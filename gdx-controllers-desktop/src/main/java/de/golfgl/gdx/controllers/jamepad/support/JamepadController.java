@@ -11,8 +11,6 @@ import com.studiohartman.jamepad.ControllerButton;
 import com.studiohartman.jamepad.ControllerIndex;
 import com.studiohartman.jamepad.ControllerUnpluggedException;
 
-import static de.golfgl.gdx.controllers.jamepad.support.JamePadExceptions.notSupported;
-
 public class JamepadController implements Controller {
     private static final IntMap<ControllerButton> CODE_TO_BUTTON = new IntMap<>(ControllerButton.values().length);
     private static final IntMap<ControllerAxis> CODE_TO_AXIS = new IntMap<>(ControllerAxis.values().length);
@@ -44,7 +42,8 @@ public class JamepadController implements Controller {
         return query(new ControllerQuerier<Boolean>() {
             @Override
             public Boolean query(ControllerIndex controllerIndex) throws ControllerUnpluggedException {
-                return controllerIndex.isButtonPressed(toButton(buttonCode));
+                ControllerButton toCheck = toButton(buttonCode);
+                return toCheck != null ? controllerIndex.isButtonPressed(toCheck) : valueOnFailure(controllerIndex);
             }
 
             @Override
@@ -58,7 +57,8 @@ public class JamepadController implements Controller {
     public float getAxis(final int axisCode) {
         return query(new ControllerQuerier<Float>() {
             public Float query(ControllerIndex controllerIndex) throws ControllerUnpluggedException {
-                return controllerIndex.getAxisState(toAxis(axisCode));
+                ControllerAxis toCheck = toAxis(axisCode);
+                return toCheck != null ? controllerIndex.getAxisState(toCheck) : valueOnFailure(controllerIndex);
             }
 
             public Float valueOnFailure(ControllerIndex controllerIndex) {
@@ -69,27 +69,31 @@ public class JamepadController implements Controller {
 
     @Override
     public PovDirection getPov(int povCode) {
-        throw notSupported("getPov(...)");
+        // not supported
+        return PovDirection.center;
     }
 
     @Override
     public boolean getSliderX(int sliderCode) {
-        throw notSupported("getSliderX(...)");
+        // not supported
+        return false;
     }
 
     @Override
     public boolean getSliderY(int sliderCode) {
-        throw notSupported("getSliderY(...)");
+        // not supported
+        return false;
     }
 
     @Override
     public Vector3 getAccelerometer(int accelerometerCode) {
-        throw notSupported("getAccelerometer(...)");
+        // not supported
+        return Vector3.Zero;
     }
 
     @Override
     public void setAccelerometerSensitivity(float sensitivity) {
-        throw notSupported("setAccelerometerSensitivity(...)");
+        // not supported
     }
 
     @Override
