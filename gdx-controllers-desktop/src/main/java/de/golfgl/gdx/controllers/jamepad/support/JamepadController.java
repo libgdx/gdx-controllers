@@ -42,7 +42,8 @@ public class JamepadController implements Controller {
         return query(new ControllerQuerier<Boolean>() {
             @Override
             public Boolean query(ControllerIndex controllerIndex) throws ControllerUnpluggedException {
-                return controllerIndex.isButtonPressed(toButton(buttonCode));
+                ControllerButton button = toButton(buttonCode);
+                return button != null && controllerIndex.isButtonPressed(button);
             }
 
             @Override
@@ -56,7 +57,8 @@ public class JamepadController implements Controller {
     public float getAxis(final int axisCode) {
         return query(new ControllerQuerier<Float>() {
             public Float query(ControllerIndex controllerIndex) throws ControllerUnpluggedException {
-                return controllerIndex.getAxisState(toAxis(axisCode));
+                ControllerAxis axis = toAxis(axisCode);
+                return axis == null ? 0.0f : controllerIndex.getAxisState(axis);
             }
 
             public Float valueOnFailure(ControllerIndex controllerIndex) {
