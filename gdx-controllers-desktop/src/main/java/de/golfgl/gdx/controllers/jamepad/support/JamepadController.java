@@ -11,8 +11,6 @@ import com.studiohartman.jamepad.ControllerButton;
 import com.studiohartman.jamepad.ControllerIndex;
 import com.studiohartman.jamepad.ControllerUnpluggedException;
 
-import static de.golfgl.gdx.controllers.jamepad.support.JamePadExceptions.notSupported;
-
 public class JamepadController implements Controller {
     private static final IntMap<ControllerButton> CODE_TO_BUTTON = new IntMap<>(ControllerButton.values().length);
     private static final IntMap<ControllerAxis> CODE_TO_AXIS = new IntMap<>(ControllerAxis.values().length);
@@ -69,27 +67,27 @@ public class JamepadController implements Controller {
 
     @Override
     public PovDirection getPov(int povCode) {
-        throw notSupported("getPov(...)");
+        return PovDirection.center;
     }
 
     @Override
     public boolean getSliderX(int sliderCode) {
-        throw notSupported("getSliderX(...)");
+        return false;
     }
 
     @Override
     public boolean getSliderY(int sliderCode) {
-        throw notSupported("getSliderY(...)");
+        return false;
     }
 
     @Override
     public Vector3 getAccelerometer(int accelerometerCode) {
-        throw notSupported("getAccelerometer(...)");
+        return Vector3.Zero;
     }
 
     @Override
     public void setAccelerometerSensitivity(float sensitivity) {
-        throw notSupported("setAccelerometerSensitivity(...)");
+
     }
 
     @Override
