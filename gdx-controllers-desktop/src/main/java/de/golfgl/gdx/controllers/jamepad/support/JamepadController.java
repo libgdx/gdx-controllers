@@ -119,9 +119,10 @@ public class JamepadController implements Controller {
         compositeControllerListener.removeListener(listener);
     }
 
-    public void update() {
+    public boolean update() {
         updateButtonsState();
         updateAxisState();
+        return connected;
     }
 
     private ControllerButton toButton(int buttonCode) {
@@ -174,7 +175,6 @@ public class JamepadController implements Controller {
             } catch (ControllerUnpluggedException e) {
                 connected = false;
                 logger.info("Failed querying controller at index: " + controllerIndex.getIndex());
-                compositeControllerListener.disconnected(this);
             }
         }
         return querier.valueOnFailure(controllerIndex);

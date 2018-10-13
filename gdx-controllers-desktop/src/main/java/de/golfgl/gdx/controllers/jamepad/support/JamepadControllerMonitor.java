@@ -2,6 +2,7 @@ package de.golfgl.gdx.controllers.jamepad.support;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.IntMap;
 import com.studiohartman.jamepad.ControllerIndex;
 import com.studiohartman.jamepad.ControllerManager;
@@ -9,7 +10,7 @@ import com.studiohartman.jamepad.ControllerManager;
 public class JamepadControllerMonitor implements Runnable {
     private final ControllerManager controllerManager;
     private final ControllerListener listener;
-    private final IntMap<Tuple> currentControllers = new IntMap<>();
+    private final IntMap<Tuple> indexToController = new IntMap<>();
 
     public JamepadControllerMonitor(ControllerManager controllerManager, ControllerListener listener) {
         this.controllerManager = controllerManager;
@@ -20,24 +21,42 @@ public class JamepadControllerMonitor implements Runnable {
     public void run() {
         controllerManager.update();
 
+        checkForNewControllers();
+        update();
+
+        Gdx.app.postRunnable(this);
+    }
+
+    private void checkForNewControllers() {
         int newNumControllers = controllerManager.getNumControllers();
         for (int i = 0; i < newNumControllers; i++) {
             ControllerIndex controllerIndex = controllerManager.getControllerIndex(i);
 
-            if (!currentControllers.containsKey(controllerIndex.getIndex())) {
-                Tuple tuple = new Tuple(controllerIndex);
-                tuple.controller.addListener(listener);
+            if (!indexToController.containsKey(controllerIndex.getIndex())) {
+                Tuple tuple1 = new Tuple(controllerIndex);
+                tuple1.controller.addListener(listener);
 
-                currentControllers.put(controllerIndex.getIndex(), tuple);
-                listener.connected(tuple.controller);
+                indexToController.put(controllerIndex.getIndex(), tuple1);
+                listener.connected(tuple1.controller);
+            }
+        }
+    }
+
+    private void update() {
+        IntArray disconnectedControllers = new IntArray(indexToController.size);
+        for (Tuple tuple : indexToController.values()) {
+            JamepadController controller = tuple.controller;
+            boolean connected = controller.update();
+
+            if (!connected) {
+                listener.disconnected(tuple.controller);
+                disconnectedControllers.add(tuple.index.getIndex());
             }
         }
 
-        for (Tuple tuple : currentControllers.values()) {
-            tuple.controller.update();
+        for (int i = 0; i < disconnectedControllers.size; i++) {
+            indexToController.remove(disconnectedControllers.get(i));
         }
-
-        Gdx.app.postRunnable(this);
     }
 
     private class Tuple {
