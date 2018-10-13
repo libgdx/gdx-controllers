@@ -58,7 +58,19 @@ public class JamepadController implements Controller {
         return query(new ControllerQuerier<Float>() {
             public Float query(ControllerIndex controllerIndex) throws ControllerUnpluggedException {
                 ControllerAxis axis = toAxis(axisCode);
-                return axis == null ? 0.0f : controllerIndex.getAxisState(axis);
+
+                if (axis == null) {
+                    return 0.0f;
+                } else {
+                    float axisState = controllerIndex.getAxisState(axis);
+
+                    // Jamepad flips vertical controller axis values. That's not a great idea to differ from
+                    // common standards. Up is negative, down is positive, that's the way it is and we ensure this here
+                    if (axis == ControllerAxis.LEFTY || axis == ControllerAxis.RIGHTY)
+                        axisState = -axisState;
+
+                    return axisState;
+                }
             }
 
             public Float valueOnFailure(ControllerIndex controllerIndex) {
