@@ -23,7 +23,7 @@ public class JamepadControllerManager implements ControllerManager, Disposable {
 
         if (!nativeLibInitialized) {
             int maxNumControllers = 4;
-            String mappingsPath = "jamepad/gamecontrollerdb.txt";
+            String mappingsPath = "gamecontrollerdb.txt";
 
             controllerManager = new com.studiohartman.jamepad.ControllerManager(maxNumControllers, mappingsPath);
             controllerManager.initSDLGamepad();
