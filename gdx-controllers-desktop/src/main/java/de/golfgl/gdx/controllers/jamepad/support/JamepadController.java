@@ -15,7 +15,6 @@ public class JamepadController implements Controller {
     private static final IntMap<ControllerButton> CODE_TO_BUTTON = new IntMap<>(ControllerButton.values().length);
     private static final IntMap<ControllerAxis> CODE_TO_AXIS = new IntMap<>(ControllerAxis.values().length);
     private static final Logger logger = new Logger(JamepadController.class.getSimpleName());
-    private static final int MAX_QUERY_ATTEMPTS = 2;
 
     static {
         for (ControllerButton button : ControllerButton.values()) {
@@ -31,6 +30,7 @@ public class JamepadController implements Controller {
     private final ControllerIndex controllerIndex;
     private final IntMap<Boolean> buttonState = new IntMap<>();
     private final IntMap<Float> axisState = new IntMap<>();
+    private boolean connected = true;
 
     public JamepadController(ControllerIndex controllerIndex) {
         this.controllerIndex = controllerIndex;
@@ -164,17 +164,15 @@ public class JamepadController implements Controller {
     }
 
     private <R> R query(ControllerQuerier<R> querier) {
-        for (int i = 0; i < MAX_QUERY_ATTEMPTS; i++) {
+        if (connected) {
             try {
                 return querier.query(controllerIndex);
             } catch (ControllerUnpluggedException e) {
-                logger.error("Failed querying controller at index: " + controllerIndex.getIndex(), e);
-                controllerIndex.reconnectController();
+                connected = false;
+                logger.info("Failed querying controller at index: " + controllerIndex.getIndex());
+                compositeControllerListener.disconnected(this);
             }
         }
-
-        compositeControllerListener.disconnected(this);
-
         return querier.valueOnFailure(controllerIndex);
     }
 
