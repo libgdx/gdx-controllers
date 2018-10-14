@@ -31,6 +31,7 @@ public class JamepadTest extends ApplicationAdapter {
     private ObjectMap<ControllerButton, Label> buttonToLabel = new ObjectMap<>(ControllerButton.values().length);
     private ObjectMap<ControllerAxis, Label> axisToLabel = new ObjectMap<>(ControllerAxis.values().length);
     private Controller selectedController;
+    private SelectBox controllerList;
 
     public static void main(String[] args) {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
@@ -42,37 +43,20 @@ public class JamepadTest extends ApplicationAdapter {
 
     @Override
     public void create() {
-        Skin skin = new Skin(Gdx.files.classpath("uiskin.json"));
-        final SelectBox controllerList = new SelectBox(skin);
+        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+        controllerList = new SelectBox(skin);
 
-        controllerNames.add("Select...");
-        for (Controller controller : Controllers.getControllers()) {
-            controllerNames.add(controller.getName());
-            controllers.add(controller);
-        }
+        refreshControllersList();
 
         Controllers.addListener(new ControllerAdapter() {
             @Override
-            public void connected(Controller controller) {
-                controllers.add(controller);
-                controllerNames.add(controller.getName());
-
-                int selected = controllerList.getSelectedIndex();
-                controllerList.setItems(controllerNames);
-                controllerList.setSelectedIndex(selected);
+            public void connected(final Controller controller) {
+                refreshControllersList();
             }
 
             @Override
             public void disconnected(Controller controller) {
-                int index = controllers.indexOf(controller, true);
-                controllerNames.removeIndex(index + 1);
-                controllers.removeValue(controller, true);
-
-                if (controller.equals(selectedController)) {
-                    selectedController = null;
-                    controllerList.setItems(controllerNames);
-                    controllerList.setSelectedIndex(0);
-                }
+                refreshControllersList();
             }
         });
 
@@ -117,6 +101,21 @@ public class JamepadTest extends ApplicationAdapter {
         stage.addActor(table);
 
         Gdx.input.setInputProcessor(stage);
+    }
+
+    private void refreshControllersList() {
+        controllerNames = new Array<>();
+        controllers = new Array<>();
+        controllerNames.add("Select...");
+        Gdx.app.log("Controllers", Controllers.getControllers().size + " controllers connected.");
+        for (int i = 0; i < Controllers.getControllers().size; i++) {
+            Controller controller = Controllers.getControllers().get(i);
+            Gdx.app.log("Controllers", controller.getName());
+            controllerNames.add(controller.getName());
+            controllers.add(controller);
+        }
+        controllerList.setItems(controllerNames);
+        controllerList.setSelectedIndex(0);
     }
 
     @Override
