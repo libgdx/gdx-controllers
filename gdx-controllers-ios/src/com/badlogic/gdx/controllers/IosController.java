@@ -1,57 +1,161 @@
 package com.badlogic.gdx.controllers;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
 import org.robovm.apple.gamecontroller.GCController;
 import org.robovm.apple.gamecontroller.GCControllerAxisInput;
 import org.robovm.apple.gamecontroller.GCControllerButtonInput;
 import org.robovm.apple.gamecontroller.GCControllerDirectionPad;
+import org.robovm.apple.gamecontroller.GCControllerElement;
+import org.robovm.apple.gamecontroller.GCExtendedGamepad;
+import org.robovm.apple.gamecontroller.GCGamepad;
+import org.robovm.objc.block.VoidBlock1;
+import org.robovm.objc.block.VoidBlock2;
 
 public class IosController implements Controller, Disposable {
-	private final GCController controller;
+    public final static int BUTTON_PAUSE = 9;
 
-	public IosController(GCController controller) {
-		this.controller = controller;
-		controller.retain();
-	}
+    private final GCController controller;
+    private final Array<ControllerListener> listeners = new Array<>();
 
-	@Override
-	public void dispose() {
-		// TODO clear listeners
+    public IosController(GCController controller) {
+        this.controller = controller;
+        controller.retain();
+        controller.setControllerPausedHandler(new VoidBlock1<GCController>() {
+            @Override
+            public void invoke(GCController gcController) {
+                onPauseButtonPressed();
+            }
+        });
+        if (controller.getExtendedGamepad() != null)
+            controller.getExtendedGamepad().setValueChangedHandler(new VoidBlock2<GCExtendedGamepad, GCControllerElement>() {
+                @Override
+                public void invoke(GCExtendedGamepad gcExtendedGamepad, GCControllerElement gcControllerElement) {
+                    onControllerValueChanged(gcControllerElement);
+                }
+            });
+        else if (controller.getGamepad() != null)
+            controller.getGamepad().setValueChangedHandler(new VoidBlock2<GCGamepad, GCControllerElement>() {
+                @Override
+                public void invoke(GCGamepad gcGamepad, GCControllerElement gcControllerElement) {
+                    onControllerValueChanged(gcControllerElement);
+                }
+            });
+    }
 
-		controller.release();
-	}
+    @Override
+    public void dispose() {
+        listeners.clear();
+        controller.setControllerPausedHandler(null);
+        if (controller.getExtendedGamepad() != null)
+            controller.getExtendedGamepad().setValueChangedHandler(null);
+        if (controller.getGamepad() != null)
+            controller.getGamepad().setValueChangedHandler(null);
 
-	/**
-	 * @return button from constant, following W3C recommendations
-	 */
-	protected GCControllerButtonInput getButtonFromConst(int i) {
-		switch (i) {
-			case 0:
-				// Button A
-				if (controller.getExtendedGamepad() != null)
-					return controller.getExtendedGamepad().getButtonA();
-				else
-					return controller.getGamepad().getButtonA();
-			case 1:
-				// Button B
-				if (controller.getExtendedGamepad() != null)
-					return controller.getExtendedGamepad().getButtonB();
-				else
-					return controller.getGamepad().getButtonB();
-			case 2:
-				// Button X
-				if (controller.getExtendedGamepad() != null)
-					return controller.getExtendedGamepad().getButtonX();
-				else
-					return controller.getGamepad().getButtonX();
-			case 3:
-				// Button Y
-				if (controller.getExtendedGamepad() != null)
-					return controller.getExtendedGamepad().getButtonY();
-				else
-					return controller.getGamepad().getButtonY();
+        controller.release();
+    }
+
+    protected void onPauseButtonPressed() {
+        if (listeners.size > 0 || Controllers.getListeners().size > 0) {
+            notifyListenersButtonDown(BUTTON_PAUSE);
+            notifyListenersButtonUp(BUTTON_PAUSE);
+        } else {
+            // TODO cache the button until next call to getButton(BUTTON_PAUSE)
+        }
+    }
+
+    protected void onControllerValueChanged(GCControllerElement gcControllerElement) {
+        if (gcControllerElement instanceof GCControllerButtonInput) {
+            GCControllerButtonInput buttonElement = (GCControllerButtonInput) gcControllerElement;
+            boolean pressed = buttonElement.isPressed();
+            int buttonNum = getConstFromButtonInput(buttonElement);
+            if (buttonNum >= 0) {
+                if (pressed)
+                    notifyListenersButtonDown(buttonNum);
+                else
+                    notifyListenersButtonUp(buttonNum);
+            }
+
+        } else if (gcControllerElement instanceof GCControllerAxisInput) {
+            //TODO
+
+        } else if (gcControllerElement instanceof GCControllerDirectionPad) {
+            //TODO
+        }
+    }
+
+    private void notifyListenersButtonUp(int button) {
+        for (ControllerListener listener : Controllers.getListeners()) {
+            if (listener.buttonUp(this, button))
+                break;
+        }
+        for (ControllerListener listener : listeners) {
+            if (listener.buttonUp(this, button))
+                break;
+        }
+    }
+
+    protected void notifyListenersButtonDown(int button) {
+        for (ControllerListener listener : Controllers.getListeners()) {
+            if (listener.buttonDown(this, button))
+                break;
+        }
+        for (ControllerListener listener : listeners) {
+            if (listener.buttonDown(this, button))
+                break;
+        }
+    }
+
+    /**
+     * @return constant from button, following W3C recommendations. -1 if not found
+     */
+    protected int getConstFromButtonInput(GCControllerButtonInput controllerButtonInput) {
+        int maxButtonNum = getMaxButtonNum();
+        for (int i = 0; i < maxButtonNum; i++) {
+            GCControllerButtonInput buttonFromConst = getButtonFromConst(i);
+            if (buttonFromConst != null && controllerButtonInput == buttonFromConst)
+                return i;
+        }
+
+        if (controllerButtonInput != null)
+            Gdx.app.log("Controllers", "Pressed unknown button: " +
+                    controllerButtonInput.toString());
+
+        return -1;
+    }
+
+    /**
+     * @return button from constant, following W3C recommendations
+     */
+    protected GCControllerButtonInput getButtonFromConst(int i) {
+        switch (i) {
+            case 0:
+                // Button A
+                if (controller.getExtendedGamepad() != null)
+                    return controller.getExtendedGamepad().getButtonA();
+                else
+                    return controller.getGamepad().getButtonA();
+            case 1:
+                // Button B
+                if (controller.getExtendedGamepad() != null)
+                    return controller.getExtendedGamepad().getButtonB();
+                else
+                    return controller.getGamepad().getButtonB();
+            case 2:
+                // Button X
+                if (controller.getExtendedGamepad() != null)
+                    return controller.getExtendedGamepad().getButtonX();
+                else
+                    return controller.getGamepad().getButtonX();
+            case 3:
+                // Button Y
+                if (controller.getExtendedGamepad() != null)
+                    return controller.getExtendedGamepad().getButtonY();
+                else
+                    return controller.getGamepad().getButtonY();
             case 4:
                 // L1
                 if (controller.getExtendedGamepad() != null)
@@ -85,22 +189,26 @@ public class IosController implements Controller, Disposable {
                 return null;
 
             // 12-15: DPad
-		}
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	@Override
-	public boolean getButton(int i) {
-		GCControllerButtonInput buttonFromConst = getButtonFromConst(i);
+    public int getMaxButtonNum() {
+        return Math.max(7, BUTTON_PAUSE);
+    }
 
-		if (buttonFromConst != null)
-		    return buttonFromConst.isPressed();
+    @Override
+    public boolean getButton(int i) {
+        GCControllerButtonInput buttonFromConst = getButtonFromConst(i);
+
+        if (buttonFromConst != null)
+            return buttonFromConst.isPressed();
         else
-		    return false;
-	}
+            return false;
+    }
 
-	protected GCControllerAxisInput getAxisFromConst(int i) {
+    protected GCControllerAxisInput getAxisFromConst(int i) {
         switch (i) {
             case 0:
                 // Left X
@@ -130,18 +238,18 @@ public class IosController implements Controller, Disposable {
         return null;
     }
 
-	@Override
-	public float getAxis(int i) {
+    @Override
+    public float getAxis(int i) {
         GCControllerAxisInput axisFromConst = getAxisFromConst(i);
 
         if (axisFromConst != null)
             return axisFromConst.getValue();
 
-		return 0;
-	}
+        return 0;
+    }
 
-	@Override
-	public PovDirection getPov(int i) {
+    @Override
+    public PovDirection getPov(int i) {
         GCControllerDirectionPad dpad = null;
 
         if (i == 0) {
@@ -152,7 +260,7 @@ public class IosController implements Controller, Disposable {
         }
 
         if (dpad == null)
-    		return PovDirection.center;
+            return PovDirection.center;
         else if (dpad.getDown().isPressed() && dpad.getLeft().isPressed())
             return PovDirection.southWest;
         else if (dpad.getLeft().isPressed() && dpad.getUp().isPressed())
@@ -171,50 +279,50 @@ public class IosController implements Controller, Disposable {
             return PovDirection.east;
         else
             return PovDirection.center;
-	}
+    }
 
-	@Override
-	public boolean getSliderX(int i) {
-		return false;
-	}
+    @Override
+    public boolean getSliderX(int i) {
+        return false;
+    }
 
-	@Override
-	public boolean getSliderY(int i) {
-		return false;
-	}
+    @Override
+    public boolean getSliderY(int i) {
+        return false;
+    }
 
-	@Override
-	public Vector3 getAccelerometer(int i) {
-        // not supported
+    @Override
+    public Vector3 getAccelerometer(int i) {
+        // TODO
         return Vector3.Zero;
-	}
+    }
 
-	@Override
-	public void setAccelerometerSensitivity(float v) {
+    @Override
+    public void setAccelerometerSensitivity(float v) {
         // not supported
-	}
+    }
 
-	@Override
-	public String getName() {
-		return controller.getVendorName();
-	}
+    @Override
+    public String getName() {
+        return controller.getVendorName();
+    }
 
-	@Override
-	public void addListener(ControllerListener controllerListener) {
-		//TODO
-	}
+    @Override
+    public void addListener(ControllerListener controllerListener) {
+        listeners.add(controllerListener);
+    }
 
-	@Override
-	public void removeListener(ControllerListener controllerListener) {
-		//TODO
-	}
+    @Override
+    public void removeListener(ControllerListener controllerListener) {
+        listeners.removeValue(controllerListener, true);
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		return (o instanceof IosController && ((IosController) o).getController() == controller);
-	}
+    @Override
+    public boolean equals(Object o) {
+        return (o instanceof IosController && ((IosController) o).getController() == controller);
+    }
 
-	public GCController getController() {
-		return controller;
-	}
+    public GCController getController() {
+        return controller;
+    }
 }

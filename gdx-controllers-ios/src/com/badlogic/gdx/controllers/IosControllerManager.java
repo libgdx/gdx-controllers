@@ -6,6 +6,7 @@ import com.badlogic.gdx.LifecycleListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 
+import org.robovm.apple.foundation.Foundation;
 import org.robovm.apple.foundation.NSArray;
 import org.robovm.apple.gamecontroller.GCController;
 import org.robovm.objc.block.VoidBlock1;
@@ -26,7 +27,9 @@ public class IosControllerManager implements ControllerManager {
 		ObjectMap<Application, ControllerManager> managers = Controllers.managers;
 
 		// this is a copy from Controllers class. A hack to get IosControllerManager to work with libGDX
-		if (!managers.containsKey(Gdx.app)) {
+		if (Foundation.getMajorSystemVersion() < 7) {
+			Gdx.app.log("Controllers", "IosControllerManager not added, needs iOS 7+.");
+		} else if (!managers.containsKey(Gdx.app)) {
 			ControllerManager manager = new IosControllerManager();
 
 			managers.put(Gdx.app, manager);
@@ -80,7 +83,6 @@ public class IosControllerManager implements ControllerManager {
 				}
 			});
 
-			// TODO Pause button handler
 		}
 	}
 
