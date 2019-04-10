@@ -48,7 +48,9 @@ public class IosController implements Controller, Disposable {
 
     @Override
     public void dispose() {
-        listeners.clear();
+    	synchronized (listeners) {
+			listeners.clear();
+		}
         controller.setControllerPausedHandler(null);
         if (controller.getExtendedGamepad() != null)
             controller.getExtendedGamepad().setValueChangedHandler(null);
@@ -88,25 +90,37 @@ public class IosController implements Controller, Disposable {
     }
 
     private void notifyListenersButtonUp(int button) {
-        for (ControllerListener listener : Controllers.getListeners()) {
-            if (listener.buttonUp(this, button))
-                break;
-        }
-        for (ControllerListener listener : listeners) {
-            if (listener.buttonUp(this, button))
-                break;
-        }
+		Array<ControllerListener> managerListeners = Controllers.getListeners();
+		synchronized (managerListeners) {
+			for (ControllerListener listener : managerListeners) {
+				if (listener.buttonUp(this, button))
+					break;
+			}
+		}
+
+		synchronized (this.listeners) {
+			for (ControllerListener listener : this.listeners) {
+				if (listener.buttonUp(this, button))
+					break;
+			}
+		}
     }
 
     protected void notifyListenersButtonDown(int button) {
-        for (ControllerListener listener : Controllers.getListeners()) {
-            if (listener.buttonDown(this, button))
-                break;
-        }
-        for (ControllerListener listener : listeners) {
-            if (listener.buttonDown(this, button))
-                break;
-        }
+		Array<ControllerListener> managerListeners = Controllers.getListeners();
+		synchronized (managerListeners) {
+			for (ControllerListener listener : managerListeners) {
+				if (listener.buttonDown(this, button))
+					break;
+			}
+		}
+
+		synchronized (listeners) {
+			for (ControllerListener listener : listeners) {
+				if (listener.buttonDown(this, button))
+					break;
+			}
+		}
     }
 
     /**
@@ -309,12 +323,17 @@ public class IosController implements Controller, Disposable {
 
     @Override
     public void addListener(ControllerListener controllerListener) {
-        listeners.add(controllerListener);
+		synchronized (listeners) {
+			if (!listeners.contains(controllerListener, true))
+				listeners.add(controllerListener);
+		}
     }
 
     @Override
     public void removeListener(ControllerListener controllerListener) {
-        listeners.removeValue(controllerListener, true);
+		synchronized (listeners) {
+			listeners.removeValue(controllerListener, true);
+		}
     }
 
     @Override

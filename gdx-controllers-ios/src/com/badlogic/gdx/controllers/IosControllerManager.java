@@ -92,8 +92,10 @@ public class IosControllerManager implements ControllerManager {
 		if (!controllers.contains(iosController, false)) {
 			controllers.add(iosController);
 
-			for (ControllerListener listener : listeners)
-				listener.connected(iosController);
+			synchronized (listeners) {
+				for (ControllerListener listener : listeners)
+					listener.connected(iosController);
+			}
 		} else
 			iosController.dispose();
 	}
@@ -109,8 +111,9 @@ public class IosControllerManager implements ControllerManager {
 		if (oldReference != null) {
 			controllers.removeValue(oldReference, true);
 
-			for (ControllerListener listener : listeners) {
-				listener.disconnected(oldReference);
+			synchronized (listeners) {
+				for (ControllerListener listener : listeners)
+					listener.disconnected(oldReference);
 			}
 
 			oldReference.dispose();
@@ -121,13 +124,17 @@ public class IosControllerManager implements ControllerManager {
 	public void addListener(ControllerListener controllerListener) {
 		initializeControllerArray();
 
-		if (!listeners.contains(controllerListener, true))
-			listeners.add(controllerListener);
+		synchronized (listeners) {
+			if (!listeners.contains(controllerListener, true))
+				listeners.add(controllerListener);
+		}
 	}
 
 	@Override
 	public void removeListener(ControllerListener controllerListener) {
-		listeners.removeValue(controllerListener, true);
+		synchronized (listeners) {
+			listeners.removeValue(controllerListener, true);
+		}
 	}
 
 	@Override
@@ -137,7 +144,9 @@ public class IosControllerManager implements ControllerManager {
 
 	@Override
 	public void clearListeners() {
-		listeners.clear();
+		synchronized (listeners) {
+			listeners.clear();
+		}
 	}
 }
 
