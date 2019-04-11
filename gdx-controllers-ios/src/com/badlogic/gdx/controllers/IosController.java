@@ -87,9 +87,11 @@ public class IosController implements Controller, Disposable {
             }
 
         } else if (gcControllerElement instanceof GCControllerAxisInput) {
-            //TODO
+			GCControllerAxisInput axisInput = (GCControllerAxisInput) gcControllerElement;
+			int axisNum = getConstFromAxisInput(axisInput);
+			notifyListenersAxisMoved(axisNum, axisInput.getValue());
 
-        } else if (gcControllerElement instanceof GCControllerDirectionPad) {
+		} else if (gcControllerElement instanceof GCControllerDirectionPad) {
             PovDirection newPovDirection = getPovDirectionFromDirectionPad((GCControllerDirectionPad) gcControllerElement);
 
             if (newPovDirection != lastPovDirection) {
@@ -99,7 +101,7 @@ public class IosController implements Controller, Disposable {
         }
     }
 
-    private void notifyListenersButtonUp(int button) {
+	private void notifyListenersButtonUp(int button) {
 		Array<ControllerListener> managerListeners = Controllers.getListeners();
 		synchronized (managerListeners) {
 			for (ControllerListener listener : managerListeners) {
@@ -133,7 +135,24 @@ public class IosController implements Controller, Disposable {
 		}
     }
 
-    protected void notifyListenersPovDirection(PovDirection newPovDirection) {
+	protected void notifyListenersAxisMoved(int axisNum, float value) {
+		Array<ControllerListener> managerListeners = Controllers.getListeners();
+		synchronized (managerListeners) {
+			for (ControllerListener listener : managerListeners) {
+				if (listener.axisMoved(this, axisNum, value))
+					break;
+			}
+		}
+
+		synchronized (listeners) {
+			for (ControllerListener listener : listeners) {
+				if (listener.axisMoved(this, axisNum, value))
+					break;
+			}
+		}
+	}
+
+	protected void notifyListenersPovDirection(PovDirection newPovDirection) {
         Array<ControllerListener> managerListeners = Controllers.getListeners();
         synchronized (managerListeners) {
             for (ControllerListener listener : managerListeners) {
@@ -254,6 +273,15 @@ public class IosController implements Controller, Disposable {
         else
             return false;
     }
+
+    protected int getConstFromAxisInput(GCControllerAxisInput axis) {
+    	for (int i = 0; i <= 3; i++) {
+    		if (getAxisFromConst(i) == axis)
+    			return i;
+		}
+
+		return -1;
+	}
 
     protected GCControllerAxisInput getAxisFromConst(int i) {
         switch (i) {
