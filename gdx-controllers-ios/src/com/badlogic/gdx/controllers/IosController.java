@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.TimeUtils;
 
 import org.robovm.apple.gamecontroller.GCController;
 import org.robovm.apple.gamecontroller.GCControllerAxisInput;
@@ -20,9 +21,15 @@ public class IosController implements Controller, Disposable {
 
     private final GCController controller;
     private final Array<ControllerListener> listeners = new Array<>();
+    private final boolean[] pressedButtons;
+    private PovDirection lastPovDirection = PovDirection.center;
+    private long lastPausePressedMs = 0;
 
     public IosController(GCController controller) {
         this.controller = controller;
+
+        pressedButtons = new boolean[getMaxButtonNum() + 1];
+
         controller.retain();
         controller.setControllerPausedHandler(new VoidBlock1<GCController>() {
             @Override
@@ -61,12 +68,9 @@ public class IosController implements Controller, Disposable {
     }
 
     protected void onPauseButtonPressed() {
-        if (listeners.size > 0 || Controllers.getListeners().size > 0) {
-            notifyListenersButtonDown(BUTTON_PAUSE);
-            notifyListenersButtonUp(BUTTON_PAUSE);
-        } else {
-            // TODO cache the button until next call to getButton(BUTTON_PAUSE)
-        }
+        lastPausePressedMs = TimeUtils.millis();
+        notifyListenersButtonDown(BUTTON_PAUSE);
+        notifyListenersButtonUp(BUTTON_PAUSE);
     }
 
     protected void onControllerValueChanged(GCControllerElement gcControllerElement) {
@@ -74,7 +78,8 @@ public class IosController implements Controller, Disposable {
             GCControllerButtonInput buttonElement = (GCControllerButtonInput) gcControllerElement;
             boolean pressed = buttonElement.isPressed();
             int buttonNum = getConstFromButtonInput(buttonElement);
-            if (buttonNum >= 0) {
+            if (buttonNum >= 0 && pressedButtons[buttonNum] != pressed) {
+                pressedButtons[buttonNum] = pressed;
                 if (pressed)
                     notifyListenersButtonDown(buttonNum);
                 else
@@ -85,7 +90,12 @@ public class IosController implements Controller, Disposable {
             //TODO
 
         } else if (gcControllerElement instanceof GCControllerDirectionPad) {
-            //TODO
+            PovDirection newPovDirection = getPovDirectionFromDirectionPad((GCControllerDirectionPad) gcControllerElement);
+
+            if (newPovDirection != lastPovDirection) {
+                lastPovDirection = newPovDirection;
+                notifyListenersPovDirection(newPovDirection);
+            }
         }
     }
 
@@ -121,6 +131,23 @@ public class IosController implements Controller, Disposable {
 					break;
 			}
 		}
+    }
+
+    protected void notifyListenersPovDirection(PovDirection newPovDirection) {
+        Array<ControllerListener> managerListeners = Controllers.getListeners();
+        synchronized (managerListeners) {
+            for (ControllerListener listener : managerListeners) {
+                if (listener.povMoved(this, 0, newPovDirection))
+                    break;
+            }
+        }
+
+        synchronized (listeners) {
+            for (ControllerListener listener : listeners) {
+                if (listener.povMoved(this, 0, newPovDirection))
+                    break;
+            }
+        }
     }
 
     /**
@@ -216,7 +243,13 @@ public class IosController implements Controller, Disposable {
     public boolean getButton(int i) {
         GCControllerButtonInput buttonFromConst = getButtonFromConst(i);
 
-        if (buttonFromConst != null)
+        if (i == BUTTON_PAUSE) {
+            if (lastPausePressedMs > 0 && (TimeUtils.millis() - lastPausePressedMs) <= 100) {
+                lastPausePressedMs = 0;
+                return true;
+            } else
+                return false;
+        } else if (buttonFromConst != null)
             return buttonFromConst.isPressed();
         else
             return false;
@@ -273,6 +306,10 @@ public class IosController implements Controller, Disposable {
                 dpad = controller.getGamepad().getDpad();
         }
 
+        return getPovDirectionFromDirectionPad(dpad);
+    }
+
+    private PovDirection getPovDirectionFromDirectionPad(GCControllerDirectionPad dpad) {
         if (dpad == null)
             return PovDirection.center;
         else if (dpad.getDown().isPressed() && dpad.getLeft().isPressed())
