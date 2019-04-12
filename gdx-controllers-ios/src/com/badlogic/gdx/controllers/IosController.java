@@ -263,7 +263,7 @@ public class IosController implements Controller, Disposable {
         GCControllerButtonInput buttonFromConst = getButtonFromConst(i);
 
         if (i == BUTTON_PAUSE) {
-            if (lastPausePressedMs > 0 && (TimeUtils.millis() - lastPausePressedMs) <= 100) {
+            if (lastPausePressedMs > 0 && (TimeUtils.millis() - lastPausePressedMs) <= 250) {
                 lastPausePressedMs = 0;
                 return true;
             } else
@@ -350,7 +350,7 @@ public class IosController implements Controller, Disposable {
             return PovDirection.southEast;
         else if (dpad.getDown().isPressed() && !dpad.getUp().isPressed())
             return PovDirection.south;
-        else if (dpad.getUp().isPressed() && !dpad.getUp().isPressed())
+        else if (dpad.getUp().isPressed() && !dpad.getDown().isPressed())
             return PovDirection.north;
         else if (dpad.getLeft().isPressed() && !dpad.getRight().isPressed())
             return PovDirection.west;
