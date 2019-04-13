@@ -87,17 +87,23 @@ public class IosControllerManager implements ControllerManager {
 	}
 
 	protected void onControllerConnect(GCController gcController) {
-		IosController iosController = new IosController(gcController);
+		boolean alreadyInList = false;
+		for (Controller controller : controllers) {
+			if (((IosController) controller).getController() == gcController) {
+				alreadyInList = true;
+				break;
+			}
+		}
 
-		if (!controllers.contains(iosController, false)) {
+		if (!alreadyInList) {
+			IosController iosController = new IosController(gcController);
 			controllers.add(iosController);
 
 			synchronized (listeners) {
 				for (ControllerListener listener : listeners)
 					listener.connected(iosController);
 			}
-		} else
-			iosController.dispose();
+		}
 	}
 
 	protected void onControllerDisconnect(GCController gcController) {
