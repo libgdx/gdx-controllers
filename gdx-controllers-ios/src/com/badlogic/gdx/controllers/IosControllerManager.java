@@ -52,6 +52,10 @@ public class IosControllerManager implements ControllerManager {
 		}
 	}
 
+	protected boolean isSupportedController(GCController controller) {
+		return controller.getExtendedGamepad() != null || controller.getGamepad() != null;
+	}
+
 	@Override
 	public Array<Controller> getControllers() {
 		initializeControllerArray();
@@ -66,7 +70,8 @@ public class IosControllerManager implements ControllerManager {
 			NSArray<GCController> controllers = GCController.getControllers();
 
 			for (GCController controller : controllers) {
-				this.controllers.add(new IosController(controller));
+				if (isSupportedController(controller))
+					this.controllers.add(new IosController(controller));
 			}
 
 			GCController.Notifications.observeDidConnect(new VoidBlock1<GCController>() {
@@ -87,6 +92,9 @@ public class IosControllerManager implements ControllerManager {
 	}
 
 	protected void onControllerConnect(GCController gcController) {
+		if (!isSupportedController(gcController))
+			return;
+
 		boolean alreadyInList = false;
 		for (Controller controller : controllers) {
 			if (((IosController) controller).getController() == gcController) {

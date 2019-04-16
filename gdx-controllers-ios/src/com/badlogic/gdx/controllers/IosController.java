@@ -61,7 +61,7 @@ public class IosController implements Controller, Disposable {
         controller.setControllerPausedHandler(null);
         if (controller.getExtendedGamepad() != null)
             controller.getExtendedGamepad().setValueChangedHandler(null);
-        if (controller.getGamepad() != null)
+        else if (controller.getGamepad() != null)
             controller.getGamepad().setValueChangedHandler(null);
 
         controller.release();
@@ -372,7 +372,7 @@ public class IosController implements Controller, Disposable {
 
     @Override
     public Vector3 getAccelerometer(int i) {
-        // TODO
+        // TODO supported since iOS8
         return Vector3.Zero;
     }
 
