@@ -1,6 +1,6 @@
 package de.golfgl.gdx.controllers.jamepad.support;
 
-import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.AdvancedController;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.math.Vector3;
@@ -11,7 +11,9 @@ import com.studiohartman.jamepad.ControllerButton;
 import com.studiohartman.jamepad.ControllerIndex;
 import com.studiohartman.jamepad.ControllerUnpluggedException;
 
-public class JamepadController implements Controller {
+import java.util.UUID;
+
+public class JamepadController implements AdvancedController {
     private static final IntMap<ControllerButton> CODE_TO_BUTTON = new IntMap<>(ControllerButton.values().length);
     private static final IntMap<ControllerAxis> CODE_TO_AXIS = new IntMap<>(ControllerAxis.values().length);
     private static final Logger logger = new Logger(JamepadController.class.getSimpleName());
@@ -30,10 +32,12 @@ public class JamepadController implements Controller {
     private final ControllerIndex controllerIndex;
     private final IntMap<Boolean> buttonState = new IntMap<>();
     private final IntMap<Float> axisState = new IntMap<>();
+    private final String uuid;
     private boolean connected = true;
 
     public JamepadController(ControllerIndex controllerIndex) {
         this.controllerIndex = controllerIndex;
+        this.uuid = UUID.randomUUID().toString();
         initializeState();
     }
 
@@ -200,6 +204,71 @@ public class JamepadController implements Controller {
         for (ControllerButton button : ControllerButton.values()) {
             buttonState.put(button.ordinal(), false);
         }
+    }
+
+    @Override
+    public boolean canVibrate() {
+        return true;
+    }
+
+    @Override
+    public boolean isVibrating() {
+        return controllerIndex.isVibrating();
+    }
+
+    @Override
+    public void startVibration(float strength) {
+        try {
+            controllerIndex.startVibration(strength, strength);
+        } catch (ControllerUnpluggedException e) {
+            // do nothing
+        }
+    }
+
+    @Override
+    public void stopVibration() {
+        controllerIndex.stopVibration();
+    }
+
+    @Override
+    public String getUniqueId() {
+        return uuid;
+    }
+
+    @Override
+    public boolean supportsPlayerIndex() {
+        return false;
+    }
+
+    @Override
+    public int getPlayerIndex() {
+        return PLAYER_IDX_UNSET;
+    }
+
+    @Override
+    public void setPlayerIndex(int index) {
+        // unsupported
+    }
+
+    @Override
+    public int getMinButtonIndex() {
+        return 0;
+    }
+
+    @Override
+    public int getMaxButtonIndex() {
+        return CODE_TO_BUTTON.size - 1;
+    }
+
+    @Override
+    public int getAxisCount() {
+        return CODE_TO_AXIS.size - 1;
+    }
+
+    @Override
+    public int getPovCount() {
+        // unsupported
+        return 0;
     }
 
     private interface ControllerQuerier<R> {
