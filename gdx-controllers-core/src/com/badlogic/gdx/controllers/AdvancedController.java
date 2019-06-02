@@ -63,12 +63,14 @@ public interface AdvancedController extends Controller {
     int getMaxButtonIndex();
 
     /**
-     * @return number of axis of this controller
+     * @return number of axis of this controller. Axis indices start at 0, so the maximum axis index
+     * is one under this value.
      */
     int getAxisCount();
 
     /**
-     * @return number of dpads of this controller
+     * @return number of dpads of this controller. Indices start at 0, so the maximum pov index is
+     * one under this value.
      */
     int getPovCount();
 }

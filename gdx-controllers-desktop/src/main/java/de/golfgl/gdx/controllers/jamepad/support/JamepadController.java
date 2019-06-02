@@ -262,7 +262,7 @@ public class JamepadController implements AdvancedController {
 
     @Override
     public int getAxisCount() {
-        return CODE_TO_AXIS.size - 1;
+        return CODE_TO_AXIS.size;
     }
 
     @Override
