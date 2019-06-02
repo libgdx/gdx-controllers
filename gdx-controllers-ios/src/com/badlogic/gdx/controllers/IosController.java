@@ -11,15 +11,19 @@ import org.robovm.apple.gamecontroller.GCControllerAxisInput;
 import org.robovm.apple.gamecontroller.GCControllerButtonInput;
 import org.robovm.apple.gamecontroller.GCControllerDirectionPad;
 import org.robovm.apple.gamecontroller.GCControllerElement;
+import org.robovm.apple.gamecontroller.GCControllerPlayerIndex;
 import org.robovm.apple.gamecontroller.GCExtendedGamepad;
 import org.robovm.apple.gamecontroller.GCGamepad;
 import org.robovm.objc.block.VoidBlock1;
 import org.robovm.objc.block.VoidBlock2;
 
-public class IosController implements Controller, Disposable {
+import java.util.UUID;
+
+public class IosController implements AdvancedController, Disposable {
     public final static int BUTTON_PAUSE = 9;
 
     private final GCController controller;
+    private final String uuid;
     private final Array<ControllerListener> listeners = new Array<>();
     private final boolean[] pressedButtons;
     private PovDirection lastPovDirection = PovDirection.center;
@@ -27,8 +31,9 @@ public class IosController implements Controller, Disposable {
 
     public IosController(GCController controller) {
         this.controller = controller;
+        uuid = UUID.randomUUID().toString();
 
-        pressedButtons = new boolean[getMaxButtonNum() + 1];
+        pressedButtons = new boolean[getMaxButtonIndex() + 1];
 
         controller.retain();
         controller.setControllerPausedHandler(new VoidBlock1<GCController>() {
@@ -173,7 +178,7 @@ public class IosController implements Controller, Disposable {
      * @return constant from button, following W3C recommendations. -1 if not found
      */
     protected int getConstFromButtonInput(GCControllerButtonInput controllerButtonInput) {
-        int maxButtonNum = getMaxButtonNum();
+        int maxButtonNum = getMaxButtonIndex();
         for (int i = 0; i < maxButtonNum; i++) {
             GCControllerButtonInput buttonFromConst = getButtonFromConst(i);
             if (buttonFromConst != null && controllerButtonInput == buttonFromConst)
@@ -254,7 +259,13 @@ public class IosController implements Controller, Disposable {
         return null;
     }
 
-    public int getMaxButtonNum() {
+    @Override
+    public int getMinButtonIndex() {
+        return 0;
+    }
+
+    @Override
+    public int getMaxButtonIndex() {
         return Math.max(7, BUTTON_PAUSE);
     }
 
@@ -399,6 +410,57 @@ public class IosController implements Controller, Disposable {
 		synchronized (listeners) {
 			listeners.removeValue(controllerListener, true);
 		}
+    }
+
+    @Override
+    public boolean canVibrate() {
+        return false;
+    }
+
+    @Override
+    public boolean isVibrating() {
+        return false;
+    }
+
+    @Override
+    public void startVibration(float strength) {
+        // not supported
+    }
+
+    @Override
+    public void stopVibration() {
+        // not supported
+    }
+
+    @Override
+    public String getUniqueId() {
+        return uuid;
+    }
+
+    @Override
+    public boolean supportsPlayerIndex() {
+        return true;
+    }
+
+    @Override
+    public int getPlayerIndex() {
+        GCControllerPlayerIndex playerIndex = controller.getPlayerIndex();
+        return playerIndex != null ? (int) playerIndex.value() : PLAYER_IDX_UNSET;
+    }
+
+    @Override
+    public void setPlayerIndex(int index) {
+        controller.setPlayerIndex(GCControllerPlayerIndex.valueOf(index));
+    }
+
+    @Override
+    public int getAxisCount() {
+        return controller.getExtendedGamepad() != null ? 4 : 0;
+    }
+
+    @Override
+    public int getPovCount() {
+        return 1;
     }
 
     @Override
