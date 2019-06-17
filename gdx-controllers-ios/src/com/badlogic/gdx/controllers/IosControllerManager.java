@@ -3,6 +3,7 @@ package com.badlogic.gdx.controllers;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.LifecycleListener;
+import com.badlogic.gdx.backends.iosrobovm.IOSApplication;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 
@@ -30,14 +31,14 @@ public class IosControllerManager implements ControllerManager {
 	 * you need to call this method to register IosControllerManager with libGDX before your first call to
 	 * Controllers.getControllers().
 	 */
-	public static void initializeIosControllers() {
+	public static void initializeIosControllers(boolean enableICade) {
 		ObjectMap<Application, ControllerManager> managers = Controllers.managers;
 
 		// this is a copy from Controllers class. A hack to get IosControllerManager to work with libGDX
 		if (Foundation.getMajorSystemVersion() < 7) {
 			Gdx.app.log("Controllers", "IosControllerManager not added, needs iOS 7+.");
 		} else if (!managers.containsKey(Gdx.app)) {
-			ControllerManager manager = new IosControllerManager();
+			IosControllerManager manager = new IosControllerManager();
 
 			managers.put(Gdx.app, manager);
 			final Application app = Gdx.app;
@@ -54,6 +55,10 @@ public class IosControllerManager implements ControllerManager {
 				}
 			});
 			Gdx.app.log("Controllers", "added manager for application, " + managers.size + " managers active");
+
+			if (enableICade) {
+				manager.enableICade(((IOSApplication) Gdx.app).getUIViewController());
+			}
 		} else {
 			Gdx.app.log("Controllers", "IosControllerManager not added, manager already active. ");
 		}

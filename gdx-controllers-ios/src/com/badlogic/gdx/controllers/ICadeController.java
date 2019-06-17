@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector3;
 
 public class ICadeController extends AbstractController {
 
-	public final static String KEYS_TO_HANDLE = "wexzaqdcythrufjnimkpoglv";
+	public final static String KEYS_TO_HANDLE = "wexzaqdchrufytjnimkplvog";
 	private final boolean[] buttonPressed;
 
 	public ICadeController() {
