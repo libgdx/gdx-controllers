@@ -2,8 +2,6 @@ package com.badlogic.gdx.controllers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import org.robovm.apple.gamecontroller.GCController;
@@ -19,12 +17,11 @@ import org.robovm.objc.block.VoidBlock2;
 
 import java.util.UUID;
 
-public class IosController implements AdvancedController, Disposable {
+public class IosController extends AbstractController {
     public final static int BUTTON_PAUSE = 9;
 
     private final GCController controller;
     private final String uuid;
-    private final Array<ControllerListener> listeners = new Array<>();
     private final boolean[] pressedButtons;
     private PovDirection lastPovDirection = PovDirection.center;
     private long lastPausePressedMs = 0;
@@ -60,9 +57,8 @@ public class IosController implements AdvancedController, Disposable {
 
     @Override
     public void dispose() {
-    	synchronized (listeners) {
-			listeners.clear();
-		}
+        super.dispose();
+
         controller.setControllerPausedHandler(null);
         if (controller.getExtendedGamepad() != null)
             controller.getExtendedGamepad().setValueChangedHandler(null);
@@ -102,74 +98,6 @@ public class IosController implements AdvancedController, Disposable {
             if (newPovDirection != lastPovDirection) {
                 lastPovDirection = newPovDirection;
                 notifyListenersPovDirection(newPovDirection);
-            }
-        }
-    }
-
-	private void notifyListenersButtonUp(int button) {
-		Array<ControllerListener> managerListeners = Controllers.getListeners();
-		synchronized (managerListeners) {
-			for (ControllerListener listener : managerListeners) {
-				if (listener.buttonUp(this, button))
-					break;
-			}
-		}
-
-		synchronized (this.listeners) {
-			for (ControllerListener listener : this.listeners) {
-				if (listener.buttonUp(this, button))
-					break;
-			}
-		}
-    }
-
-    protected void notifyListenersButtonDown(int button) {
-		Array<ControllerListener> managerListeners = Controllers.getListeners();
-		synchronized (managerListeners) {
-			for (ControllerListener listener : managerListeners) {
-				if (listener.buttonDown(this, button))
-					break;
-			}
-		}
-
-		synchronized (listeners) {
-			for (ControllerListener listener : listeners) {
-				if (listener.buttonDown(this, button))
-					break;
-			}
-		}
-    }
-
-	protected void notifyListenersAxisMoved(int axisNum, float value) {
-		Array<ControllerListener> managerListeners = Controllers.getListeners();
-		synchronized (managerListeners) {
-			for (ControllerListener listener : managerListeners) {
-				if (listener.axisMoved(this, axisNum, value))
-					break;
-			}
-		}
-
-		synchronized (listeners) {
-			for (ControllerListener listener : listeners) {
-				if (listener.axisMoved(this, axisNum, value))
-					break;
-			}
-		}
-	}
-
-	protected void notifyListenersPovDirection(PovDirection newPovDirection) {
-        Array<ControllerListener> managerListeners = Controllers.getListeners();
-        synchronized (managerListeners) {
-            for (ControllerListener listener : managerListeners) {
-                if (listener.povMoved(this, 0, newPovDirection))
-                    break;
-            }
-        }
-
-        synchronized (listeners) {
-            for (ControllerListener listener : listeners) {
-                if (listener.povMoved(this, 0, newPovDirection))
-                    break;
             }
         }
     }
@@ -395,41 +323,6 @@ public class IosController implements AdvancedController, Disposable {
     @Override
     public String getName() {
         return controller.getVendorName();
-    }
-
-    @Override
-    public void addListener(ControllerListener controllerListener) {
-		synchronized (listeners) {
-			if (!listeners.contains(controllerListener, true))
-				listeners.add(controllerListener);
-		}
-    }
-
-    @Override
-    public void removeListener(ControllerListener controllerListener) {
-		synchronized (listeners) {
-			listeners.removeValue(controllerListener, true);
-		}
-    }
-
-    @Override
-    public boolean canVibrate() {
-        return false;
-    }
-
-    @Override
-    public boolean isVibrating() {
-        return false;
-    }
-
-    @Override
-    public void startVibration(float strength) {
-        // not supported
-    }
-
-    @Override
-    public void stopVibration() {
-        // not supported
     }
 
     @Override

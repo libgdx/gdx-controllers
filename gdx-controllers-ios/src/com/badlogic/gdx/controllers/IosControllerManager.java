@@ -9,12 +9,19 @@ import com.badlogic.gdx.utils.ObjectMap;
 import org.robovm.apple.foundation.Foundation;
 import org.robovm.apple.foundation.NSArray;
 import org.robovm.apple.gamecontroller.GCController;
+import org.robovm.apple.uikit.UIKeyCommand;
+import org.robovm.apple.uikit.UIKeyModifierFlags;
+import org.robovm.apple.uikit.UIViewController;
+import org.robovm.objc.Selector;
+import org.robovm.objc.annotation.BindSelector;
 import org.robovm.objc.block.VoidBlock1;
+import org.robovm.rt.bro.annotation.Callback;
 
 public class IosControllerManager implements ControllerManager {
 	private final Array<Controller> controllers = new Array<>();
 	private final Array<ControllerListener> listeners = new Array<>();
 	private boolean initialized = false;
+	private ICadeController iCadeController;
 
 	public IosControllerManager() {
 	}
@@ -50,6 +57,39 @@ public class IosControllerManager implements ControllerManager {
 		} else {
 			Gdx.app.log("Controllers", "IosControllerManager not added, manager already active. ");
 		}
+	}
+
+	public void enableICade(UIViewController controller) {
+		Selector action = Selector.register("keyPress:");
+		for (int i = 0; i < ICadeController.KEYS_TO_HANDLE.length(); i++) {
+			controller.addKeyCommand(new UIKeyCommand(ICadeController.KEYS_TO_HANDLE.substring(i, 1),
+					UIKeyModifierFlags.None, action));
+		}
+	}
+
+	@Callback
+	@BindSelector("keyPress:")
+	private static void keyPress(UIKeyCommand sender) {
+		//a key for ICadeController was pressed
+		// instantiate it, if not already available
+		IosControllerManager controllerManager = (IosControllerManager) Controllers.managers.get(Gdx.app);
+
+		if (controllerManager != null)
+			controllerManager.handleKeyPressed(sender);
+	}
+
+	private void handleKeyPressed(UIKeyCommand sender) {
+		if (iCadeController == null) {
+			iCadeController = new ICadeController();
+			controllers.add(iCadeController);
+
+			synchronized (listeners) {
+				for (ControllerListener listener : listeners)
+					listener.connected(iCadeController);
+			}
+		}
+
+		iCadeController.handleKeyPressed(sender.getInput());
 	}
 
 	protected boolean isSupportedController(GCController controller) {
@@ -97,7 +137,7 @@ public class IosControllerManager implements ControllerManager {
 
 		boolean alreadyInList = false;
 		for (Controller controller : controllers) {
-			if (((IosController) controller).getController() == gcController) {
+			if (controller instanceof IosController && ((IosController) controller).getController() == gcController) {
 				alreadyInList = true;
 				break;
 			}
@@ -117,7 +157,7 @@ public class IosControllerManager implements ControllerManager {
 	protected void onControllerDisconnect(GCController gcController) {
 		IosController oldReference = null;
 		for (Controller controller : controllers) {
-			if (((IosController) controller).getController() == gcController) {
+			if (controller instanceof IosController && ((IosController) controller).getController() == gcController) {
 				oldReference = (IosController) controller;
 			}
 		}
