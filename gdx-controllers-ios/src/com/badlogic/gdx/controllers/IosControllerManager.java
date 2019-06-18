@@ -78,10 +78,9 @@ public class IosControllerManager implements ControllerManager {
 	}
 
 	private void handleKeyPressed(UIKeyCommand sender) {
-		String key = sender.getInput();
-		Gdx.app.log("Controllers", "iCade key pressed: " + key);
-
 		if (iCadeController == null) {
+			Gdx.app.log("Controllers", "iCade key was pressed, adding iCade controller.");
+
 			iCadeController = new ICadeController();
 			controllers.add(iCadeController);
 
@@ -91,7 +90,7 @@ public class IosControllerManager implements ControllerManager {
 			}
 		}
 
-		iCadeController.handleKeyPressed(key);
+		iCadeController.handleKeyPressed(sender.getInput());
 	}
 
 	protected boolean isSupportedController(GCController controller) {
