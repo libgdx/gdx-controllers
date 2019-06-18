@@ -23,7 +23,7 @@ public class ICadeController extends AbstractController {
 
 	@Override
 	public int getMaxButtonIndex() {
-		return KEYS_TO_HANDLE.length() - 1;
+		return (KEYS_TO_HANDLE.length() / 2) - 1;
 	}
 
 	@Override
@@ -40,7 +40,10 @@ public class ICadeController extends AbstractController {
 
 	@Override
 	public boolean getButton(int i) {
-		return buttonPressed[i];
+		if (i <= getMaxButtonIndex())
+			return buttonPressed[i];
+		else
+			return false;
 	}
 
 	@Override

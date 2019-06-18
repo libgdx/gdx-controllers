@@ -31,7 +31,7 @@ public class IosControllerManager implements ControllerManager {
 	 * you need to call this method to register IosControllerManager with libGDX before your first call to
 	 * Controllers.getControllers().
 	 */
-	public static void initializeIosControllers(boolean enableICade) {
+	public static void initializeIosControllers() {
 		ObjectMap<Application, ControllerManager> managers = Controllers.managers;
 
 		// this is a copy from Controllers class. A hack to get IosControllerManager to work with libGDX
@@ -56,25 +56,22 @@ public class IosControllerManager implements ControllerManager {
 			});
 			Gdx.app.log("Controllers", "added manager for application, " + managers.size + " managers active");
 
-			if (enableICade) {
-				manager.enableICade(((IOSApplication) Gdx.app).getUIViewController());
-			}
 		} else {
 			Gdx.app.log("Controllers", "IosControllerManager not added, manager already active. ");
 		}
 	}
 
-	public void enableICade(UIViewController controller) {
-		Selector action = Selector.register("keyPress:");
+	public static void enableICade(UIViewController controller, Selector action) {
 		for (int i = 0; i < ICadeController.KEYS_TO_HANDLE.length(); i++) {
-			controller.addKeyCommand(new UIKeyCommand(ICadeController.KEYS_TO_HANDLE.substring(i, 1),
+			controller.addKeyCommand(new UIKeyCommand(Character.toString(ICadeController.KEYS_TO_HANDLE.charAt(i)),
 					UIKeyModifierFlags.None, action));
 		}
+
+		controller.becomeFirstResponder();
+		Gdx.app.log("Controllers", "iCade support activated");
 	}
 
-	@Callback
-	@BindSelector("keyPress:")
-	private static void keyPress(UIKeyCommand sender) {
+	public static void keyPress(UIKeyCommand sender) {
 		//a key for ICadeController was pressed
 		// instantiate it, if not already available
 		IosControllerManager controllerManager = (IosControllerManager) Controllers.managers.get(Gdx.app);
@@ -84,6 +81,9 @@ public class IosControllerManager implements ControllerManager {
 	}
 
 	private void handleKeyPressed(UIKeyCommand sender) {
+		String key = sender.getInput();
+		Gdx.app.log("Controllers", "iCade key pressed: " + key);
+
 		if (iCadeController == null) {
 			iCadeController = new ICadeController();
 			controllers.add(iCadeController);
@@ -94,7 +94,7 @@ public class IosControllerManager implements ControllerManager {
 			}
 		}
 
-		iCadeController.handleKeyPressed(sender.getInput());
+		iCadeController.handleKeyPressed(key);
 	}
 
 	protected boolean isSupportedController(GCController controller) {
