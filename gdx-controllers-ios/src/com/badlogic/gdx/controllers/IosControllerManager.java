@@ -3,7 +3,6 @@ package com.badlogic.gdx.controllers;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.LifecycleListener;
-import com.badlogic.gdx.backends.iosrobovm.IOSApplication;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 
@@ -14,9 +13,7 @@ import org.robovm.apple.uikit.UIKeyCommand;
 import org.robovm.apple.uikit.UIKeyModifierFlags;
 import org.robovm.apple.uikit.UIViewController;
 import org.robovm.objc.Selector;
-import org.robovm.objc.annotation.BindSelector;
 import org.robovm.objc.block.VoidBlock1;
-import org.robovm.rt.bro.annotation.Callback;
 
 public class IosControllerManager implements ControllerManager {
 	private final Array<Controller> controllers = new Array<>();

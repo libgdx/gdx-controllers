@@ -4,7 +4,9 @@ import com.badlogic.gdx.math.Vector3;
 
 public class ICadeController extends AbstractController {
 
-	public final static String KEYS_TO_HANDLE = "wexzaqdchrufytjnimkplvog";
+	protected static final String KEYS_AXIS = "aqdcwexz";
+	protected static final String KEYS_BUTTONS = "hrufytjnimkplvog";
+	public final static String KEYS_TO_HANDLE = KEYS_BUTTONS + KEYS_AXIS;
 	private final boolean[] buttonPressed;
 
 	public ICadeController() {
@@ -23,13 +25,12 @@ public class ICadeController extends AbstractController {
 
 	@Override
 	public int getMaxButtonIndex() {
-		return (KEYS_TO_HANDLE.length() / 2) - 1;
+		return (KEYS_BUTTONS.length() / 2) - 1;
 	}
 
 	@Override
 	public int getAxisCount() {
-		// not supported
-		return 0;
+		return (KEYS_AXIS.length() / 4);
 	}
 
 	@Override
@@ -48,7 +49,16 @@ public class ICadeController extends AbstractController {
 
 	@Override
 	public float getAxis(int i) {
-		// not supported
+		if (i < getAxisCount()) {
+			int offset = getMaxButtonIndex() + 1 + i * 2;
+
+			if (buttonPressed[offset] && !buttonPressed[offset + 1])
+				return -1;
+			else if (!buttonPressed[offset] && buttonPressed[offset + 1])
+				return 1;
+			else return 0;
+		}
+
 		return 0;
 	}
 
@@ -97,10 +107,15 @@ public class ICadeController extends AbstractController {
 			if (buttonPressed[buttonNum] != buttonDown) {
 				buttonPressed[buttonNum] = buttonDown;
 
-				if (buttonDown)
-					notifyListenersButtonDown(buttonNum);
-				else
-					notifyListenersButtonUp(buttonNum);
+				if (buttonNum <= getMaxButtonIndex()) {
+					if (buttonDown)
+						notifyListenersButtonDown(buttonNum);
+					else
+						notifyListenersButtonUp(buttonNum);
+				} else {
+					int axisNum = (buttonNum - getMaxButtonIndex() - 1) / 2;
+					notifyListenersAxisMoved(axisNum, getAxis(axisNum));
+				}
 			}
 		}
 	}
