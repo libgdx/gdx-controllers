@@ -5,12 +5,14 @@ import com.badlogic.gdx.utils.Disposable;
 
 abstract class AbstractController implements AdvancedController, Disposable {
 	private final Array<ControllerListener> listeners = new Array<>();
+	private boolean connected = true;
 
 	@Override
 	public void dispose() {
 		synchronized (listeners) {
 			listeners.clear();
 		}
+		connected = false;
 	}
 
 	protected void notifyListenersButtonUp(int button) {
@@ -121,6 +123,11 @@ abstract class AbstractController implements AdvancedController, Disposable {
 	@Override
 	public boolean supportsPlayerIndex() {
 		return false;
+	}
+
+	@Override
+	public boolean isConnected() {
+		return connected;
 	}
 
 	@Override

@@ -271,6 +271,11 @@ public class JamepadController implements AdvancedController {
         return 0;
     }
 
+    @Override
+    public boolean isConnected() {
+        return connected && controllerIndex.isConnected();
+    }
+
     private interface ControllerQuerier<R> {
         R query(ControllerIndex controllerIndex) throws ControllerUnpluggedException;
 

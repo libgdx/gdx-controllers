@@ -73,4 +73,9 @@ public interface AdvancedController extends Controller {
      * one under this value.
      */
     int getPovCount();
+
+    /**
+     * @return true when this Controller is still connected, false if it already disconnected
+     */
+    boolean isConnected();
 }
