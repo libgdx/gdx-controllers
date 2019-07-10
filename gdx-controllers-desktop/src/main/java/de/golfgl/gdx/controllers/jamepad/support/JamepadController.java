@@ -43,44 +43,38 @@ public class JamepadController implements AdvancedController {
 
     @Override
     public boolean getButton(final int buttonCode) {
-        return query(new ControllerQuerier<Boolean>() {
-            @Override
-            public Boolean query(ControllerIndex controllerIndex) throws ControllerUnpluggedException {
-                ControllerButton button = toButton(buttonCode);
-                return button != null && controllerIndex.isButtonPressed(button);
-            }
-
-            @Override
-            public Boolean valueOnFailure(ControllerIndex controllerIndex) {
-                return false;
-            }
-        });
+        try {
+            ControllerButton button = toButton(buttonCode);
+            return button != null && controllerIndex.isButtonPressed(button);
+        } catch (ControllerUnpluggedException e) {
+            connected = false;
+            logger.info("Failed querying controller at index: " + controllerIndex.getIndex());
+        }
+        return false;
     }
 
     @Override
     public float getAxis(final int axisCode) {
-        return query(new ControllerQuerier<Float>() {
-            public Float query(ControllerIndex controllerIndex) throws ControllerUnpluggedException {
-                ControllerAxis axis = toAxis(axisCode);
+        try {
+            ControllerAxis axis = toAxis(axisCode);
 
-                if (axis == null) {
-                    return 0.0f;
-                } else {
-                    float axisState = controllerIndex.getAxisState(axis);
-
-                    // Jamepad flips vertical controller axis values. That's not a great idea to differ from
-                    // common standards. Up is negative, down is positive, that's the way it is and we ensure this here
-                    if (axis == ControllerAxis.LEFTY || axis == ControllerAxis.RIGHTY)
-                        axisState = -axisState;
-
-                    return axisState;
-                }
-            }
-
-            public Float valueOnFailure(ControllerIndex controllerIndex) {
+            if (axis == null) {
                 return 0.0f;
+            } else {
+                float axisState = controllerIndex.getAxisState(axis);
+
+                // Jamepad flips vertical controller axis values. That's not a great idea to differ from
+                // common standards. Up is negative, down is positive, that's the way it is and we ensure this here
+                if (axis == ControllerAxis.LEFTY || axis == ControllerAxis.RIGHTY)
+                    axisState = -axisState;
+
+                return axisState;
             }
-        });
+        } catch (ControllerUnpluggedException e) {
+            connected = false;
+            logger.info("Failed querying controller at index: " + controllerIndex.getIndex());
+        }
+        return 0f;
     }
 
     @Override
@@ -114,15 +108,13 @@ public class JamepadController implements AdvancedController {
 
     @Override
     public String getName() {
-        return query(new ControllerQuerier<String>() {
-            public String query(ControllerIndex controllerIndex) throws ControllerUnpluggedException {
-                return controllerIndex.getName();
-            }
-
-            public String valueOnFailure(ControllerIndex controllerIndex) {
-                return "Unknown";
-            }
-        });
+        try {
+            return controllerIndex.getName();
+        } catch (ControllerUnpluggedException e) {
+            connected = false;
+            logger.info("Failed querying controller at index: " + controllerIndex.getIndex());
+        }
+        return "Unknown";
     }
 
     @Override
@@ -182,18 +174,6 @@ public class JamepadController implements AdvancedController {
             }
             buttonState.put(id, pressed);
         }
-    }
-
-    private <R> R query(ControllerQuerier<R> querier) {
-        if (connected) {
-            try {
-                return querier.query(controllerIndex);
-            } catch (ControllerUnpluggedException e) {
-                connected = false;
-                logger.info("Failed querying controller at index: " + controllerIndex.getIndex());
-            }
-        }
-        return querier.valueOnFailure(controllerIndex);
     }
 
     private void initializeState() {
@@ -274,11 +254,5 @@ public class JamepadController implements AdvancedController {
     @Override
     public boolean isConnected() {
         return connected && controllerIndex.isConnected();
-    }
-
-    private interface ControllerQuerier<R> {
-        R query(ControllerIndex controllerIndex) throws ControllerUnpluggedException;
-
-        R valueOnFailure(ControllerIndex controllerIndex);
     }
 }
