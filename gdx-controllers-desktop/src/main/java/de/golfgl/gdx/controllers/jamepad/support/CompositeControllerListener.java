@@ -4,10 +4,11 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
+
+import java.util.LinkedList;
 
 public class CompositeControllerListener implements ControllerListener {
-    private final Array<ControllerListener> listeners = new Array<>();
+    private final LinkedList<ControllerListener> listeners = new LinkedList<>();
 
     @Override
     public void connected(Controller controller) {
@@ -101,7 +102,7 @@ public class CompositeControllerListener implements ControllerListener {
     }
 
     public void removeListener(ControllerListener listener) {
-        listeners.removeValue(listener, true);
+        listeners.remove(listener);
     }
 
     public void clear() {

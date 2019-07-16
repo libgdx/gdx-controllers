@@ -32,7 +32,7 @@ public class JamepadControllerMonitor implements Runnable {
         for (int i = 0; i < newNumControllers; i++) {
             ControllerIndex controllerIndex = controllerManager.getControllerIndex(i);
 
-            if (!indexToController.containsKey(controllerIndex.getIndex())) {
+            if (!indexToController.containsKey(controllerIndex.getIndex()) && controllerIndex.isConnected()) {
                 Tuple tuple1 = new Tuple(controllerIndex);
                 tuple1.controller.addListener(listener);
 
@@ -49,7 +49,6 @@ public class JamepadControllerMonitor implements Runnable {
             boolean connected = controller.update();
 
             if (!connected) {
-                listener.disconnected(tuple.controller);
                 disconnectedControllers.add(tuple.index.getIndex());
             }
         }

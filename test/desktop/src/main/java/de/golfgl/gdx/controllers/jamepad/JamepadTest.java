@@ -4,8 +4,10 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.controllers.AdvancedController;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerAdapter;
+import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -32,6 +34,7 @@ public class JamepadTest extends ApplicationAdapter {
     private ObjectMap<ControllerAxis, Label> axisToLabel = new ObjectMap<>(ControllerAxis.values().length);
     private Controller selectedController;
     private SelectBox controllerList;
+    private ControllerListener controllerListener;
 
     public static void main(String[] args) {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
@@ -46,16 +49,34 @@ public class JamepadTest extends ApplicationAdapter {
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
         controllerList = new SelectBox(skin);
 
+        controllerListener = new ControllerAdapter() {
+            @Override
+            public void connected(final Controller controller) {
+                Gdx.app.log("Controller", "Controller connected: " + controller.getName()
+                        + "/" + ((AdvancedController) controller).getUniqueId());
+            }
+
+            @Override
+            public void disconnected(Controller controller) {
+                Gdx.app.log("Controller", "Controller disconnected: " + controller.getName()
+                        + "/" + ((AdvancedController) controller).getUniqueId());
+            }
+        };
+
         refreshControllersList();
 
         Controllers.addListener(new ControllerAdapter() {
             @Override
             public void connected(final Controller controller) {
+                Gdx.app.log("Controllers", "Controller connected: " + controller.getName()
+                        + "/" + ((AdvancedController) controller).getUniqueId());
                 refreshControllersList();
             }
 
             @Override
             public void disconnected(Controller controller) {
+                Gdx.app.log("Controllers", "Controller disconnected: " + controller.getName()
+                        + "/" + ((AdvancedController) controller).getUniqueId());
                 refreshControllersList();
             }
         });
@@ -110,9 +131,10 @@ public class JamepadTest extends ApplicationAdapter {
         Gdx.app.log("Controllers", Controllers.getControllers().size + " controllers connected.");
         for (int i = 0; i < Controllers.getControllers().size; i++) {
             Controller controller = Controllers.getControllers().get(i);
-            Gdx.app.log("Controllers", controller.getName());
+            Gdx.app.log("Controllers", controller.getName() + "/" + ((AdvancedController) controller).getUniqueId());
             controllerNames.add(controller.getName());
             controllers.add(controller);
+            controller.addListener(controllerListener);
         }
         controllerList.setItems(controllerNames);
         controllerList.setSelectedIndex(0);
