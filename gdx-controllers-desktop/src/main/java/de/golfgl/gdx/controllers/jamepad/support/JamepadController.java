@@ -47,9 +47,7 @@ public class JamepadController implements AdvancedController {
             ControllerButton button = toButton(buttonCode);
             return button != null && controllerIndex.isButtonPressed(button);
         } catch (ControllerUnpluggedException e) {
-            connected = false;
-            logger.info("Failed querying controller at index: " + controllerIndex.getIndex());
-            compositeControllerListener.disconnected(this);
+            setDisconnected();
         }
         return false;
     }
@@ -72,9 +70,7 @@ public class JamepadController implements AdvancedController {
                 return axisState;
             }
         } catch (ControllerUnpluggedException e) {
-            connected = false;
-            logger.info("Failed querying controller at index: " + controllerIndex.getIndex());
-            compositeControllerListener.disconnected(this);
+            setDisconnected();
         }
         return 0f;
     }
@@ -113,11 +109,15 @@ public class JamepadController implements AdvancedController {
         try {
             return controllerIndex.getName();
         } catch (ControllerUnpluggedException e) {
-            connected = false;
-            logger.info("Failed querying controller at index: " + controllerIndex.getIndex());
-            compositeControllerListener.disconnected(this);
+            setDisconnected();
         }
         return "Unknown";
+    }
+
+    private void setDisconnected() {
+        connected = false;
+        logger.info("Failed querying controller at index: " + controllerIndex.getIndex());
+        compositeControllerListener.disconnected(this);
     }
 
     @Override
