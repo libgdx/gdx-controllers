@@ -26,74 +26,71 @@ public class CompositeControllerListener implements ControllerListener {
 
     @Override
     public boolean buttonDown(final Controller controller, final int buttonCode) {
-        return notifyListeners(new Notifier() {
-            public boolean perform(ControllerListener listener) {
-                return listener.buttonDown(controller, buttonCode);
+        for (ControllerListener listener : listeners) {
+            if (listener.buttonDown(controller, buttonCode)) {
+                return true;
             }
-        });
+        }
+        return false;
     }
 
     @Override
     public boolean buttonUp(final Controller controller, final int buttonCode) {
-        return notifyListeners(new Notifier() {
-            public boolean perform(ControllerListener listener) {
-                return listener.buttonUp(controller, buttonCode);
+        for (ControllerListener listener : listeners) {
+            if (listener.buttonUp(controller, buttonCode)) {
+                return true;
             }
-        });
+        }
+        return false;
     }
 
     @Override
     public boolean axisMoved(final Controller controller, final int axisCode, final float value) {
-        return notifyListeners(new Notifier() {
-            public boolean perform(ControllerListener listener) {
-                return listener.axisMoved(controller, axisCode, value);
+        for (ControllerListener listener : listeners) {
+            if (listener.axisMoved(controller, axisCode, value)) {
+                return true;
             }
-        });
+        }
+        return false;
     }
 
     @Override
     public boolean povMoved(final Controller controller, final int povCode, final PovDirection value) {
-        return notifyListeners(new Notifier() {
-            public boolean perform(ControllerListener listener) {
-                return listener.povMoved(controller, povCode, value);
+        for (ControllerListener listener : listeners) {
+            if (listener.povMoved(controller, povCode, value)) {
+                return true;
             }
-        });
+        }
+        return false;
     }
 
     @Override
     public boolean xSliderMoved(final Controller controller, final int sliderCode, final boolean value) {
-        return notifyListeners(new Notifier() {
-            public boolean perform(ControllerListener listener) {
-                return listener.xSliderMoved(controller, sliderCode, value);
+        for (ControllerListener listener : listeners) {
+            if (listener.xSliderMoved(controller, sliderCode, value)) {
+                return true;
             }
-        });
+        }
+        return false;
     }
 
     @Override
     public boolean ySliderMoved(final Controller controller, final int sliderCode, final boolean value) {
-        return notifyListeners(new Notifier() {
-            public boolean perform(ControllerListener listener) {
-                return listener.ySliderMoved(controller, sliderCode, value);
+        for (ControllerListener listener : listeners) {
+            if (listener.ySliderMoved(controller, sliderCode, value)) {
+                return true;
             }
-        });
+        }
+        return false;
     }
 
     @Override
     public boolean accelerometerMoved(final Controller controller, final int accelerometerCode, final Vector3 value) {
-        return notifyListeners(new Notifier() {
-            public boolean perform(ControllerListener listener) {
-                return listener.accelerometerMoved(controller, accelerometerCode, value);
-            }
-        });
-    }
-
-    private boolean notifyListeners(Notifier notifier) {
         for (ControllerListener listener : listeners) {
-            if (notifier.perform(listener)) {
+            if (listener.accelerometerMoved(controller, accelerometerCode, value)) {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -107,9 +104,5 @@ public class CompositeControllerListener implements ControllerListener {
 
     public void clear() {
         listeners.clear();
-    }
-
-    private interface Notifier {
-        boolean perform(ControllerListener listener);
     }
 }
