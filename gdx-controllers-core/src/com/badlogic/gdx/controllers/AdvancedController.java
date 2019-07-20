@@ -7,6 +7,7 @@ package com.badlogic.gdx.controllers;
 public interface AdvancedController extends Controller {
     public static final int PLAYER_IDX_UNSET = -1;
 
+    // TODO Vibration umbauen auf vibrate(long) und pattern
     /**
      * @return whether the connected controller (or the current controller implementation) can rumble
      */
