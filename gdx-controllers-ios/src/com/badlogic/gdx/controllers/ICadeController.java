@@ -93,6 +93,11 @@ public class ICadeController extends AbstractController {
 	}
 
 	@Override
+	public ControllerMapping getMapping() {
+		return ICadeMapping.getInstance();
+	}
+
+	@Override
 	public String getName() {
 		return "iCade device";
 	}

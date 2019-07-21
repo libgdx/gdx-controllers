@@ -357,6 +357,11 @@ public class IosController extends AbstractController {
     }
 
     @Override
+    public ControllerMapping getMapping() {
+        return MfiMapping.getInstance();
+    }
+
+    @Override
     public boolean equals(Object o) {
         return (o instanceof IosController && ((IosController) o).getController() == controller);
     }

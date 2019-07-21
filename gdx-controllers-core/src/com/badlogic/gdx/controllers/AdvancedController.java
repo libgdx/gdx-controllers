@@ -79,4 +79,9 @@ public interface AdvancedController extends Controller {
      * @return true when this Controller is still connected, false if it already disconnected
      */
     boolean isConnected();
+
+    /**
+     * @return button and axis mapping for this controller (or platform)
+     */
+    ControllerMapping getMapping();
 }
