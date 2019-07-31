@@ -90,6 +90,7 @@ public class JamepadTest extends ApplicationAdapter {
                     selectedController = null;
                 } else {
                     selectedController = Controllers.getControllers().get(index - 1);
+                    ((AdvancedController) selectedController).startVibration(200, 1);
                 }
             }
         });

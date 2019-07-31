@@ -7,6 +7,7 @@ import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.Logger;
+import com.badlogic.gdx.utils.Timer;
 import com.studiohartman.jamepad.ControllerAxis;
 import com.studiohartman.jamepad.ControllerButton;
 import com.studiohartman.jamepad.ControllerIndex;
@@ -35,6 +36,7 @@ public class JamepadController implements AdvancedController {
     private final IntMap<Float> axisState = new IntMap<>();
     private final String uuid;
     private boolean connected = true;
+    private CancelVibrationTask cancelVibrationTask;
 
     public JamepadController(ControllerIndex controllerIndex) {
         this.controllerIndex = controllerIndex;
@@ -201,17 +203,24 @@ public class JamepadController implements AdvancedController {
     }
 
     @Override
-    public void startVibration(float strength) {
+    public void startVibration(int duration, float strength) {
         try {
+            if (cancelVibrationTask == null)
+                cancelVibrationTask = new CancelVibrationTask();
+
             controllerIndex.startVibration(strength, strength);
+            Timer.schedule(cancelVibrationTask, (float) duration / 1000);
         } catch (ControllerUnpluggedException e) {
             // do nothing
         }
     }
 
     @Override
-    public void stopVibration() {
-        controllerIndex.stopVibration();
+    public void cancelVibration() {
+        if (cancelVibrationTask != null && cancelVibrationTask.isScheduled()) {
+            cancelVibrationTask.cancel();
+            cancelVibrationTask.run();
+        }
     }
 
     @Override
@@ -263,5 +272,13 @@ public class JamepadController implements AdvancedController {
     @Override
     public ControllerMapping getMapping() {
         return JamepadMapping.getInstance();
+    }
+
+    private class CancelVibrationTask extends Timer.Task {
+        @Override
+        public void run() {
+            if (controllerIndex.isVibrating())
+                controllerIndex.stopVibration();
+        }
     }
 }

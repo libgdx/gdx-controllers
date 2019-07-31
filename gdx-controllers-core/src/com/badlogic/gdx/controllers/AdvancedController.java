@@ -21,14 +21,15 @@ public interface AdvancedController extends Controller {
     /**
      * starts rumbling
      *
+     * @param duration duration, in milliseconds
      * @param strength value between 0f and 1f
      */
-    void startVibration(float strength);
+    void startVibration(int duration, float strength);
 
     /**
-     * stops rumbling
+     * cancel any running rumbling
      */
-    void stopVibration();
+    void cancelVibration();
 
     /**
      * @return unique ID to recognize this controller if more than one of the same controller models are connected.
