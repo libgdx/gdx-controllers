@@ -118,9 +118,11 @@ public class JamepadController implements AdvancedController {
     }
 
     private void setDisconnected() {
-        connected = false;
-        logger.info("Failed querying controller at index: " + controllerIndex.getIndex());
-        compositeControllerListener.disconnected(this);
+        if (connected) {
+            connected = false;
+            logger.info("Failed querying controller at index: " + controllerIndex.getIndex());
+            compositeControllerListener.disconnected(this);
+        }
     }
 
     @Override
