@@ -7,7 +7,7 @@ import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.Logger;
-import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.studiohartman.jamepad.ControllerAxis;
 import com.studiohartman.jamepad.ControllerButton;
 import com.studiohartman.jamepad.ControllerIndex;
@@ -36,7 +36,7 @@ public class JamepadController implements AdvancedController {
     private final IntMap<Float> axisState = new IntMap<>();
     private final String uuid;
     private boolean connected = true;
-    private CancelVibrationTask cancelVibrationTask;
+    private long vibrationEndMs;
 
     public JamepadController(ControllerIndex controllerIndex) {
         this.controllerIndex = controllerIndex;
@@ -199,17 +199,14 @@ public class JamepadController implements AdvancedController {
 
     @Override
     public boolean isVibrating() {
-        return controllerIndex.isVibrating();
+        return canVibrate() && TimeUtils.millis() < vibrationEndMs;
     }
 
     @Override
     public void startVibration(int duration, float strength) {
         try {
-            if (cancelVibrationTask == null)
-                cancelVibrationTask = new CancelVibrationTask();
-
-            controllerIndex.startVibration(strength, strength);
-            Timer.schedule(cancelVibrationTask, (float) duration / 1000);
+            controllerIndex.doVibration(strength, strength, duration);
+            vibrationEndMs = TimeUtils.millis() + duration;
         } catch (ControllerUnpluggedException e) {
             // do nothing
         }
@@ -217,10 +214,7 @@ public class JamepadController implements AdvancedController {
 
     @Override
     public void cancelVibration() {
-        if (cancelVibrationTask != null && cancelVibrationTask.isScheduled()) {
-            cancelVibrationTask.cancel();
-            cancelVibrationTask.run();
-        }
+
     }
 
     @Override
@@ -272,13 +266,5 @@ public class JamepadController implements AdvancedController {
     @Override
     public ControllerMapping getMapping() {
         return JamepadMapping.getInstance();
-    }
-
-    private class CancelVibrationTask extends Timer.Task {
-        @Override
-        public void run() {
-            if (controllerIndex.isVibrating())
-                controllerIndex.stopVibration();
-        }
     }
 }
