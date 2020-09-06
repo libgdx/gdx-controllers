@@ -55,7 +55,7 @@ public class JamepadControllerManager implements ControllerManager, Disposable {
 
     @Override
     public Array<ControllerListener> getListeners() {
-        Array array = new Array();
+        Array<ControllerListener> array = new Array<>();
         array.add(compositeListener);
         return array;
     }
