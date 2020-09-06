@@ -7,7 +7,6 @@ package com.badlogic.gdx.controllers;
 public interface AdvancedController extends Controller {
     public static final int PLAYER_IDX_UNSET = -1;
 
-    // TODO Vibration umbauen auf vibrate(long) und pattern
     /**
      * @return whether the connected controller (or the current controller implementation) can rumble
      */
@@ -38,17 +37,18 @@ public interface AdvancedController extends Controller {
     String getUniqueId();
 
     /**
-     * @return whether the connected controller (or the implementation) can show the current player index
+     * @return whether the connected controller (or the implementation) can show and set the current player index
      */
     boolean supportsPlayerIndex();
 
     /**
-     * @return player index of this controller, or PLAYER_IDX_UNSET if none is set
+     * @return 0-based player index of this controller, or PLAYER_IDX_UNSET if none is set
      */
     int getPlayerIndex();
 
     /**
-     * sets the player index of this controller
+     * Sets the player index of this controller. Please note that this does not always set
+     * indication lights of controllers, sometimes it is just an internal representation.
      *
      * @param index 0 typically 0 to 3 for player indices, and PLAYER_IDX_UNSET for unset
      */

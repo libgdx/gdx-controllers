@@ -63,14 +63,7 @@ public class JamepadController implements AdvancedController {
             if (axis == null) {
                 return 0.0f;
             } else {
-                float axisState = controllerIndex.getAxisState(axis);
-
-                // Jamepad flips vertical controller axis values. That's not a great idea to differ from
-                // common standards. Up is negative, down is positive, that's the way it is and we ensure this here
-                if (axis == ControllerAxis.LEFTY || axis == ControllerAxis.RIGHTY)
-                    axisState = -axisState;
-
-                return axisState;
+                return controllerIndex.getAxisState(axis);
             }
         } catch (ControllerUnpluggedException e) {
             setDisconnected();
@@ -210,7 +203,7 @@ public class JamepadController implements AdvancedController {
             controllerIndex.doVibration(strength, strength, duration);
             vibrationEndMs = TimeUtils.millis() + duration;
         } catch (ControllerUnpluggedException e) {
-            // do nothing
+            setDisconnected();
         }
     }
 
@@ -226,17 +219,26 @@ public class JamepadController implements AdvancedController {
 
     @Override
     public boolean supportsPlayerIndex() {
-        return false;
+        return true;
     }
 
     @Override
     public int getPlayerIndex() {
-        return PLAYER_IDX_UNSET;
+        try {
+            return controllerIndex.getPlayerIndex();
+        } catch (ControllerUnpluggedException e) {
+            setDisconnected();
+            return PLAYER_IDX_UNSET;
+        }
     }
 
     @Override
     public void setPlayerIndex(int index) {
-        // unsupported
+        try {
+            controllerIndex.setPlayerIndex(index);
+        } catch (ControllerUnpluggedException e) {
+            setDisconnected();
+        }
     }
 
     @Override

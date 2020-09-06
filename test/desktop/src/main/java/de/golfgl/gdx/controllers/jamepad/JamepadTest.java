@@ -11,12 +11,14 @@ import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -28,12 +30,13 @@ import static com.badlogic.gdx.graphics.Color.WHITE;
 
 public class JamepadTest extends ApplicationAdapter {
     private Stage stage;
-    private Array<String> controllerNames = new Array();
-    private Array<Controller> controllers = new Array();
+    private Array<String> controllerNames = new Array<>();
+    private Array<Controller> controllers = new Array<>();
     private ObjectMap<ControllerButton, Label> buttonToLabel = new ObjectMap<>(ControllerButton.values().length);
     private ObjectMap<ControllerAxis, Label> axisToLabel = new ObjectMap<>(ControllerAxis.values().length);
+    private Label indexLabel;
     private Controller selectedController;
-    private SelectBox controllerList;
+    private SelectBox<String> controllerList;
     private ControllerListener controllerListener;
 
     public static void main(String[] args) {
@@ -47,7 +50,7 @@ public class JamepadTest extends ApplicationAdapter {
     @Override
     public void create() {
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-        controllerList = new SelectBox(skin);
+        controllerList = new SelectBox<>(skin);
 
         controllerListener = new ControllerAdapter() {
             @Override
@@ -109,6 +112,19 @@ public class JamepadTest extends ApplicationAdapter {
             axisTable.add(axis.name()).padRight(10);
             axisTable.add(label).row();
         }
+        axisTable.add("Player index").padRight(10);
+        indexLabel = new Label("", skin);
+        indexLabel.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                if (selectedController != null) {
+                    ((AdvancedController) selectedController).
+                            setPlayerIndex(((AdvancedController) selectedController).getPlayerIndex() + 1);
+                }
+            }
+        });
+        axisTable.add(indexLabel).row();
 
         stage = new Stage();
         stage.setViewport(new ScreenViewport());
@@ -148,6 +164,7 @@ public class JamepadTest extends ApplicationAdapter {
 
         updateStateOfButtons();
         updateStateOfAxis();
+        indexLabel.setText(selectedController != null ? String.valueOf(((AdvancedController) selectedController).getPlayerIndex()) : "");
 
         stage.act();
         stage.draw();
