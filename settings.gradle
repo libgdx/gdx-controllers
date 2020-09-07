@@ -1,0 +1,3 @@
+include ':gdx-controllers-android'
+include ':gdx-controllers-core'
+include ':gdx-controllers-gwt'

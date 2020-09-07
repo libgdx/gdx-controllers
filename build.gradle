@@ -1,0 +1,47 @@
+ext {
+    GROUPID = 'com.badlogicgames.gdx-controllers'
+    VERSION = '2.0.0-SNAPSHOT'
+
+}
+
+buildscript {
+    repositories {
+        jcenter()
+        google()
+    }
+    dependencies {
+        classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
+        classpath 'com.android.tools.build:gradle:3.2.0'
+        classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.0'
+    }
+}
+
+allprojects {
+    apply plugin: "eclipse"
+    apply plugin: "idea"
+
+    ext {
+        minSdk = 16
+        targetSdk = 29
+        compileSdk = 29
+        buildTools = '29.0.3'
+
+        appName = 'gdx-controllers'
+        gdxVersion = '1.9.11'
+        roboVMVersion = '2.3.10'
+    }
+
+    repositories {
+        jcenter()
+        google()
+        mavenCentral()
+        mavenLocal()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven { url "https://jitpack.io" }
+    }
+
+    group = GROUPID
+    version = VERSION
+}
+
