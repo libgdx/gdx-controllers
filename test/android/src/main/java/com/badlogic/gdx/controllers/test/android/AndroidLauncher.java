@@ -20,7 +20,7 @@ import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.badlogic.gdx.controllers.test.GdxControllersTest;
+import com.badlogic.gdx.controllers.test.ControllersTest;
 
 /** Launches the Android application. */
 public class AndroidLauncher extends AndroidApplication {
@@ -28,6 +28,6 @@ public class AndroidLauncher extends AndroidApplication {
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration configuration = new AndroidApplicationConfiguration();
-		initialize(new GdxControllersTest(), configuration);
+		initialize(new ControllersTest(), configuration);
 	}
 }

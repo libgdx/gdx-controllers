@@ -73,7 +73,7 @@ public class JamepadController implements AdvancedController {
 
     @Override
     public PovDirection getPov(int povCode) {
-        // not supported
+        // TODO supported by Jamepad, we have to wire this in
         return PovDirection.center;
     }
 

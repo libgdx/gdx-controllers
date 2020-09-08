@@ -18,6 +18,7 @@ package com.badlogic.gdx.controllers.test.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.controllers.test.ControllersTest;
 
 /** Launches the desktop (LWJGL) application. */
 public class DesktopLauncher {
@@ -26,8 +27,7 @@ public class DesktopLauncher {
 	}
 
 	private static LwjglApplication createApplication () {
-		// FIXME transition JamepadTest to core
-		return new LwjglApplication(new JamepadTest(), getDefaultConfiguration());
+		return new LwjglApplication(new ControllersTest(), getDefaultConfiguration());
 	}
 
 	private static LwjglApplicationConfiguration getDefaultConfiguration () {

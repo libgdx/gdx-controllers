@@ -26,8 +26,8 @@ gwt {
 }
 
 dependencies {
-	implementation project(':test:core')
 	implementation project(':gdx-controllers-gwt')
+	implementation project(':test:core')
 	implementation "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
 	implementation "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
 	implementation "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"

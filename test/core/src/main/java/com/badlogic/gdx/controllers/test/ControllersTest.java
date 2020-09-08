@@ -1,13 +1,12 @@
-package com.badlogic.gdx.controllers.test.desktop;
+package com.badlogic.gdx.controllers.test;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.controllers.AdvancedController;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerAdapter;
 import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -20,36 +19,41 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.studiohartman.jamepad.ControllerAxis;
-import com.studiohartman.jamepad.ControllerButton;
 
 import static com.badlogic.gdx.graphics.Color.RED;
 import static com.badlogic.gdx.graphics.Color.WHITE;
 
-public class JamepadTest extends ApplicationAdapter {
+public class ControllersTest extends ApplicationAdapter {
+    public Label axisLeftX;
+    public Label axisLeftY;
+    public Label axisRightX;
+    public Label axisRightY;
+    public Label buttonA;
+    public Label buttonB;
+    public Label buttonX;
+    public Label buttonY;
+    public Label buttonBack;
+    public Label buttonStart;
+    public Label buttonL1;
+    public Label buttonL2;
+    public Label buttonR1;
+    public Label buttonR2;
+    public Label buttonLeftStick;
+    public Label buttonRightStick;
     private Stage stage;
     private Array<String> controllerNames = new Array<>();
     private Array<Controller> controllers = new Array<>();
-    private ObjectMap<ControllerButton, Label> buttonToLabel = new ObjectMap<>(ControllerButton.values().length);
-    private ObjectMap<ControllerAxis, Label> axisToLabel = new ObjectMap<>(ControllerAxis.values().length);
     private Label indexLabel;
+
     private Controller selectedController;
     private SelectBox<String> controllerList;
     private ControllerListener controllerListener;
-
-    public static void main(String[] args) {
-        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        config.width = 640;
-        config.height = 480;
-
-        new LwjglApplication(new JamepadTest(), config);
-    }
+    private Skin skin;
 
     @Override
     public void create() {
-        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+        skin = new Skin(Gdx.files.internal("uiskin.json"));
         controllerList = new SelectBox<>(skin);
 
         controllerListener = new ControllerAdapter() {
@@ -99,19 +103,25 @@ public class JamepadTest extends ApplicationAdapter {
         });
 
         Table buttonTable = new Table(skin);
-        for (ControllerButton button : ControllerButton.values()) {
-            Label label = new Label(button.name(), skin);
-            buttonToLabel.put(button, label);
-            buttonTable.add(label).row();
-        }
+        buttonA = addControllerButtonLabel(buttonTable, "buttonA          ");
+        buttonB = addControllerButtonLabel(buttonTable, "buttonB          ");
+        buttonX = addControllerButtonLabel(buttonTable, "buttonX          ");
+        buttonY = addControllerButtonLabel(buttonTable, "buttonY          ");
+        buttonBack = addControllerButtonLabel(buttonTable, "buttonBack       ");
+        buttonStart = addControllerButtonLabel(buttonTable, "buttonStart      ");
+        buttonL1 = addControllerButtonLabel(buttonTable, "buttonL1         ");
+        buttonL2 = addControllerButtonLabel(buttonTable, "buttonL2         ");
+        buttonR1 = addControllerButtonLabel(buttonTable, "buttonR1         ");
+        buttonR2 = addControllerButtonLabel(buttonTable, "buttonR2         ");
+        buttonLeftStick = addControllerButtonLabel(buttonTable, "buttonLeftStick  ");
+        buttonRightStick = addControllerButtonLabel(buttonTable, "buttonRightStick ");
 
         Table axisTable = new Table(skin);
-        for (ControllerAxis axis : ControllerAxis.values()) {
-            Label label = new Label("0.0", skin);
-            axisToLabel.put(axis, label);
-            axisTable.add(axis.name()).padRight(10);
-            axisTable.add(label).row();
-        }
+        axisLeftX = addControllerAxisLabel(axisTable, "LeftX");
+        axisLeftY = addControllerAxisLabel(axisTable, "LeftY");
+        axisRightX = addControllerAxisLabel(axisTable, "RightX");
+        axisRightY = addControllerAxisLabel(axisTable, "RightY");
+
         axisTable.add("Player index").padRight(10);
         indexLabel = new Label("", skin);
         indexLabel.addListener(new ClickListener() {
@@ -126,6 +136,8 @@ public class JamepadTest extends ApplicationAdapter {
         });
         axisTable.add(indexLabel).row();
 
+        // TODO POV
+
         stage = new Stage();
         stage.setViewport(new ScreenViewport());
 
@@ -139,6 +151,19 @@ public class JamepadTest extends ApplicationAdapter {
         stage.addActor(table);
 
         Gdx.input.setInputProcessor(stage);
+    }
+
+    private Label addControllerButtonLabel(Table table, String name) {
+        Label label = new Label(name.trim(), skin);
+        table.add(label).row();
+        return label;
+    }
+
+    private Label addControllerAxisLabel(Table table, String name) {
+        Label label = new Label("0.0", skin);
+        table.add(name.trim()).padRight(10);
+        table.add(label).row();
+        return label;
     }
 
     private void refreshControllersList() {
@@ -171,27 +196,52 @@ public class JamepadTest extends ApplicationAdapter {
     }
 
     private void updateStateOfAxis() {
-        for (ObjectMap.Entry<ControllerAxis, Label> entry : axisToLabel) {
-            if (selectedController == null) {
-                entry.value.setColor(Color.DARK_GRAY);
-                entry.value.setText("0.0");
-            } else {
-                float value = selectedController.getAxis(entry.key.ordinal());
-                entry.value.setColor(value == 0 ? WHITE : RED);
-                entry.value.setText(String.valueOf(value));
-            }
+        if (selectedController == null) {
+            updateAxisLabel(axisLeftX, ControllerMapping.UNDEFINED);
+            updateAxisLabel(axisLeftY, ControllerMapping.UNDEFINED);
+            updateAxisLabel(axisRightX, ControllerMapping.UNDEFINED);
+            updateAxisLabel(axisRightY, ControllerMapping.UNDEFINED);
+        } else {
+            updateAxisLabel(axisLeftX, ((AdvancedController) selectedController).getMapping().axisLeftX);
+            updateAxisLabel(axisLeftY, ((AdvancedController) selectedController).getMapping().axisLeftX);
+            updateAxisLabel(axisRightX, ((AdvancedController) selectedController).getMapping().axisRightX);
+            updateAxisLabel(axisRightY, ((AdvancedController) selectedController).getMapping().axisRightY);
+        }
+    }
+
+    private void updateAxisLabel(Label axisLabel, int axisNum) {
+        if (axisNum == ControllerMapping.UNDEFINED) {
+            axisLabel.setColor(Color.DARK_GRAY);
+            axisLabel.setText("0.0");
+       } else {
+            float value = selectedController.getAxis(axisNum);
+            axisLabel.setColor(value == 0 ? WHITE : RED);
+            axisLabel.setText(String.valueOf(value));
+        }
+    }
+
+    private void updateButtonLabel(Label buttonLabel, int buttonNum) {
+        if (buttonNum == ControllerMapping.UNDEFINED) {
+            buttonLabel.setColor(Color.DARK_GRAY);
+        } else {
+            boolean pressed = selectedController.getButton(buttonNum);
+            buttonLabel.setColor(pressed ? RED : WHITE);
         }
     }
 
     private void updateStateOfButtons() {
-        for (ObjectMap.Entry<ControllerButton, Label> entry : buttonToLabel.entries()) {
-            if (selectedController == null) {
-                entry.value.setColor(Color.DARK_GRAY);
-            } else {
-                boolean pressed = selectedController.getButton(entry.key.ordinal());
-                entry.value.setColor(pressed ? RED : WHITE);
-            }
-        }
+        updateButtonLabel(buttonA, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonA);
+        updateButtonLabel(buttonB, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonB);
+        updateButtonLabel(buttonX, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonX);
+        updateButtonLabel(buttonY, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonY);
+        updateButtonLabel(buttonBack, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonBack);
+        updateButtonLabel(buttonStart, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonStart);
+        updateButtonLabel(buttonL1, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonL1);
+        updateButtonLabel(buttonL2, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonL2);
+        updateButtonLabel(buttonR1, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonR1);
+        updateButtonLabel(buttonR2, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonR2);
+        updateButtonLabel(buttonLeftStick, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonLeftStick);
+        updateButtonLabel(buttonRightStick, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonRightStick);
     }
 
     @Override
