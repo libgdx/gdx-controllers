@@ -1,3 +1,6 @@
 include ':gdx-controllers-android'
 include ':gdx-controllers-core'
+include ':gdx-controllers-desktop'
+include ':gdx-controllers-ios'
 include ':gdx-controllers-gwt'
+include "test:core", "test:android", "test:desktop", "test:html", "test:lwjgl3", "test:ios"

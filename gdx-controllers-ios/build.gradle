@@ -1,0 +1,30 @@
+apply plugin: 'java-library'
+apply plugin: 'robovm'
+
+apply from: '../publish.gradle'
+
+configurations {
+	custom
+	compile.extendsFrom custom
+}
+
+eclipse {
+	project {
+		name = appName + "-ios"
+	}
+}
+
+dependencies {
+	api project(":gdx-controllers-core")
+	implementation "com.mobidevelop.robovm:robovm-rt:${roboVMVersion}"
+	implementation "com.mobidevelop.robovm:robovm-cocoatouch:${roboVMVersion}"
+	implementation "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
+
+}
+
+sourceSets.main.java.srcDirs = [ "src/" ]
+
+
+ext {
+	ARTIFACTID = 'gdx-controllers-ios'
+}

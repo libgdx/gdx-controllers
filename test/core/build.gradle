@@ -1,0 +1,9 @@
+apply plugin: "java-library"
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+eclipse.project.name = appName + '-core'
+
+dependencies {
+	implementation project(':gdx-controllers-core')
+	api "com.badlogicgames.gdx:gdx:$gdxVersion"
+}
