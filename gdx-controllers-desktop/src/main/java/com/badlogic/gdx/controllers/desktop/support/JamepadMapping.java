@@ -1,4 +1,4 @@
-package de.golfgl.gdx.controllers.jamepad.support;
+package com.badlogic.gdx.controllers.desktop.support;
 
 import com.badlogic.gdx.controllers.ControllerMapping;
 import com.studiohartman.jamepad.ControllerAxis;

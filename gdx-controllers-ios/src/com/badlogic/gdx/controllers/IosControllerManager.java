@@ -1,10 +1,7 @@
 package com.badlogic.gdx.controllers;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.LifecycleListener;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap;
 
 import org.robovm.apple.foundation.Foundation;
 import org.robovm.apple.foundation.NSArray;
@@ -22,40 +19,6 @@ public class IosControllerManager implements ControllerManager {
 	private ICadeController iCadeController;
 
 	public IosControllerManager() {
-	}
-
-	/**
-	 * you need to call this method to register IosControllerManager with libGDX before your first call to
-	 * Controllers.getControllers().
-	 */
-	public static void initializeIosControllers() {
-		ObjectMap<Application, ControllerManager> managers = Controllers.managers;
-
-		// this is a copy from Controllers class. A hack to get IosControllerManager to work with libGDX
-		if (Foundation.getMajorSystemVersion() < 7) {
-			Gdx.app.log("Controllers", "IosControllerManager not added, needs iOS 7+.");
-		} else if (!managers.containsKey(Gdx.app)) {
-			IosControllerManager manager = new IosControllerManager();
-
-			managers.put(Gdx.app, manager);
-			final Application app = Gdx.app;
-			Gdx.app.addLifecycleListener(new LifecycleListener() {
-				public void resume() {
-				}
-
-				public void pause() {
-				}
-
-				public void dispose() {
-					Controllers.managers.remove(app);
-					Gdx.app.log("Controllers", "removed manager for application, " + Controllers.managers.size + " managers active");
-				}
-			});
-			Gdx.app.log("Controllers", "added manager for application, " + managers.size + " managers active");
-
-		} else {
-			Gdx.app.log("Controllers", "IosControllerManager not added, manager already active. ");
-		}
 	}
 
 	public static void enableICade(UIViewController controller, Selector action) {
@@ -105,7 +68,7 @@ public class IosControllerManager implements ControllerManager {
 	}
 
 	private void initializeControllerArray() {
-		if (!initialized) {
+		if (!initialized && Foundation.getMajorSystemVersion() >= 7) {
 			initialized = true;
 
 			NSArray<GCController> controllers = GCController.getControllers();

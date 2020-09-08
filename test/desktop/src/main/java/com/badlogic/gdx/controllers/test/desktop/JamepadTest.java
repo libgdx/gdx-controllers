@@ -1,4 +1,4 @@
-package de.golfgl.gdx.controllers.jamepad;
+package com.badlogic.gdx.controllers.test.desktop;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;

@@ -1,15 +1,15 @@
-package de.golfgl.gdx.controllers.jamepad;
+package com.badlogic.gdx.controllers.desktop;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerAdapter;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerManager;
+import com.badlogic.gdx.controllers.desktop.support.CompositeControllerListener;
+import com.badlogic.gdx.controllers.desktop.support.JamepadControllerMonitor;
+import com.badlogic.gdx.controllers.desktop.support.JamepadShutdownHook;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
-import de.golfgl.gdx.controllers.jamepad.support.CompositeControllerListener;
-import de.golfgl.gdx.controllers.jamepad.support.JamepadControllerMonitor;
-import de.golfgl.gdx.controllers.jamepad.support.JamepadShutdownHook;
 
 public class JamepadControllerManager implements ControllerManager, Disposable {
     private static boolean nativeLibInitialized = false;

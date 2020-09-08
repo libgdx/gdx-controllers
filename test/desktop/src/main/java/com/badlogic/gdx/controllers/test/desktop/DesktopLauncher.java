@@ -18,9 +18,6 @@ package com.badlogic.gdx.controllers.test.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.badlogic.gdx.controllers.test.GdxControllersTest;
-
-import de.golfgl.gdx.controllers.jamepad.JamepadTest;
 
 /** Launches the desktop (LWJGL) application. */
 public class DesktopLauncher {

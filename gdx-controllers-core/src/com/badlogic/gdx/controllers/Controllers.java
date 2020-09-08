@@ -92,13 +92,11 @@ public class Controllers {
 		} else if (type == ApplicationType.Android) {
 			className = "com.badlogic.gdx.controllers.android.AndroidControllers";
 		} else if (type == ApplicationType.Desktop) {
-			if(Gdx.graphics.getType() == GraphicsType.LWJGL3) {
-				className = "com.badlogic.gdx.controllers.lwjgl3.Lwjgl3ControllerManager";
-			} else {
-				className = "com.badlogic.gdx.controllers.desktop.DesktopControllerManager";
-			}
+			className = "com.badlogic.gdx.controllers.desktop.JamepadControllerManager";
 		} else if (type == ApplicationType.WebGL) {
 			className = "com.badlogic.gdx.controllers.gwt.GwtControllers";
+		} else if (type == ApplicationType.iOS) {
+			className = "com.badlogic.gdx.controllers.IosControllerManager";
 		} else {
 			Gdx.app.log(TAG, "No controller manager is available for: " + Gdx.app.getType());
 			manager = new ControllerManagerStub();

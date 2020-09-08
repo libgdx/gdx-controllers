@@ -1,4 +1,4 @@
-package de.golfgl.gdx.controllers.jamepad.support;
+package com.badlogic.gdx.controllers.desktop.support;
 
 import com.badlogic.gdx.LifecycleListener;
 import com.studiohartman.jamepad.ControllerManager;
