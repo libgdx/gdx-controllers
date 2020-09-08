@@ -62,6 +62,21 @@ public final class Gamepad extends JavaScriptObject {
 		this.previousTimestamp = previousTimestamp;
 	}-*/;
 
+	public native boolean canVibrate() /*-{
+		return (this.vibrationActuator);
+	}-*/;
+
+	public native void doVibrate(int duration, float strength) /*-{
+	    if (this.vibrationActuator) {
+			this.vibrationActuator.playEffect("dual-rumble", {
+			  startDelay: 0,
+			  duration: duration,
+			  weakMagnitude: strength,
+			  strongMagnitude: strength
+			});
+		}
+	}-*/;
+
 	public static Gamepad getGamepad(int index) {
 		return GamepadSupport.getGamepad(index);		
 	}
