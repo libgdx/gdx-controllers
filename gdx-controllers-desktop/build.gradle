@@ -14,12 +14,11 @@ eclipse {
 }
 
 dependencies {
+	api project(":gdx-controllers-core")
 	implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+	// FIXME change it after first official libgdx-Jamepad release
+	api "com.github.MrStahlfelge:Jamepad:2.0.12.1"
 }
-
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-
-sourceSets.main.java.srcDirs = [ "src/" ]
 
 targetCompatibility = 1.7
 sourceCompatibility = 1.7

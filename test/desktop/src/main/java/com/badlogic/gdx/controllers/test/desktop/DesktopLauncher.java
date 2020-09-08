@@ -20,6 +20,8 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.controllers.test.GdxControllersTest;
 
+import de.golfgl.gdx.controllers.jamepad.JamepadTest;
+
 /** Launches the desktop (LWJGL) application. */
 public class DesktopLauncher {
 	public static void main (String[] args) {
@@ -27,7 +29,8 @@ public class DesktopLauncher {
 	}
 
 	private static LwjglApplication createApplication () {
-		return new LwjglApplication(new GdxControllersTest(), getDefaultConfiguration());
+		// FIXME transition JamepadTest to core
+		return new LwjglApplication(new JamepadTest(), getDefaultConfiguration());
 	}
 
 	private static LwjglApplicationConfiguration getDefaultConfiguration () {

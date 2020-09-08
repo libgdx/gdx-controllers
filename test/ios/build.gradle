@@ -1,8 +1,6 @@
 apply plugin: 'robovm'
 apply plugin: 'java'
 
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-
 ext {
 	mainClassName = "com.badlogic.gdx.controllers.test.ios.IOSLauncher"
 }
