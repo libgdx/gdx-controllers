@@ -23,7 +23,6 @@ import android.hardware.input.InputManager.InputDeviceListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.LifecycleListener;
 import com.badlogic.gdx.backends.android.AndroidApplication;
-import com.badlogic.gdx.backends.android.AndroidInput;
 
 /**
  * Used on +4.1 to get events on device connects/disconnects.

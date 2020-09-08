@@ -306,6 +306,7 @@ public class AndroidControllers implements LifecycleListener, ControllerManager,
 		if(controller != null) {
 			synchronized(eventQueue) {
 				AndroidControllerEvent event = eventPool.obtain();
+				controller.connected = false;
 				event.type = AndroidControllerEvent.DISCONNECTED;
 				event.controller = controller;
 				eventQueue.add(event);
