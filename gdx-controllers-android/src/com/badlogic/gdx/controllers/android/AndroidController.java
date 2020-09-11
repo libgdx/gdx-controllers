@@ -90,25 +90,6 @@ public class AndroidController implements AdvancedController {
 	}
 	
 	@Override
-	public boolean getSliderX (int sliderIndex) {
-		return false;
-	}
-
-	@Override
-	public boolean getSliderY (int sliderIndex) {
-		return false;
-	}
-
-	@Override
-	public Vector3 getAccelerometer (int accelerometerIndex) {
-		return Vector3.Zero;
-	}
-
-	@Override
-	public void setAccelerometerSensitivity (float sensitivity) {
-	}
-
-	@Override
 	public void addListener (ControllerListener listener) {
 		this.listeners.add(listener);
 	}

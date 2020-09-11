@@ -78,29 +78,6 @@ public class JamepadController implements AdvancedController {
     }
 
     @Override
-    public boolean getSliderX(int sliderCode) {
-        // not supported
-        return false;
-    }
-
-    @Override
-    public boolean getSliderY(int sliderCode) {
-        // not supported
-        return false;
-    }
-
-    @Override
-    public Vector3 getAccelerometer(int accelerometerCode) {
-        // not supported
-        return Vector3.Zero;
-    }
-
-    @Override
-    public void setAccelerometerSensitivity(float sensitivity) {
-        // not supported
-    }
-
-    @Override
     public String getName() {
         try {
             return controllerIndex.getName();

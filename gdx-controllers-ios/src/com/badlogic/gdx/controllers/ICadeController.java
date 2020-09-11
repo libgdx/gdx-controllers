@@ -69,30 +69,6 @@ public class ICadeController extends AbstractController {
 	}
 
 	@Override
-	public boolean getSliderX(int i) {
-		// not supported
-		return false;
-	}
-
-	@Override
-	public boolean getSliderY(int i) {
-		// not supported
-		return false;
-	}
-
-	@Override
-	public Vector3 getAccelerometer(int i) {
-		// not supported
-		return Vector3.Zero;
-	}
-
-	@Override
-	public void setAccelerometerSensitivity(float v) {
-		// not supported
-
-	}
-
-	@Override
 	public ControllerMapping getMapping() {
 		return ICadeMapping.getInstance();
 	}

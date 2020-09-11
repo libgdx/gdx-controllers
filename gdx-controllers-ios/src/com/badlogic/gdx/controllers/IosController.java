@@ -300,27 +300,6 @@ public class IosController extends AbstractController {
     }
 
     @Override
-    public boolean getSliderX(int i) {
-        return false;
-    }
-
-    @Override
-    public boolean getSliderY(int i) {
-        return false;
-    }
-
-    @Override
-    public Vector3 getAccelerometer(int i) {
-        // TODO supported since iOS8
-        return Vector3.Zero;
-    }
-
-    @Override
-    public void setAccelerometerSensitivity(float v) {
-        // not supported
-    }
-
-    @Override
     public String getName() {
         return controller.getVendorName();
     }

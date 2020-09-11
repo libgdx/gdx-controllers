@@ -102,26 +102,6 @@ public class GwtController implements AdvancedController {
 	}
 
 	@Override
-	public boolean getSliderX(int sliderCode) {
-		return false;
-	}
-
-	@Override
-	public boolean getSliderY(int sliderCode) {
-		return false;
-	}
-
-	@Override
-	public Vector3 getAccelerometer(int accelerometerCode) {
-		return Vector3.Zero;
-	}
-
-	@Override
-	public void setAccelerometerSensitivity(float sensitivity) {
-		// Nope
-	}
-
-	@Override
 	public boolean canVibrate() {
 		return Gamepad.getGamepad(index).canVibrate();
 	}

@@ -36,21 +36,6 @@ public interface Controller {
 	 * @return the {@link PovDirection} */
 	public PovDirection getPov (int povCode);
 
-	/** @param sliderCode
-	 * @return whether the slider is pressed */
-	public boolean getSliderX (int sliderCode);
-
-	/** @param sliderCode
-	 * @return whether the slider is pressed */
-	public boolean getSliderY (int sliderCode);
-
-	/** @param accelerometerCode
-	 * @return the accelerometer values on the 3 axis, in m/s^2 */
-	public Vector3 getAccelerometer (int accelerometerCode);
-
-	/** @param sensitivity the accelerometer sensitive, 0 (lowest) to 1 (highest) */
-	public void setAccelerometerSensitivity (float sensitivity);
-
 	/** @return the device name */
 	public String getName ();
 
