@@ -3,6 +3,10 @@ package com.badlogic.gdx.controllers;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
+/**
+ * AbstractController to be used by new Controller implementations to avoid reimplementations
+ * of listener notifications
+ */
 abstract class AbstractController implements AdvancedController, Disposable {
 	private final Array<ControllerListener> listeners = new Array<>();
 	private boolean connected = true;
@@ -65,23 +69,6 @@ abstract class AbstractController implements AdvancedController, Disposable {
 			}
 		}
 	}
-
-	protected void notifyListenersPovDirection(PovDirection newPovDirection) {
-        Array<ControllerListener> managerListeners = Controllers.getListeners();
-        synchronized (managerListeners) {
-            for (ControllerListener listener : managerListeners) {
-                if (listener.povMoved(this, 0, newPovDirection))
-                    break;
-            }
-        }
-
-        synchronized (listeners) {
-            for (ControllerListener listener : listeners) {
-                if (listener.povMoved(this, 0, newPovDirection))
-                    break;
-            }
-        }
-    }
 
 	@Override
 	public void addListener(ControllerListener controllerListener) {

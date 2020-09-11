@@ -52,37 +52,4 @@ public interface ControllerListener {
 	 * @param value the axis value, -1 to 1
 	 * @return whether to hand the event to other listeners. */
 	public boolean axisMoved (Controller controller, int axisCode, float value);
-
-	/** A POV on the {@link Controller} moved. The povCode is controller specific. The
-	 * <code>com.badlogic.gdx.controllers.mapping</code> package hosts POV constants for known controllers.
-	 * @param controller
-	 * @param povCode
-	 * @param value
-	 * @return whether to hand the event to other listeners. */
-	public boolean povMoved (Controller controller, int povCode, PovDirection value);
-
-	/** An x-slider on the {@link Controller} moved. The sliderCode is controller specific. The
-	 * <code>com.badlogic.gdx.controllers.mapping</code> package hosts slider constants for known controllers.
-	 * @param controller
-	 * @param sliderCode
-	 * @param value
-	 * @return whether to hand the event to other listeners. */
-	public boolean xSliderMoved (Controller controller, int sliderCode, boolean value);
-
-	/** An y-slider on the {@link Controller} moved. The sliderCode is controller specific. The
-	 * <code>com.badlogic.gdx.controllers.mapping</code> package hosts slider constants for known controllers.
-	 * @param controller
-	 * @param sliderCode
-	 * @param value
-	 * @return whether to hand the event to other listeners. */
-	public boolean ySliderMoved (Controller controller, int sliderCode, boolean value);
-
-	/** An accelerometer value on the {@link Controller} changed. The accelerometerCode is controller specific. The
-	 * <code>com.badlogic.gdx.controllers.mapping</code> package hosts slider constants for known controllers. The value is a
-	 * {@link Vector3} representing the acceleration on a 3-axis accelerometer in m/s^2.
-	 * @param controller
-	 * @param accelerometerCode
-	 * @param value
-	 * @return whether to hand the event to other listeners. */
-	public boolean accelerometerMoved (Controller controller, int accelerometerCode, Vector3 value);
 }

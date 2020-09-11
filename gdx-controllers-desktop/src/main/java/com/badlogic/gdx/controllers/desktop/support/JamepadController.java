@@ -3,8 +3,6 @@ package com.badlogic.gdx.controllers.desktop.support;
 import com.badlogic.gdx.controllers.AdvancedController;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
-import com.badlogic.gdx.controllers.PovDirection;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -69,12 +67,6 @@ public class JamepadController implements AdvancedController {
             setDisconnected();
         }
         return 0f;
-    }
-
-    @Override
-    public PovDirection getPov(int povCode) {
-        // TODO supported by Jamepad, we have to wire this in
-        return PovDirection.center;
     }
 
     @Override
@@ -231,12 +223,6 @@ public class JamepadController implements AdvancedController {
     @Override
     public int getAxisCount() {
         return CODE_TO_AXIS.size;
-    }
-
-    @Override
-    public int getPovCount() {
-        // unsupported
-        return 0;
     }
 
     @Override

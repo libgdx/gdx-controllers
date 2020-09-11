@@ -116,14 +116,6 @@ public class AndroidControllers implements LifecycleListener, ControllerManager,
 									if(listener.axisMoved(event.controller, event.code, event.axisValue)) break;
 								}
 								break;
-							case AndroidControllerEvent.POV:
-								for (ControllerListener listener : listeners) {
-									if (listener.povMoved(event.controller, 0, event.povDirection)) break;
-								}
-								for (ControllerListener listener : event.controller.getListeners()) {
-									if (listener.povMoved(event.controller, 0, event.povDirection)) break;
-								}
-								break;
 							default:
 						}
 					}
@@ -141,29 +133,71 @@ public class AndroidControllers implements LifecycleListener, ControllerManager,
 		AndroidController controller = controllerMap.get(motionEvent.getDeviceId());
 		if(controller != null) {
 			synchronized(eventQueue) {
-				final int historySize = motionEvent.getHistorySize();
-
 				if (controller.hasPovAxis()) {
-					int direction = 0;
 					float povX = motionEvent.getAxisValue(MotionEvent.AXIS_HAT_X);
 					float povY = motionEvent.getAxisValue(MotionEvent.AXIS_HAT_Y);
-					if (Float.compare(povY, -1.0f) == 0) {
-						direction |= 0x00000001;
-					} else if (Float.compare(povY, 1.0f) == 0) {
-						direction |= 0x00000010;
+					// map axis movement to dpad buttons
+					if (povX != controller.povX) {
+						if (controller.povX == 1f) {
+							AndroidControllerEvent event = eventPool.obtain();
+							event.controller = controller;
+							event.type = AndroidControllerEvent.BUTTON_UP;
+							event.code = KeyEvent.KEYCODE_DPAD_RIGHT;
+							eventQueue.add(event);
+						} else if (controller.povX == -1f) {
+							AndroidControllerEvent event = eventPool.obtain();
+							event.controller = controller;
+							event.type = AndroidControllerEvent.BUTTON_UP;
+							event.code = KeyEvent.KEYCODE_DPAD_LEFT;
+							eventQueue.add(event);
+						}
+
+						if (povX == 1f) {
+							AndroidControllerEvent event = eventPool.obtain();
+							event.controller = controller;
+							event.type = AndroidControllerEvent.BUTTON_DOWN;
+							event.code = KeyEvent.KEYCODE_DPAD_RIGHT;
+							eventQueue.add(event);
+						} else if (povX == -1f) {
+							AndroidControllerEvent event = eventPool.obtain();
+							event.controller = controller;
+							event.type = AndroidControllerEvent.BUTTON_DOWN;
+							event.code = KeyEvent.KEYCODE_DPAD_LEFT;
+							eventQueue.add(event);
+						}
+						controller.povX = povX;
 					}
-					if (Float.compare(povX, 1.0f) == 0) {
-						direction |= 0x00000100;
-					} else if (Float.compare(povX, -1.0f) == 0) {
-						direction |= 0x00001000;
-					}
-					if (direction != controller.pov) {
-						controller.pov = direction;
-						AndroidControllerEvent event = eventPool.obtain();
-						event.type = AndroidControllerEvent.POV;
-						event.controller = controller;
-						event.povDirection = controller.getPov(0);
-						eventQueue.add(event);
+
+					if (povY != controller.povY) {
+						if (controller.povY == 1f) {
+							AndroidControllerEvent event = eventPool.obtain();
+							event.controller = controller;
+							event.type = AndroidControllerEvent.BUTTON_UP;
+							event.code = KeyEvent.KEYCODE_DPAD_DOWN;
+							eventQueue.add(event);
+						} else if (controller.povY == -1f) {
+							AndroidControllerEvent event = eventPool.obtain();
+							event.controller = controller;
+							event.type = AndroidControllerEvent.BUTTON_UP;
+							event.code = KeyEvent.KEYCODE_DPAD_UP;
+							eventQueue.add(event);
+						}
+
+						if (povY == 1f) {
+							AndroidControllerEvent event = eventPool.obtain();
+							event.controller = controller;
+							event.type = AndroidControllerEvent.BUTTON_DOWN;
+							event.code = KeyEvent.KEYCODE_DPAD_DOWN;
+							eventQueue.add(event);
+						} else if (povY == -1f) {
+							AndroidControllerEvent event = eventPool.obtain();
+							event.controller = controller;
+							event.type = AndroidControllerEvent.BUTTON_DOWN;
+							event.code = KeyEvent.KEYCODE_DPAD_UP;
+							eventQueue.add(event);
+						}
+						controller.povY = povY;
+
 					}
 				}
 
@@ -202,48 +236,11 @@ public class AndroidControllers implements LifecycleListener, ControllerManager,
 				AndroidControllerEvent event = eventPool.obtain();
 				event.controller = controller;
 				if(keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-					if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-						event.type = AndroidControllerEvent.POV;
-						controller.pov |= 0x00000001;
-						event.povDirection = controller.getPov(0);
-					} else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-						event.type = AndroidControllerEvent.POV;
-						controller.pov |= 0x00000010;
-						event.povDirection = controller.getPov(0);
-					} else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-						event.type = AndroidControllerEvent.POV;
-						controller.pov |= 0x00000100;
-						event.povDirection = controller.getPov(0);
-					} else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-						event.type = AndroidControllerEvent.POV;
-						controller.pov |= 0x00001000;
-						event.povDirection = controller.getPov(0);
-					} else {
-						event.type = AndroidControllerEvent.BUTTON_DOWN;
-						event.code = keyCode;
-					}
+					event.type = AndroidControllerEvent.BUTTON_DOWN;
 				} else {
-					if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-						event.type = AndroidControllerEvent.POV;
-						controller.pov &= 0x00001110;
-						event.povDirection = controller.getPov(0);
-					} else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-						event.type = AndroidControllerEvent.POV;
-						controller.pov &= 0x00001101;
-						event.povDirection = controller.getPov(0);
-					} else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-						event.type = AndroidControllerEvent.POV;
-						controller.pov &= 0x00001011;
-						event.povDirection = controller.getPov(0);
-					} else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-						event.type = AndroidControllerEvent.POV;
-						controller.pov &= 0x00000111;
-						event.povDirection = controller.getPov(0);
-					} else {
-						event.type = AndroidControllerEvent.BUTTON_UP;
-						event.code = keyCode;
-					}
+					event.type = AndroidControllerEvent.BUTTON_UP;
 				}
+				event.code = keyCode;
 				eventQueue.add(event);
 			}
 			if (keyCode == KeyEvent.KEYCODE_BACK && !Gdx.input.isCatchBackKey()) {

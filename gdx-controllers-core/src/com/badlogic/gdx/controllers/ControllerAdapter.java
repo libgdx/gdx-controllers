@@ -37,26 +37,6 @@ public class ControllerAdapter implements ControllerListener {
 	}
 
 	@Override
-	public boolean povMoved (Controller controller, int povIndex, PovDirection value) {
-		return false;
-	}
-
-	@Override
-	public boolean xSliderMoved (Controller controller, int sliderIndex, boolean value) {
-		return false;
-	}
-
-	@Override
-	public boolean ySliderMoved (Controller controller, int sliderIndex, boolean value) {
-		return false;
-	}
-
-	@Override
-	public boolean accelerometerMoved (Controller controller, int accelerometerIndex, Vector3 value) {
-		return false;
-	}
-
-	@Override
 	public void connected (Controller controller) {
 	}
 

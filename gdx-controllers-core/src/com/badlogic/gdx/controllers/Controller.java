@@ -32,10 +32,6 @@ public interface Controller {
 	 * @return the value of the axis, between -1 and 1 */
 	public float getAxis (int axisCode);
 
-	/** @param povCode
-	 * @return the {@link PovDirection} */
-	public PovDirection getPov (int povCode);
-
 	/** @return the device name */
 	public String getName ();
 

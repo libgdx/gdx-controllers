@@ -32,11 +32,6 @@ import com.google.gwt.core.client.JsArrayNumber;
 
 public class GwtControllers implements ControllerManager, GamepadSupportListener {
 
-	private static final int STANDARD_CONTROLLER_DPAD_UP = 12;
-	private static final int STANDARD_CONTROLLER_DPAD_DOWN = 13;
-	private static final int STANDARD_CONTROLLER_DPAD_LEFT = 14;
-	private static final int STANDARD_CONTROLLER_DPAD_RIGHT = 15;
-
 	private final IntMap<GwtController> controllerMap = new IntMap<GwtController>();
 	private final Array<Controller> controllers = new Array<Controller>();
 	private final Array<ControllerListener> listeners = new Array<ControllerListener>();
@@ -101,14 +96,6 @@ public class GwtControllers implements ControllerManager, GamepadSupportListener
 							}
 							for (ControllerListener listener : event.controller.getListeners()) {
 								if (listener.axisMoved(event.controller, event.code, event.amount)) break;
-							}
-							break;
-						case GwtControllerEvent.POV:
-							for (ControllerListener listener : listeners) {
-								if (listener.povMoved(event.controller, 0, event.povDirection)) break;
-							}
-							for (ControllerListener listener : event.controller.getListeners()) {
-								if (listener.povMoved(event.controller, 0, event.povDirection)) break;
 							}
 							break;
 						default:
@@ -191,55 +178,19 @@ public class GwtControllers implements ControllerManager, GamepadSupportListener
 				}
 				for (int i = 0, j = buttons.length(); i < j; i++) {
 					float newButton = (float)buttons.get(i).getValue();
-					if (controller.isStandardMapping() && i >= STANDARD_CONTROLLER_DPAD_UP && i <= STANDARD_CONTROLLER_DPAD_RIGHT) {
-						int direction = controller.pov;
-						if (newButton < 0.5f) {
-							if (i == STANDARD_CONTROLLER_DPAD_UP)
-								direction &= 0x00001110;
-							else if (i == STANDARD_CONTROLLER_DPAD_DOWN)
-								direction &= 0x00001101;
-							else if (i == STANDARD_CONTROLLER_DPAD_LEFT)
-								direction &= 0x00000111;
-							else if (i == STANDARD_CONTROLLER_DPAD_RIGHT)
-								direction &= 0x00001011;
-						} else {
-							if (i == STANDARD_CONTROLLER_DPAD_UP) {
-								direction |= 0x00000001;
-								direction &= 0x00001101;
-							} else if (i == STANDARD_CONTROLLER_DPAD_DOWN) {
-								direction |= 0x00000010;
-								direction &= 0x00001110;
-							} else if (i == STANDARD_CONTROLLER_DPAD_LEFT) {
-								direction |= 0x00001000;
-								direction &= 0x00001011;
-							} else if (i == STANDARD_CONTROLLER_DPAD_RIGHT) {
-								direction |= 0x00000100;
-								direction &= 0x00000111;
-							}
+					float oldButton = controller.getButtonValue(i);
+					if (oldButton != newButton) {
+						if ((oldButton < 0.5f && newButton < 0.5f) || (oldButton >= 0.5f && newButton >= 0.5f)) {
+							controller.buttons.put(i, newButton);
+							continue;
 						}
-						if (direction != controller.pov) {
-							controller.pov = direction;
-							GwtControllerEvent event = eventPool.obtain();
-							event.type = GwtControllerEvent.POV;
-							event.controller = controller;
-							event.povDirection = controller.getPov(0);
-							eventQueue.add(event);
-						}
-					} else {
-						float oldButton = controller.getButtonValue(i);
-						if (oldButton != newButton) {
-							if ((oldButton < 0.5f && newButton < 0.5f) || (oldButton >= 0.5f && newButton >= 0.5f)) {
-								controller.buttons.put(i, newButton);
-								continue;
-							}
 
-							GwtControllerEvent event = eventPool.obtain();
-							event.type = newButton >= 0.5f ? GwtControllerEvent.BUTTON_DOWN : GwtControllerEvent.BUTTON_UP;
-							event.controller = controller;
-							event.code = i;
-							event.amount = newButton;
-							eventQueue.add(event);
-						}
+						GwtControllerEvent event = eventPool.obtain();
+						event.type = newButton >= 0.5f ? GwtControllerEvent.BUTTON_DOWN : GwtControllerEvent.BUTTON_UP;
+						event.controller = controller;
+						event.code = i;
+						event.amount = newButton;
+						eventQueue.add(event);
 					}
 				}
 			}

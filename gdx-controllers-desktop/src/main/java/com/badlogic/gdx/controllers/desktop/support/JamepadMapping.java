@@ -15,7 +15,9 @@ public class JamepadMapping extends ControllerMapping {
                 ControllerButton.BACK.ordinal(), ControllerButton.START.ordinal(),
                 ControllerButton.LEFTBUMPER.ordinal(), UNDEFINED,
                 ControllerButton.RIGHTBUMPER.ordinal(), UNDEFINED,
-                ControllerButton.LEFTSTICK.ordinal(), ControllerButton.RIGHTSTICK.ordinal());
+                ControllerButton.LEFTSTICK.ordinal(), ControllerButton.RIGHTSTICK.ordinal(),
+                ControllerButton.DPAD_UP.ordinal(), ControllerButton.DPAD_DOWN.ordinal(),
+                ControllerButton.DPAD_LEFT.ordinal(), ControllerButton.DPAD_RIGHT.ordinal());
     }
 
     static JamepadMapping getInstance() {

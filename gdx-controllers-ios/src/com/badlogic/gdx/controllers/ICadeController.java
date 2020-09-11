@@ -34,12 +34,6 @@ public class ICadeController extends AbstractController {
 	}
 
 	@Override
-	public int getPovCount() {
-		// not supported
-		return 0;
-	}
-
-	@Override
 	public boolean getButton(int i) {
 		if (i <= getMaxButtonIndex())
 			return buttonPressed[i];
@@ -60,12 +54,6 @@ public class ICadeController extends AbstractController {
 		}
 
 		return 0;
-	}
-
-	@Override
-	public PovDirection getPov(int i) {
-		// not supported
-		return PovDirection.center;
 	}
 
 	@Override

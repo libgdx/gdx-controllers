@@ -23,8 +23,6 @@ import android.view.MotionEvent;
 import com.badlogic.gdx.controllers.AdvancedController;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
-import com.badlogic.gdx.controllers.PovDirection;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntIntMap;
 
@@ -37,7 +35,8 @@ public class AndroidController implements AdvancedController {
 	protected final IntIntMap buttons = new IntIntMap();
 	protected final float[] axes;
 	protected final int[] axesIds;
-	protected int pov = 0;
+	protected float povX = 0f;
+	protected float povY = 0f;
 	private boolean povAxis;
 	private final Array<ControllerListener> listeners = new Array<ControllerListener>();
 	private String uuid;
@@ -115,33 +114,6 @@ public class AndroidController implements AdvancedController {
 	}
 
 	@Override
-	public PovDirection getPov (int povIndex) {
-		if (povIndex != 0) return PovDirection.center;
-		switch (pov) {
-			case 0x00000000:
-				return PovDirection.center;
-			case 0x00000001:
-				return PovDirection.north;
-			case 0x00000010:
-				return PovDirection.south;
-			case 0x00000100:
-				return PovDirection.east;
-			case 0x00001000:
-				return PovDirection.west;
-			case 0x00000101:
-				return PovDirection.northEast;
-			case 0x00000110:
-				return PovDirection.southEast;
-			case 0x00001001:
-				return PovDirection.northWest;
-			case 0x00001010:
-				return PovDirection.southWest;
-			default:
-				throw new RuntimeException("Unexpected POV value : " + pov);
-		}
-	}
-
-	@Override
 	public String getName () {
 		return name;
 	}
@@ -200,11 +172,6 @@ public class AndroidController implements AdvancedController {
 	@Override
 	public int getAxisCount() {
 		return axes.length;
-	}
-
-	@Override
-	public int getPovCount() {
-		return hasPovAxis() ? 1 : 0;
 	}
 
 	@Override

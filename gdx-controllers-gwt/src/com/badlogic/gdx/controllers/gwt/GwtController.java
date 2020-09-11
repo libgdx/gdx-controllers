@@ -19,9 +19,7 @@ package com.badlogic.gdx.controllers.gwt;
 import com.badlogic.gdx.controllers.AdvancedController;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
-import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.controllers.gwt.support.Gamepad;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntFloatMap;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -33,7 +31,6 @@ public class GwtController implements AdvancedController {
 	private boolean standardMapping;
 	protected final float[] axes;
 	protected final IntFloatMap buttons = new IntFloatMap();
-	protected int pov = 0;
 	boolean connected = true;
 
 	private final Array<ControllerListener> listeners = new Array<ControllerListener>();
@@ -74,31 +71,6 @@ public class GwtController implements AdvancedController {
 	public float getAxis(int axisIndex) {
 		if(axisIndex < 0 || axisIndex >= axes.length) return 0;
 		return axes[axisIndex];
-	}
-
-	@Override
-	public PovDirection getPov(int povIndex) {
-		if (povIndex != 0) return PovDirection.center;
-		switch (pov) {
-			case 0x00000001:
-				return PovDirection.north;
-			case 0x00000010:
-				return PovDirection.south;
-			case 0x00000100:
-				return PovDirection.east;
-			case 0x00001000:
-				return PovDirection.west;
-			case 0x00000101:
-				return PovDirection.northEast;
-			case 0x00000110:
-				return PovDirection.southEast;
-			case 0x00001001:
-				return PovDirection.northWest;
-			case 0x00001010:
-				return PovDirection.southWest;
-			default:
-				return PovDirection.center;
-		}
 	}
 
 	@Override
@@ -158,11 +130,6 @@ public class GwtController implements AdvancedController {
 	@Override
 	public int getAxisCount() {
 		return axes.length;
-	}
-
-	@Override
-	public int getPovCount() {
-		return isStandardMapping() ? 1 : 0;
 	}
 
 	@Override

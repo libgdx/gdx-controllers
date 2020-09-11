@@ -2,8 +2,6 @@ package com.badlogic.gdx.controllers.desktop.support;
 
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
-import com.badlogic.gdx.controllers.PovDirection;
-import com.badlogic.gdx.math.Vector3;
 
 import java.util.LinkedList;
 
@@ -48,46 +46,6 @@ public class CompositeControllerListener implements ControllerListener {
     public boolean axisMoved(final Controller controller, final int axisCode, final float value) {
         for (ControllerListener listener : listeners) {
             if (listener.axisMoved(controller, axisCode, value)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean povMoved(final Controller controller, final int povCode, final PovDirection value) {
-        for (ControllerListener listener : listeners) {
-            if (listener.povMoved(controller, povCode, value)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean xSliderMoved(final Controller controller, final int sliderCode, final boolean value) {
-        for (ControllerListener listener : listeners) {
-            if (listener.xSliderMoved(controller, sliderCode, value)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean ySliderMoved(final Controller controller, final int sliderCode, final boolean value) {
-        for (ControllerListener listener : listeners) {
-            if (listener.ySliderMoved(controller, sliderCode, value)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean accelerometerMoved(final Controller controller, final int accelerometerCode, final Vector3 value) {
-        for (ControllerListener listener : listeners) {
-            if (listener.accelerometerMoved(controller, accelerometerCode, value)) {
                 return true;
             }
         }

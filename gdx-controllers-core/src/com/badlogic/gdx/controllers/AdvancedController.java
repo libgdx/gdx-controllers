@@ -71,12 +71,6 @@ public interface AdvancedController extends Controller {
     int getAxisCount();
 
     /**
-     * @return number of dpads of this controller. Indices start at 0, so the maximum pov index is
-     * one under this value.
-     */
-    int getPovCount();
-
-    /**
      * @return true when this Controller is still connected, false if it already disconnected
      */
     boolean isConnected();

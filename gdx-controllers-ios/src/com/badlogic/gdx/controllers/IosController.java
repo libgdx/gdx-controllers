@@ -1,7 +1,6 @@
 package com.badlogic.gdx.controllers;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import org.robovm.apple.gamecontroller.GCController;
@@ -19,11 +18,14 @@ import java.util.UUID;
 
 public class IosController extends AbstractController {
     public final static int BUTTON_PAUSE = 9;
+    public static final int BUTTON_DPAD_UP = 12;
+    public static final int BUTTON_DPAD_DOWN = 13;
+    public static final int BUTTON_DPAD_LEFT = 14;
+    public static final int BUTTON_DPAD_RIGHT = 15;
 
     private final GCController controller;
     private final String uuid;
     private final boolean[] pressedButtons;
-    private PovDirection lastPovDirection = PovDirection.center;
     private long lastPausePressedMs = 0;
 
     public IosController(GCController controller) {
@@ -88,16 +90,22 @@ public class IosController extends AbstractController {
             }
 
         } else if (gcControllerElement instanceof GCControllerAxisInput) {
-			GCControllerAxisInput axisInput = (GCControllerAxisInput) gcControllerElement;
-			int axisNum = getConstFromAxisInput(axisInput);
-			notifyListenersAxisMoved(axisNum, axisInput.getValue());
+            GCControllerAxisInput axisInput = (GCControllerAxisInput) gcControllerElement;
+            int axisNum = getConstFromAxisInput(axisInput);
+            notifyListenersAxisMoved(axisNum, axisInput.getValue());
 
-		} else if (gcControllerElement instanceof GCControllerDirectionPad) {
-            PovDirection newPovDirection = getPovDirectionFromDirectionPad((GCControllerDirectionPad) gcControllerElement);
+        } else if (gcControllerElement instanceof GCControllerDirectionPad) {
 
-            if (newPovDirection != lastPovDirection) {
-                lastPovDirection = newPovDirection;
-                notifyListenersPovDirection(newPovDirection);
+            // some dpad button changed, cycle to find them all
+            for (int buttonNum = BUTTON_DPAD_UP; buttonNum <= BUTTON_DPAD_RIGHT; buttonNum++) {
+                GCControllerButtonInput dpadButton = getButtonFromConst(buttonNum);
+                if (dpadButton != null && pressedButtons[buttonNum] != dpadButton.isPressed()) {
+                    pressedButtons[buttonNum] = dpadButton.isPressed();
+                    if (pressedButtons[buttonNum])
+                        notifyListenersButtonDown(buttonNum);
+                    else
+                        notifyListenersButtonUp(buttonNum);
+                }
             }
         }
     }
@@ -180,8 +188,34 @@ public class IosController extends AbstractController {
             case 11:
                 // right stick button
                 return null;
-
-            // 12-15: DPad
+            case BUTTON_DPAD_UP:
+                // Dpad up
+                if (controller.getExtendedGamepad() != null) {
+                    return controller.getExtendedGamepad().getDpad().getUp();
+                } else {
+                    return controller.getGamepad().getDpad().getUp();
+                }
+            case BUTTON_DPAD_DOWN:
+                // dpad down
+                if (controller.getExtendedGamepad() != null) {
+                    return controller.getExtendedGamepad().getDpad().getDown();
+                } else {
+                    return controller.getGamepad().getDpad().getDown();
+                }
+            case BUTTON_DPAD_LEFT:
+                // dpad left
+                if (controller.getExtendedGamepad() != null) {
+                    return controller.getExtendedGamepad().getDpad().getLeft();
+                } else {
+                    return controller.getGamepad().getDpad().getLeft();
+                }
+            case BUTTON_DPAD_RIGHT:
+                // dpad right
+                if (controller.getExtendedGamepad() != null) {
+                    return controller.getExtendedGamepad().getDpad().getRight();
+                } else {
+                    return controller.getGamepad().getDpad().getRight();
+                }
         }
 
         return null;
@@ -194,7 +228,7 @@ public class IosController extends AbstractController {
 
     @Override
     public int getMaxButtonIndex() {
-        return Math.max(7, BUTTON_PAUSE);
+        return Math.max(BUTTON_DPAD_RIGHT, BUTTON_PAUSE);
     }
 
     @Override
@@ -214,13 +248,13 @@ public class IosController extends AbstractController {
     }
 
     protected int getConstFromAxisInput(GCControllerAxisInput axis) {
-    	for (int i = 0; i <= 3; i++) {
-    		if (getAxisFromConst(i) == axis)
-    			return i;
-		}
+        for (int i = 0; i <= 3; i++) {
+            if (getAxisFromConst(i) == axis)
+                return i;
+        }
 
-		return -1;
-	}
+        return -1;
+    }
 
     protected GCControllerAxisInput getAxisFromConst(int i) {
         switch (i) {
@@ -263,43 +297,6 @@ public class IosController extends AbstractController {
     }
 
     @Override
-    public PovDirection getPov(int i) {
-        GCControllerDirectionPad dpad = null;
-
-        if (i == 0) {
-            if (controller.getExtendedGamepad() != null)
-                dpad = controller.getExtendedGamepad().getDpad();
-            else
-                dpad = controller.getGamepad().getDpad();
-        }
-
-        return getPovDirectionFromDirectionPad(dpad);
-    }
-
-    private PovDirection getPovDirectionFromDirectionPad(GCControllerDirectionPad dpad) {
-        if (dpad == null)
-            return PovDirection.center;
-        else if (dpad.getDown().isPressed() && dpad.getLeft().isPressed())
-            return PovDirection.southWest;
-        else if (dpad.getLeft().isPressed() && dpad.getUp().isPressed())
-            return PovDirection.northWest;
-        else if (dpad.getUp().isPressed() && dpad.getRight().isPressed())
-            return PovDirection.northEast;
-        else if (dpad.getRight().isPressed() && dpad.getDown().isPressed())
-            return PovDirection.southEast;
-        else if (dpad.getDown().isPressed() && !dpad.getUp().isPressed())
-            return PovDirection.south;
-        else if (dpad.getUp().isPressed() && !dpad.getDown().isPressed())
-            return PovDirection.north;
-        else if (dpad.getLeft().isPressed() && !dpad.getRight().isPressed())
-            return PovDirection.west;
-        else if (dpad.getRight().isPressed() && !dpad.getLeft().isPressed())
-            return PovDirection.east;
-        else
-            return PovDirection.center;
-    }
-
-    @Override
     public String getName() {
         return controller.getVendorName();
     }
@@ -328,11 +325,6 @@ public class IosController extends AbstractController {
     @Override
     public int getAxisCount() {
         return controller.getExtendedGamepad() != null ? 4 : 0;
-    }
-
-    @Override
-    public int getPovCount() {
-        return 1;
     }
 
     @Override
