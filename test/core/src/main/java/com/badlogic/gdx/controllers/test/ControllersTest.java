@@ -109,6 +109,15 @@ public class ControllersTest extends ApplicationAdapter {
                 }
                 return true;
             }
+
+            @Override
+            public boolean axisMoved(Controller controller, int axisIndex, float value) {
+                if (controller == selectedController) {
+                    callbackLabel.setColor(WHITE);
+                    callbackLabel.setText(axisIndex + "/" + value);
+                }
+                return true;
+            }
         });
 
         controllerList.setItems(controllerNames);
@@ -235,7 +244,7 @@ public class ControllersTest extends ApplicationAdapter {
             updateAxisLabel(axisRightY, ControllerMapping.UNDEFINED);
         } else {
             updateAxisLabel(axisLeftX, ((AdvancedController) selectedController).getMapping().axisLeftX);
-            updateAxisLabel(axisLeftY, ((AdvancedController) selectedController).getMapping().axisLeftX);
+            updateAxisLabel(axisLeftY, ((AdvancedController) selectedController).getMapping().axisLeftY);
             updateAxisLabel(axisRightX, ((AdvancedController) selectedController).getMapping().axisRightX);
             updateAxisLabel(axisRightY, ((AdvancedController) selectedController).getMapping().axisRightY);
         }
