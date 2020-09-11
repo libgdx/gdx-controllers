@@ -29,6 +29,10 @@ public class ControllersTest extends ApplicationAdapter {
     public Label axisLeftY;
     public Label axisRightX;
     public Label axisRightY;
+    public Label buttonDpadUp;
+    public Label buttonDpadDown;
+    public Label buttonDpadLeft;
+    public Label buttonDpadRight;
     public Label buttonA;
     public Label buttonB;
     public Label buttonX;
@@ -50,6 +54,7 @@ public class ControllersTest extends ApplicationAdapter {
     private SelectBox<String> controllerList;
     private ControllerListener controllerListener;
     private Skin skin;
+    private Label callbackLabel;
 
     @Override
     public void create() {
@@ -86,6 +91,24 @@ public class ControllersTest extends ApplicationAdapter {
                         + "/" + ((AdvancedController) controller).getUniqueId());
                 refreshControllersList();
             }
+
+            @Override
+            public boolean buttonDown(Controller controller, int buttonIndex) {
+                if (controller == selectedController) {
+                    callbackLabel.setText(String.valueOf(buttonIndex));
+                    callbackLabel.setColor(RED);
+                }
+                return true;
+            }
+
+            @Override
+            public boolean buttonUp(Controller controller, int buttonIndex) {
+                if (controller == selectedController) {
+                    callbackLabel.setText(String.valueOf(buttonIndex));
+                    callbackLabel.setColor(WHITE);
+                }
+                return true;
+            }
         });
 
         controllerList.setItems(controllerNames);
@@ -112,7 +135,11 @@ public class ControllersTest extends ApplicationAdapter {
         buttonL1 = addControllerButtonLabel(buttonTable, "buttonL1         ");
         buttonL2 = addControllerButtonLabel(buttonTable, "buttonL2         ");
         buttonR1 = addControllerButtonLabel(buttonTable, "buttonR1         ");
-        buttonR2 = addControllerButtonLabel(buttonTable, "buttonR2         ");
+        buttonR2 = addControllerButtonLabel(buttonTable, "buttonR2  ");
+        buttonDpadUp = addControllerButtonLabel(buttonTable, "buttonDpadUp      ");
+        buttonDpadDown = addControllerButtonLabel(buttonTable, "buttonDpadDown        ");
+        buttonDpadLeft = addControllerButtonLabel(buttonTable, "buttonDpadLeft       ");
+        buttonDpadRight = addControllerButtonLabel(buttonTable, "buttonDpadRight        ");
         buttonLeftStick = addControllerButtonLabel(buttonTable, "buttonLeftStick  ");
         buttonRightStick = addControllerButtonLabel(buttonTable, "buttonRightStick ");
 
@@ -136,7 +163,9 @@ public class ControllersTest extends ApplicationAdapter {
         });
         axisTable.add(indexLabel).row();
 
-        // TODO POV
+        callbackLabel = new Label("", skin);
+        axisTable.add("Callback:");
+        axisTable.add(callbackLabel).row();
 
         stage = new Stage();
         stage.setViewport(new ScreenViewport());
@@ -173,8 +202,11 @@ public class ControllersTest extends ApplicationAdapter {
         Gdx.app.log("Controllers", Controllers.getControllers().size + " controllers connected.");
         for (int i = 0; i < Controllers.getControllers().size; i++) {
             Controller controller = Controllers.getControllers().get(i);
-            Gdx.app.log("Controllers", controller.getName() + "/" + ((AdvancedController) controller).getUniqueId());
-            controllerNames.add(controller.getName());
+            String name = controller.getName();
+            Gdx.app.log("Controllers", name + "/" + ((AdvancedController) controller).getUniqueId());
+            if (name.length() > 30)
+                name = name.substring(0, 28) + "...";
+            controllerNames.add(name);
             controllers.add(controller);
             controller.addListener(controllerListener);
         }
@@ -242,6 +274,10 @@ public class ControllersTest extends ApplicationAdapter {
         updateButtonLabel(buttonR2, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonR2);
         updateButtonLabel(buttonLeftStick, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonLeftStick);
         updateButtonLabel(buttonRightStick, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonRightStick);
+        updateButtonLabel(buttonDpadUp, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonDpadUp);
+        updateButtonLabel(buttonDpadDown, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonDpadDown);
+        updateButtonLabel(buttonDpadLeft, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonDpadLeft);
+        updateButtonLabel(buttonDpadRight, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonDpadRight);
     }
 
     @Override
