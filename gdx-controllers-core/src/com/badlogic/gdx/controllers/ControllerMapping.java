@@ -1,7 +1,11 @@
 package com.badlogic.gdx.controllers;
 
 /**
- * Default axis and button constants returned by {@link AdvancedController#getMapping}
+ * Default axis and button constants returned by {@link Controller#getMapping}.
+ *
+ * Note that on some platforms, this may return the general platform mapping. A connected controller
+ * might not have all the features, check with {@link Controller#getAxisCount()},
+ * {@link Controller#getMaxButtonIndex()}.
  */
 public class ControllerMapping {
     public static final int UNDEFINED = -1;

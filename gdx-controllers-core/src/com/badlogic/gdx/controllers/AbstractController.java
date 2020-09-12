@@ -4,10 +4,10 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
 /**
- * AbstractController to be used by new Controller implementations to avoid reimplementations
- * of listener notifications
+ * AbstractController to be used by new Controller implementations. Provides listener notification
+ * implementations and default return values
  */
-abstract class AbstractController implements AdvancedController, Disposable {
+abstract class AbstractController implements Disposable, Controller {
 	private final Array<ControllerListener> listeners = new Array<>();
 	private boolean connected = true;
 
@@ -119,7 +119,7 @@ abstract class AbstractController implements AdvancedController, Disposable {
 
 	@Override
 	public int getPlayerIndex() {
-		return AdvancedController.PLAYER_IDX_UNSET;
+		return Controller.PLAYER_IDX_UNSET;
 	}
 
 	@Override

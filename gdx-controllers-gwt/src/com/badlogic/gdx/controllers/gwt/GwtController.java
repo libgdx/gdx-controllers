@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx.controllers.gwt;
 
-import com.badlogic.gdx.controllers.AdvancedController;
+import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.controllers.gwt.support.Gamepad;
@@ -24,7 +24,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntFloatMap;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public class GwtController implements AdvancedController {
+public class GwtController implements Controller {
 
 	private int index;
 	private String name;

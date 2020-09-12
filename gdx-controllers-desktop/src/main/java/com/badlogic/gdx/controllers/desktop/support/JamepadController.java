@@ -1,6 +1,6 @@
 package com.badlogic.gdx.controllers.desktop.support;
 
-import com.badlogic.gdx.controllers.AdvancedController;
+import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.utils.IntMap;
@@ -13,7 +13,7 @@ import com.studiohartman.jamepad.ControllerUnpluggedException;
 
 import java.util.UUID;
 
-public class JamepadController implements AdvancedController {
+public class JamepadController implements Controller {
     private static final IntMap<ControllerButton> CODE_TO_BUTTON = new IntMap<>(ControllerButton.values().length);
     private static final IntMap<ControllerAxis> CODE_TO_AXIS = new IntMap<>(ControllerAxis.values().length);
     private static final Logger logger = new Logger(JamepadController.class.getSimpleName());

@@ -2,7 +2,6 @@ package com.badlogic.gdx.controllers.test;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.controllers.AdvancedController;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerAdapter;
 import com.badlogic.gdx.controllers.ControllerListener;
@@ -62,13 +61,13 @@ public class ControllersTest extends ApplicationAdapter {
             @Override
             public void connected(final Controller controller) {
                 Gdx.app.log("Controller", "Controller connected: " + controller.getName()
-                        + "/" + ((AdvancedController) controller).getUniqueId());
+                        + "/" + controller.getUniqueId());
             }
 
             @Override
             public void disconnected(Controller controller) {
                 Gdx.app.log("Controller", "Controller disconnected: " + controller.getName()
-                        + "/" + ((AdvancedController) controller).getUniqueId());
+                        + "/" + controller.getUniqueId());
             }
         };
 
@@ -78,14 +77,14 @@ public class ControllersTest extends ApplicationAdapter {
             @Override
             public void connected(final Controller controller) {
                 Gdx.app.log("Controllers", "Controller connected: " + controller.getName()
-                        + "/" + ((AdvancedController) controller).getUniqueId());
+                        + "/" + controller.getUniqueId());
                 refreshControllersList();
             }
 
             @Override
             public void disconnected(Controller controller) {
                 Gdx.app.log("Controllers", "Controller disconnected: " + controller.getName()
-                        + "/" + ((AdvancedController) controller).getUniqueId());
+                        + "/" + controller.getUniqueId());
                 refreshControllersList();
             }
 
@@ -128,7 +127,7 @@ public class ControllersTest extends ApplicationAdapter {
                     selectedController = null;
                 } else {
                     selectedController = Controllers.getControllers().get(index - 1);
-                    ((AdvancedController) selectedController).startVibration(200, 1);
+                    selectedController.startVibration(200, 1);
                 }
                 addAxisLabels();
             }
@@ -164,8 +163,7 @@ public class ControllersTest extends ApplicationAdapter {
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
                 if (selectedController != null) {
-                    ((AdvancedController) selectedController).
-                            setPlayerIndex(((AdvancedController) selectedController).getPlayerIndex() + 1);
+                    selectedController.setPlayerIndex(selectedController.getPlayerIndex() + 1);
                 }
             }
         });
@@ -197,8 +195,8 @@ public class ControllersTest extends ApplicationAdapter {
 
     private void addAxisLabels() {
         // add labels for controller axis
-        ControllerMapping mapping = selectedController == null ? null : ((AdvancedController) selectedController).getMapping();
-        int axisCount = selectedController == null ? 0 : ((AdvancedController) selectedController).getAxisCount();
+        ControllerMapping mapping = selectedController == null ? null : selectedController.getMapping();
+        int axisCount = selectedController == null ? 0 : selectedController.getAxisCount();
         for (int i = 0; i < axisCount; i++) {
             String name;
             if (mapping.axisLeftX == i)
@@ -249,7 +247,7 @@ public class ControllersTest extends ApplicationAdapter {
         for (int i = 0; i < Controllers.getControllers().size; i++) {
             Controller controller = Controllers.getControllers().get(i);
             String name = controller.getName();
-            Gdx.app.log("Controllers", name + "/" + ((AdvancedController) controller).getUniqueId());
+            Gdx.app.log("Controllers", name + "/" + controller.getUniqueId());
             if (name.length() > 30)
                 name = name.substring(0, 28) + "...";
             controllerNames.add(name);
@@ -267,7 +265,7 @@ public class ControllersTest extends ApplicationAdapter {
 
         updateStateOfButtons();
         updateStateOfAxis();
-        indexLabel.setText(selectedController != null ? String.valueOf(((AdvancedController) selectedController).getPlayerIndex()) : "");
+        indexLabel.setText(selectedController != null ? String.valueOf(selectedController.getPlayerIndex()) : "");
 
         stage.act();
         stage.draw();
@@ -288,7 +286,8 @@ public class ControllersTest extends ApplicationAdapter {
     }
 
     private void updateButtonLabel(Label buttonLabel, int buttonNum) {
-        if (buttonNum == ControllerMapping.UNDEFINED) {
+        if (buttonNum == ControllerMapping.UNDEFINED || buttonNum > selectedController.getMaxButtonIndex()
+                || buttonNum < selectedController.getMinButtonIndex()) {
             buttonLabel.setColor(Color.DARK_GRAY);
         } else {
             boolean pressed = selectedController.getButton(buttonNum);
@@ -297,22 +296,22 @@ public class ControllersTest extends ApplicationAdapter {
     }
 
     private void updateStateOfButtons() {
-        updateButtonLabel(buttonA, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonA);
-        updateButtonLabel(buttonB, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonB);
-        updateButtonLabel(buttonX, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonX);
-        updateButtonLabel(buttonY, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonY);
-        updateButtonLabel(buttonBack, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonBack);
-        updateButtonLabel(buttonStart, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonStart);
-        updateButtonLabel(buttonL1, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonL1);
-        updateButtonLabel(buttonL2, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonL2);
-        updateButtonLabel(buttonR1, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonR1);
-        updateButtonLabel(buttonR2, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonR2);
-        updateButtonLabel(buttonLeftStick, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonLeftStick);
-        updateButtonLabel(buttonRightStick, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonRightStick);
-        updateButtonLabel(buttonDpadUp, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonDpadUp);
-        updateButtonLabel(buttonDpadDown, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonDpadDown);
-        updateButtonLabel(buttonDpadLeft, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonDpadLeft);
-        updateButtonLabel(buttonDpadRight, selectedController == null ? ControllerMapping.UNDEFINED : ((AdvancedController) selectedController).getMapping().buttonDpadRight);
+        updateButtonLabel(buttonA, selectedController == null ? ControllerMapping.UNDEFINED : selectedController.getMapping().buttonA);
+        updateButtonLabel(buttonB, selectedController == null ? ControllerMapping.UNDEFINED : selectedController.getMapping().buttonB);
+        updateButtonLabel(buttonX, selectedController == null ? ControllerMapping.UNDEFINED : selectedController.getMapping().buttonX);
+        updateButtonLabel(buttonY, selectedController == null ? ControllerMapping.UNDEFINED : selectedController.getMapping().buttonY);
+        updateButtonLabel(buttonBack, selectedController == null ? ControllerMapping.UNDEFINED : selectedController.getMapping().buttonBack);
+        updateButtonLabel(buttonStart, selectedController == null ? ControllerMapping.UNDEFINED : selectedController.getMapping().buttonStart);
+        updateButtonLabel(buttonL1, selectedController == null ? ControllerMapping.UNDEFINED : selectedController.getMapping().buttonL1);
+        updateButtonLabel(buttonL2, selectedController == null ? ControllerMapping.UNDEFINED : selectedController.getMapping().buttonL2);
+        updateButtonLabel(buttonR1, selectedController == null ? ControllerMapping.UNDEFINED : selectedController.getMapping().buttonR1);
+        updateButtonLabel(buttonR2, selectedController == null ? ControllerMapping.UNDEFINED : selectedController.getMapping().buttonR2);
+        updateButtonLabel(buttonLeftStick, selectedController == null ? ControllerMapping.UNDEFINED : selectedController.getMapping().buttonLeftStick);
+        updateButtonLabel(buttonRightStick, selectedController == null ? ControllerMapping.UNDEFINED : selectedController.getMapping().buttonRightStick);
+        updateButtonLabel(buttonDpadUp, selectedController == null ? ControllerMapping.UNDEFINED : selectedController.getMapping().buttonDpadUp);
+        updateButtonLabel(buttonDpadDown, selectedController == null ? ControllerMapping.UNDEFINED : selectedController.getMapping().buttonDpadDown);
+        updateButtonLabel(buttonDpadLeft, selectedController == null ? ControllerMapping.UNDEFINED : selectedController.getMapping().buttonDpadLeft);
+        updateButtonLabel(buttonDpadRight, selectedController == null ? ControllerMapping.UNDEFINED : selectedController.getMapping().buttonDpadRight);
     }
 
     @Override
