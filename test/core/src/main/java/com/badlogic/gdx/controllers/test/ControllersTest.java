@@ -216,13 +216,13 @@ public class ControllersTest extends ApplicationAdapter {
         }
 
         // add labels in case of non-existing defaults
-        if (mapping == null || mapping.axisLeftX == ControllerMapping.UNDEFINED)
+        if (mapping == null || mapping.axisLeftX == ControllerMapping.UNDEFINED || mapping.axisLeftX >= axisCount)
             addControllerAxisLabel(axisTable, "leftX");
-        if (mapping == null || mapping.axisLeftY == ControllerMapping.UNDEFINED)
+        if (mapping == null || mapping.axisLeftY == ControllerMapping.UNDEFINED || mapping.axisLeftY >= axisCount)
             addControllerAxisLabel(axisTable, "leftY");
-        if (mapping == null || mapping.axisRightX == ControllerMapping.UNDEFINED)
+        if (mapping == null || mapping.axisRightX == ControllerMapping.UNDEFINED || mapping.axisRightX >= axisCount)
             addControllerAxisLabel(axisTable, "rightX");
-        if (mapping == null || mapping.axisRightY == ControllerMapping.UNDEFINED)
+        if (mapping == null || mapping.axisRightY == ControllerMapping.UNDEFINED || mapping.axisRightY >= axisCount)
             addControllerAxisLabel(axisTable, "rightY");
 
     }
