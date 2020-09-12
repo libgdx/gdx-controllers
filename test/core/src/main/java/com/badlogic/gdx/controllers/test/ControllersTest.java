@@ -25,10 +25,8 @@ import static com.badlogic.gdx.graphics.Color.RED;
 import static com.badlogic.gdx.graphics.Color.WHITE;
 
 public class ControllersTest extends ApplicationAdapter {
-    public Label axisLeftX;
-    public Label axisLeftY;
-    public Label axisRightX;
-    public Label axisRightY;
+    public final Array<Label> axisLabelArray = new Array<>();
+    public Table axisTable;
     public Label buttonDpadUp;
     public Label buttonDpadDown;
     public Label buttonDpadLeft;
@@ -47,7 +45,6 @@ public class ControllersTest extends ApplicationAdapter {
     public Label buttonRightStick;
     private Stage stage;
     private Array<String> controllerNames = new Array<>();
-    private Array<Controller> controllers = new Array<>();
     private Label indexLabel;
 
     private Controller selectedController;
@@ -125,12 +122,15 @@ public class ControllersTest extends ApplicationAdapter {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 int index = controllerList.getSelectedIndex();
+                axisTable.clearChildren();
+                axisLabelArray.clear();
                 if (index == 0) {
                     selectedController = null;
                 } else {
                     selectedController = Controllers.getControllers().get(index - 1);
                     ((AdvancedController) selectedController).startVibration(200, 1);
                 }
+                addAxisLabels();
             }
         });
 
@@ -152,14 +152,12 @@ public class ControllersTest extends ApplicationAdapter {
         buttonLeftStick = addControllerButtonLabel(buttonTable, "buttonLeftStick  ");
         buttonRightStick = addControllerButtonLabel(buttonTable, "buttonRightStick ");
 
-        Table axisTable = new Table(skin);
-        axisLeftX = addControllerAxisLabel(axisTable, "LeftX");
-        axisLeftY = addControllerAxisLabel(axisTable, "LeftY");
-        axisRightX = addControllerAxisLabel(axisTable, "RightX");
-        axisRightY = addControllerAxisLabel(axisTable, "RightY");
+        axisTable = new Table(skin);
+        addAxisLabels();
 
-        axisTable.row().padTop(20);
-        axisTable.add("Player index").padRight(10);
+        Table moreInfoTable = new Table(skin);
+        moreInfoTable.row().padTop(20);
+        moreInfoTable.add("Player index").padRight(10);
         indexLabel = new Label("", skin);
         indexLabel.addListener(new ClickListener() {
             @Override
@@ -171,26 +169,62 @@ public class ControllersTest extends ApplicationAdapter {
                 }
             }
         });
-        axisTable.add(indexLabel);
+        moreInfoTable.add(indexLabel);
 
-        axisTable.row().padTop(20);
+        moreInfoTable.row().padTop(20);
         callbackLabel = new Label("", skin);
-        axisTable.add("Callback:");
-        axisTable.add(callbackLabel).width(150);
+        moreInfoTable.add("Callback:");
+        moreInfoTable.add(callbackLabel).width(150);
 
         stage = new Stage(new FitViewport(640, 480));
+
+        Table columnRight = new Table();
+        columnRight.add(axisTable).row();
+        columnRight.add(moreInfoTable).row();
 
         Table table = new Table(skin);
         table.add("Controller:");
         table.add(controllerList).padBottom(10).row();
         table.add(buttonTable).padRight(10);
-        table.add(axisTable).row();
+        table.add(columnRight).row();
 
         table.setFillParent(true);
 
         stage.addActor(table);
 
         Gdx.input.setInputProcessor(stage);
+    }
+
+    private void addAxisLabels() {
+        // add labels for controller axis
+        ControllerMapping mapping = selectedController == null ? null : ((AdvancedController) selectedController).getMapping();
+        int axisCount = selectedController == null ? 0 : ((AdvancedController) selectedController).getAxisCount();
+        for (int i = 0; i < axisCount; i++) {
+            String name;
+            if (mapping.axisLeftX == i)
+                name = "leftX";
+            else if (mapping.axisLeftY == i)
+                name = "leftY";
+            else if (mapping.axisRightX == i)
+                name = "rightX";
+            else if (mapping.axisRightY == i)
+                name = "rightY";
+            else
+                name = "Axis " + i;
+            Label label = addControllerAxisLabel(axisTable, name);
+            axisLabelArray.add(label);
+        }
+
+        // add labels in case of non-existing defaults
+        if (mapping == null || mapping.axisLeftX == ControllerMapping.UNDEFINED)
+            addControllerAxisLabel(axisTable, "leftX");
+        if (mapping == null || mapping.axisLeftY == ControllerMapping.UNDEFINED)
+            addControllerAxisLabel(axisTable, "leftY");
+        if (mapping == null || mapping.axisRightX == ControllerMapping.UNDEFINED)
+            addControllerAxisLabel(axisTable, "rightX");
+        if (mapping == null || mapping.axisRightY == ControllerMapping.UNDEFINED)
+            addControllerAxisLabel(axisTable, "rightY");
+
     }
 
     private Label addControllerButtonLabel(Table table, String name) {
@@ -201,6 +235,7 @@ public class ControllersTest extends ApplicationAdapter {
 
     private Label addControllerAxisLabel(Table table, String name) {
         Label label = new Label("0.0", skin);
+        label.setColor(Color.DARK_GRAY);
         table.add(name.trim()).padRight(10);
         table.add(label).width(100).row();
         return label;
@@ -208,7 +243,7 @@ public class ControllersTest extends ApplicationAdapter {
 
     private void refreshControllersList() {
         controllerNames = new Array<>();
-        controllers = new Array<>();
+        Array<Controller> controllers = new Array<>();
         controllerNames.add("Select...");
         Gdx.app.log("Controllers", Controllers.getControllers().size + " controllers connected.");
         for (int i = 0; i < Controllers.getControllers().size; i++) {
@@ -239,28 +274,17 @@ public class ControllersTest extends ApplicationAdapter {
     }
 
     private void updateStateOfAxis() {
-        if (selectedController == null) {
-            updateAxisLabel(axisLeftX, ControllerMapping.UNDEFINED);
-            updateAxisLabel(axisLeftY, ControllerMapping.UNDEFINED);
-            updateAxisLabel(axisRightX, ControllerMapping.UNDEFINED);
-            updateAxisLabel(axisRightY, ControllerMapping.UNDEFINED);
-        } else {
-            updateAxisLabel(axisLeftX, ((AdvancedController) selectedController).getMapping().axisLeftX);
-            updateAxisLabel(axisLeftY, ((AdvancedController) selectedController).getMapping().axisLeftY);
-            updateAxisLabel(axisRightX, ((AdvancedController) selectedController).getMapping().axisRightX);
-            updateAxisLabel(axisRightY, ((AdvancedController) selectedController).getMapping().axisRightY);
+        if (selectedController != null) {
+            for (int i = 0; i < axisLabelArray.size; i++) {
+                updateAxisLabel(axisLabelArray.get(i), i);
+            }
         }
     }
 
     private void updateAxisLabel(Label axisLabel, int axisNum) {
-        if (axisNum == ControllerMapping.UNDEFINED) {
-            axisLabel.setColor(Color.DARK_GRAY);
-            axisLabel.setText("0.0");
-       } else {
-            float value = selectedController.getAxis(axisNum);
-            axisLabel.setColor(value == 0 ? WHITE : RED);
-            axisLabel.setText(String.valueOf(value));
-        }
+        float value = selectedController.getAxis(axisNum);
+        axisLabel.setColor(value == 0 ? WHITE : RED);
+        axisLabel.setText(String.valueOf(value));
     }
 
     private void updateButtonLabel(Label buttonLabel, int buttonNum) {
