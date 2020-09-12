@@ -1,6 +1,53 @@
-# gdx-controllers
+# 🎮️ gdx-controllers Game Controller Extension for libGDX, Version 2
 
-WIP
+Use game controllers with ease in your libGDX games.
+
+[🎁️ Features](https://github.com/libgdx/gdx-controllers/wiki/Features)
+
+Release version not yet available. If you need a released version, take a look at
+[gdx-controllers v1](https://github.com/libgdx/libgdx/wiki/Controllers). However, you are
+welcome to use the new v2 in work here.
+
+[🚀️ Migration guide from v1](https://github.com/libgdx/gdx-controllers/wiki/Migrate-from-v1)
+
+## 💾️ Installation
+
+The recommended way to use gdx-pay is via dependency management with Gradle or Maven. Artifacts are available in
+[Snapshot Repository](https://oss.sonatype.org/content/repositories/snapshots/com/badlogicgames/gdx-controllers/).
+
+*project-root/build.gradle:*
+
+    ext {
+        gdxControllersVersion = '2.0.0-SNAPSHOT'
+    }
+
+Add the following dependencies:
+
+*core:*
+
+        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
+
+*desktop:*
+
+        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
+
+*android:*
+
+        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-android:$gdxControllersVersion"
+
+*ios:*
+
+        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxControllersVersion"
+
+*html:*
+
+        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-gwt:$gdxControllersVersion"
+        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-gwt:$gdxControllersVersion:sources"
+
+You also need to add the following file to your GdxDefinition.gwt.xml in your html project:
+
+        <inherits name="com.badlogic.gdx.controllers" />
+        <inherits name="com.badlogic.gdx.controllers.controllers-gwt"/>
 
 ### Building from source
 To build from source, clone or download this repository, then open it in Android Studio. Perform the following command to compile and upload the library in your local repository:
@@ -9,7 +56,7 @@ To build from source, clone or download this repository, then open it in Android
     
 See `build.gradle` file for current version to use in your dependencies.
 
-## News & Community
+## 🤝️ News & Community
 
 You can get help on the [libgdx discord](https://discord.gg/6pgDK9F).
 
