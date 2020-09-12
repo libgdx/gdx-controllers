@@ -1,8 +1,8 @@
-# 🎮️ gdx-controllers Game Controller Extension for libGDX, Version 2
+# 🎮️ Game Controller Extension for libGDX, Version 2
 
 Use game controllers with ease in your libGDX games.
 
-[🎁️ Features](https://github.com/libgdx/gdx-controllers/wiki/Features)
+[📖️ Documentation](https://github.com/libgdx/gdx-controllers/wiki) - [🎁️ Feature overview](https://github.com/libgdx/gdx-controllers/wiki/Features)
 
 Release version not yet available. If you need a released version, take a look at
 [gdx-controllers v1](https://github.com/libgdx/libgdx/wiki/Controllers). However, you are
