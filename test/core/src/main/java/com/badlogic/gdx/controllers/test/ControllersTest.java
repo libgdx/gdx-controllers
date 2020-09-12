@@ -19,7 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import static com.badlogic.gdx.graphics.Color.RED;
 import static com.badlogic.gdx.graphics.Color.WHITE;
@@ -158,6 +158,7 @@ public class ControllersTest extends ApplicationAdapter {
         axisRightX = addControllerAxisLabel(axisTable, "RightX");
         axisRightY = addControllerAxisLabel(axisTable, "RightY");
 
+        axisTable.row().padTop(20);
         axisTable.add("Player index").padRight(10);
         indexLabel = new Label("", skin);
         indexLabel.addListener(new ClickListener() {
@@ -170,21 +171,22 @@ public class ControllersTest extends ApplicationAdapter {
                 }
             }
         });
-        axisTable.add(indexLabel).row();
+        axisTable.add(indexLabel);
 
+        axisTable.row().padTop(20);
         callbackLabel = new Label("", skin);
         axisTable.add("Callback:");
-        axisTable.add(callbackLabel).row();
+        axisTable.add(callbackLabel).width(150);
 
-        stage = new Stage();
-        stage.setViewport(new ScreenViewport());
-
+        stage = new Stage(new FitViewport(640, 480));
 
         Table table = new Table(skin);
         table.add("Controller:");
         table.add(controllerList).padBottom(10).row();
-        table.add(axisTable).padRight(10);
-        table.add(buttonTable).row();
+        table.add(buttonTable).padRight(10);
+        table.add(axisTable).row();
+
+        table.setFillParent(true);
 
         stage.addActor(table);
 
@@ -200,7 +202,7 @@ public class ControllersTest extends ApplicationAdapter {
     private Label addControllerAxisLabel(Table table, String name) {
         Label label = new Label("0.0", skin);
         table.add(name.trim()).padRight(10);
-        table.add(label).row();
+        table.add(label).width(100).row();
         return label;
     }
 
