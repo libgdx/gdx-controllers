@@ -52,6 +52,8 @@ public class ControllersTest extends ApplicationAdapter {
     private Skin skin;
     private Label callbackLabel;
 
+    private int callbackCount;
+
     @Override
     public void create() {
         skin = new Skin(Gdx.files.internal("uiskin.json"));
@@ -91,7 +93,8 @@ public class ControllersTest extends ApplicationAdapter {
             @Override
             public boolean buttonDown(Controller controller, int buttonIndex) {
                 if (controller == selectedController) {
-                    callbackLabel.setText(String.valueOf(buttonIndex));
+                    callbackCount++;
+                    callbackLabel.setText(buttonIndex + " (#" + callbackCount + ")");
                     callbackLabel.setColor(RED);
                 }
                 return true;
@@ -100,7 +103,8 @@ public class ControllersTest extends ApplicationAdapter {
             @Override
             public boolean buttonUp(Controller controller, int buttonIndex) {
                 if (controller == selectedController) {
-                    callbackLabel.setText(String.valueOf(buttonIndex));
+                    callbackCount++;
+                    callbackLabel.setText(buttonIndex + " (#" + callbackCount + ")");
                     callbackLabel.setColor(WHITE);
                 }
                 return true;
@@ -109,8 +113,9 @@ public class ControllersTest extends ApplicationAdapter {
             @Override
             public boolean axisMoved(Controller controller, int axisIndex, float value) {
                 if (controller == selectedController) {
+                    callbackCount++;
                     callbackLabel.setColor(WHITE);
-                    callbackLabel.setText(axisIndex + "/" + value);
+                    callbackLabel.setText(axisIndex + "/" + value + " (#" + callbackCount + ")");
                 }
                 return true;
             }
@@ -129,6 +134,7 @@ public class ControllersTest extends ApplicationAdapter {
                     selectedController = Controllers.getControllers().get(index - 1);
                     selectedController.startVibration(200, 1);
                 }
+                callbackCount = 0;
                 addAxisLabels();
             }
         });

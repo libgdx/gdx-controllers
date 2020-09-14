@@ -24,30 +24,40 @@ The recommended way to use gdx-pay is via dependency management with Gradle or M
 Add the following dependencies:
 
 *core:*
-
-        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
-
+```
+implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
+```
 *desktop:*
-
-        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
-
+```
+implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
+```
 *android:*
-
-        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-android:$gdxControllersVersion"
+```
+implementation "com.badlogicgames.gdx-controllers:gdx-controllers-android:$gdxControllersVersion"
+```
+Proguard setting:
+```
+-keep class com.badlogic.gdx.controllers.android.AndroidControllers { *; }
+```
 
 *ios:*
-
-        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxControllersVersion"
-
+```
+implementation "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxControllersVersion"
+```
+`robovml.xml` needs the following line added to `forceLinkClasses`:
+```
+<pattern>com.badlogic.gdx.controllers.IosControllerManager</pattern> 
+```
 *html:*
-
-        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-gwt:$gdxControllersVersion"
-        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-gwt:$gdxControllersVersion:sources"
-
+```
+implementation "com.badlogicgames.gdx-controllers:gdx-controllers-gwt:$gdxControllersVersion"
+implementation "com.badlogicgames.gdx-controllers:gdx-controllers-gwt:$gdxControllersVersion:sources"
+```
 You also need to add the following file to your GdxDefinition.gwt.xml in your html project:
-
-        <inherits name="com.badlogic.gdx.controllers" />
-        <inherits name="com.badlogic.gdx.controllers.controllers-gwt"/>
+```
+<inherits name="com.badlogic.gdx.controllers" />
+<inherits name="com.badlogic.gdx.controllers.controllers-gwt"/>
+```
 
 ### Building from source
 To build from source, clone or download this repository, then open it in Android Studio. Perform the following command to compile and upload the library in your local repository:
