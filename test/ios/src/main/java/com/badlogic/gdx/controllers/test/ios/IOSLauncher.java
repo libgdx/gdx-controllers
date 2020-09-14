@@ -16,19 +16,37 @@
 
 package com.badlogic.gdx.controllers.test.ios;
 
-import org.robovm.apple.foundation.NSAutoreleasePool;
-import org.robovm.apple.uikit.UIApplication;
-
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.iosrobovm.IOSApplication;
 import com.badlogic.gdx.backends.iosrobovm.IOSApplicationConfiguration;
+import com.badlogic.gdx.backends.iosrobovm.IOSGraphics;
+import com.badlogic.gdx.controllers.IosControllerManager;
 import com.badlogic.gdx.controllers.test.ControllersTest;
+
+import org.robovm.apple.foundation.NSAutoreleasePool;
+import org.robovm.apple.uikit.UIApplication;
+import org.robovm.apple.uikit.UIViewController;
+import org.robovm.objc.Selector;
 
 /** Launches the iOS (RoboVM) application. */
 public class IOSLauncher extends IOSApplication.Delegate {
 	@Override
 	protected IOSApplication createApplication () {
 		IOSApplicationConfiguration configuration = new IOSApplicationConfiguration();
-		return new IOSApplication(new ControllersTest(), configuration);
+		ControllersTest testApp = new ControllersTest() {
+			@Override
+			public void create() {
+				UIViewController uiViewController = ((IOSApplication) Gdx.app).getUIViewController();
+				IosControllerManager.enableICade(uiViewController, Selector.register("keyPress:"));
+				super.create();
+			}
+		};
+		return new IOSApplication(testApp, configuration) {
+			@Override
+			protected IOSGraphics.IOSUIViewController createUIViewController(IOSGraphics graphics) {
+				return new MyUIViewController(this, graphics);
+			}
+		};
 	}
 
 	public static void main (String[] argv) {
