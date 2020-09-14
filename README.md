@@ -23,15 +23,15 @@ The recommended way to use gdx-pay is via dependency management with Gradle or M
 
 Add the following dependencies:
 
-*core:*
+#### core:
 ```
 implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
 ```
-*desktop:*
+#### desktop:
 ```
 implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
 ```
-*android:*
+#### android:
 ```
 implementation "com.badlogicgames.gdx-controllers:gdx-controllers-android:$gdxControllersVersion"
 ```
@@ -40,7 +40,7 @@ Proguard setting:
 -keep class com.badlogic.gdx.controllers.android.AndroidControllers { *; }
 ```
 
-*ios:*
+#### ios:
 ```
 implementation "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxControllersVersion"
 ```
@@ -48,9 +48,9 @@ implementation "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxContro
 ```
 <pattern>com.badlogic.gdx.controllers.IosControllerManager</pattern> 
 ```
-*html:*
+#### html:
 ```
-implementation "com.badlogicgames.gdx-controllers:gdx-controllers-gwt:$gdxControllersVersion"
+implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion:sources"
 implementation "com.badlogicgames.gdx-controllers:gdx-controllers-gwt:$gdxControllersVersion:sources"
 ```
 You also need to add the following file to your GdxDefinition.gwt.xml in your html project:
