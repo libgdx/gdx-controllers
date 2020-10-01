@@ -9,14 +9,13 @@ import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
@@ -44,7 +43,7 @@ public class ControllersTest extends ApplicationAdapter {
     public Label buttonRightStick;
     private Stage stage;
     private Array<String> controllerNames = new Array<>();
-    private Label indexLabel;
+    private TextButton playerIndexButton;
 
     private Controller selectedController;
     private SelectBox<String> controllerList;
@@ -53,6 +52,8 @@ public class ControllersTest extends ApplicationAdapter {
     private Label callbackLabel;
 
     private int callbackCount;
+    private TextButton vibrateButton;
+    private Label buttonNum;
 
     @Override
     public void create() {
@@ -162,22 +163,37 @@ public class ControllersTest extends ApplicationAdapter {
 
         Table moreInfoTable = new Table(skin);
         moreInfoTable.row().padTop(20);
-        moreInfoTable.add("Player index").padRight(10);
-        indexLabel = new Label("", skin);
-        indexLabel.addListener(new ClickListener() {
+        moreInfoTable.add("Player index").right().padRight(10);
+        playerIndexButton = new TextButton("", skin);
+        playerIndexButton.addListener(new ChangeListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
+            public void changed(ChangeEvent event, Actor actor) {
                 if (selectedController != null) {
                     selectedController.setPlayerIndex(selectedController.getPlayerIndex() + 1);
                 }
             }
         });
-        moreInfoTable.add(indexLabel);
+        moreInfoTable.add(playerIndexButton).fill();
+        vibrateButton = new TextButton("", skin);
+        vibrateButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (selectedController != null) {
+                    selectedController.startVibration(1000, 1f);
+                }
+            }
+        });
+        moreInfoTable.row();
+        moreInfoTable.add("Vibration").right().padRight(10);
+        moreInfoTable.add(vibrateButton).fill();
+        buttonNum = new Label("", skin);
+        moreInfoTable.row();
+        moreInfoTable.add("Button indices").right().padRight(10);
+        moreInfoTable.add(buttonNum);
 
         moreInfoTable.row().padTop(20);
         callbackLabel = new Label("", skin);
-        moreInfoTable.add("Callback:");
+        moreInfoTable.add("Last callback:");
         moreInfoTable.add(callbackLabel).width(150);
 
         stage = new Stage(new FitViewport(640, 480));
@@ -271,7 +287,9 @@ public class ControllersTest extends ApplicationAdapter {
 
         updateStateOfButtons();
         updateStateOfAxis();
-        indexLabel.setText(selectedController != null ? String.valueOf(selectedController.getPlayerIndex()) : "");
+        playerIndexButton.setText(selectedController != null && selectedController.supportsPlayerIndex() ? String.valueOf(selectedController.getPlayerIndex()) : "N/A");
+        vibrateButton.setText(selectedController == null || !selectedController.canVibrate() ? "N/A" : selectedController.isVibrating() ? "Vibrating" : "Click to start");
+        buttonNum.setText(selectedController == null ? "N/A" : selectedController.getMinButtonIndex() + " to " + selectedController.getMaxButtonIndex());
 
         stage.act();
         stage.draw();
