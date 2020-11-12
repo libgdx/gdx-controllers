@@ -22,6 +22,17 @@
     <string>????</string>
     <key>CFBundleVersion</key>
     <string>${app.build}</string>
+    <key>GCSupportedGameControllers</key>
+    <array>
+        <dict>
+            <key>ProfileName</key>
+            <string>ExtendedGamepad</string>
+        </dict>
+    </array>
+    <key>GCSupportsControllerUserInteraction</key>
+    <true/>
+    <key>MinimumOSVersion</key>
+    <string>9.0</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
     <key>UIViewControllerBasedStatusBarAppearance</key>
@@ -35,12 +46,14 @@
     </array>
     <key>UIRequiredDeviceCapabilities</key>
     <array>
-        <string>armv7</string>
         <string>opengles-2</string>
     </array>
+    <key>UIRequiresFullScreen</key>
+    <true/>
     <key>UISupportedInterfaceOrientations</key>
     <array>
         <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationPortraitUpsideDown</string>
         <string>UIInterfaceOrientationLandscapeLeft</string>
         <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
