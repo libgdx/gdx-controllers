@@ -44,9 +44,11 @@ Proguard setting:
 ```
 implementation "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxControllersVersion"
 ```
-`robovml.xml` needs the following line added to `forceLinkClasses`:
+`robovml.xml` needs the following lines added to `forceLinkClasses` and `frameworks`:
 ```
 <pattern>com.badlogic.gdx.controllers.IosControllerManager</pattern> 
+....
+	<framework>GameKit</framework>
 ```
 #### html:
 ```

@@ -3,6 +3,15 @@ package com.badlogic.gdx.controllers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import org.robovm.apple.corehaptic.CHHapticEngine;
+import org.robovm.apple.corehaptic.CHHapticEvent;
+import org.robovm.apple.corehaptic.CHHapticEventParameter;
+import org.robovm.apple.corehaptic.CHHapticEventParameterID;
+import org.robovm.apple.corehaptic.CHHapticEventType;
+import org.robovm.apple.corehaptic.CHHapticPattern;
+import org.robovm.apple.foundation.Foundation;
+import org.robovm.apple.foundation.NSArray;
+import org.robovm.apple.foundation.NSErrorException;
 import org.robovm.apple.gamecontroller.GCController;
 import org.robovm.apple.gamecontroller.GCControllerAxisInput;
 import org.robovm.apple.gamecontroller.GCControllerButtonInput;
@@ -11,6 +20,7 @@ import org.robovm.apple.gamecontroller.GCControllerElement;
 import org.robovm.apple.gamecontroller.GCControllerPlayerIndex;
 import org.robovm.apple.gamecontroller.GCExtendedGamepad;
 import org.robovm.apple.gamecontroller.GCGamepad;
+import org.robovm.apple.gamecontroller.GCHapticsLocality;
 import org.robovm.objc.block.VoidBlock1;
 import org.robovm.objc.block.VoidBlock2;
 
@@ -27,6 +37,8 @@ public class IosController extends AbstractController {
     private final String uuid;
     private final boolean[] pressedButtons;
     private long lastPausePressedMs = 0;
+
+    private CHHapticEngine hapticEngine;
 
     public IosController(GCController controller) {
         this.controller = controller;
@@ -55,6 +67,13 @@ public class IosController extends AbstractController {
                     onControllerValueChanged(gcControllerElement);
                 }
             });
+
+        if (Foundation.getMajorSystemVersion() >= 14) try {
+            hapticEngine = controller.getHaptics().createEngine(GCHapticsLocality.Default);
+            hapticEngine.retain();
+        } catch (Throwable t) {
+            Gdx.app.error("Controllers", "Failed to create haptics engine", t);
+        }
     }
 
     @Override
@@ -68,6 +87,9 @@ public class IosController extends AbstractController {
             controller.getGamepad().setValueChangedHandler(null);
 
         controller.release();
+        if (hapticEngine != null) {
+            hapticEngine.release();
+        }
     }
 
     protected void onPauseButtonPressed() {
@@ -328,6 +350,23 @@ public class IosController extends AbstractController {
     }
 
     @Override
+    public boolean canVibrate() {
+        return hapticEngine != null;
+    }
+
+    @Override
+    public void startVibration(int duration, float strength) {
+        if (canVibrate()) {
+            try {
+                hapticEngine.start(null);
+                hapticEngine.createPlayer(constructRumbleEvent((float) duration / 1000, strength)).start(0, null);
+            } catch (Throwable t) {
+                Gdx.app.error("Controllers", "Vibration failed", t);
+            }
+        }
+    }
+
+    @Override
     public ControllerMapping getMapping() {
         return MfiMapping.getInstance();
     }
@@ -339,5 +378,12 @@ public class IosController extends AbstractController {
 
     public GCController getController() {
         return controller;
+    }
+
+    public CHHapticPattern constructRumbleEvent(float length, float strength) throws NSErrorException {
+        NSArray<CHHapticEventParameter> params = new NSArray<>(new CHHapticEventParameter(CHHapticEventParameterID.HapticIntensity, strength),
+                new CHHapticEventParameter(CHHapticEventParameterID.HapticSharpness, .5f));
+        return new CHHapticPattern(new NSArray<>(new CHHapticEvent(CHHapticEventType.HapticContinuous, params, 0, length)),
+                new NSArray<>());
     }
 }
