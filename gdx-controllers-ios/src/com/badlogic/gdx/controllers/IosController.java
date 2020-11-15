@@ -27,7 +27,10 @@ import org.robovm.objc.block.VoidBlock2;
 import java.util.UUID;
 
 public class IosController extends AbstractController {
+    public static final int BUTTON_BACK = 8;
     public final static int BUTTON_PAUSE = 9;
+    public static final int BUTTON_LEFT_STICK = 10;
+    public static final int BUTTON_RIGHT_STICK = 11;
     public static final int BUTTON_DPAD_UP = 12;
     public static final int BUTTON_DPAD_DOWN = 13;
     public static final int BUTTON_DPAD_LEFT = 14;
@@ -47,12 +50,14 @@ public class IosController extends AbstractController {
         pressedButtons = new boolean[getMaxButtonIndex() + 1];
 
         controller.retain();
-        controller.setControllerPausedHandler(new VoidBlock1<GCController>() {
-            @Override
-            public void invoke(GCController gcController) {
-                onPauseButtonPressed();
-            }
-        });
+        if (Foundation.getMajorSystemVersion() < 13) {
+            controller.setControllerPausedHandler(new VoidBlock1<GCController>() {
+                @Override
+                public void invoke(GCController gcController) {
+                    onPauseButtonPressed();
+                }
+            });
+        }
         if (controller.getExtendedGamepad() != null)
             controller.getExtendedGamepad().setValueChangedHandler(new VoidBlock2<GCExtendedGamepad, GCControllerElement>() {
                 @Override
@@ -201,15 +206,30 @@ public class IosController extends AbstractController {
                 if (controller.getExtendedGamepad() != null)
                     return controller.getExtendedGamepad().getRightTrigger();
                 break;
-            case 8:
+            case BUTTON_BACK:
                 // Back
-            case 9:
+                if (Foundation.getMajorSystemVersion() >= 13 && controller.getExtendedGamepad() != null) {
+                    return controller.getExtendedGamepad().getButtonOptions();
+                }
+                break;
+            case BUTTON_PAUSE:
                 // Start
-            case 10:
+                if (Foundation.getMajorSystemVersion() >= 13 && controller.getExtendedGamepad() != null) {
+                    return controller.getExtendedGamepad().getButtonMenu();
+                }
+                break;
+            case BUTTON_LEFT_STICK:
                 // Left stick button
-            case 11:
+                if (Foundation.getMajorSystemVersion() >= 13 && controller.getExtendedGamepad() != null) {
+                    return controller.getExtendedGamepad().getLeftThumbstickButton();
+                }
+                break;
+            case BUTTON_RIGHT_STICK:
                 // right stick button
-                return null;
+                if (Foundation.getMajorSystemVersion() >= 13 && controller.getExtendedGamepad() != null) {
+                    return controller.getExtendedGamepad().getRightThumbstickButton();
+                }
+                break;
             case BUTTON_DPAD_UP:
                 // Dpad up
                 if (controller.getExtendedGamepad() != null) {
@@ -257,7 +277,7 @@ public class IosController extends AbstractController {
     public boolean getButton(int i) {
         GCControllerButtonInput buttonFromConst = getButtonFromConst(i);
 
-        if (i == BUTTON_PAUSE) {
+        if (i == BUTTON_PAUSE && buttonFromConst == null) {
             if (lastPausePressedMs > 0 && (TimeUtils.millis() - lastPausePressedMs) <= 250) {
                 lastPausePressedMs = 0;
                 return true;

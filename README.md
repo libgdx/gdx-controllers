@@ -50,6 +50,8 @@ implementation "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxContro
 ....
 	<framework>GameKit</framework>
 ```
+If you forget to explicitly link GameKit framework, no game controller will show up.
+
 #### html:
 ```
 implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion:sources"
