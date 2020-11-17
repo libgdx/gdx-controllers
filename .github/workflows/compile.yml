@@ -23,6 +23,6 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Setup Android build environment
-      uses: android-actions/setup-android@v1.0.0
+      uses: android-actions/setup-android@v2.0.2
     - name: Local install
       run: ./gradlew clean uploadArchives -PSNAPSHOT=true -PLOCAL=true
