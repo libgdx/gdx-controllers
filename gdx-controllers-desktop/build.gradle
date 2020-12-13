@@ -17,7 +17,7 @@ dependencies {
 	api project(":gdx-controllers-core")
 	implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
 	// FIXME change it after first official libgdx-Jamepad release
-	api "com.github.MrStahlfelge:Jamepad:2.0.12.1"
+	api "com.badlogicgames.jamepad:jamepad:2.0.12.1-SNAPSHOT"
 }
 
 targetCompatibility = 1.7

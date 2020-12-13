@@ -8,6 +8,9 @@ subprojects {
 		maven { url 'https://jitpack.io' }
 		jcenter()
 	}
+
+
+
 }
 
 // Clearing Eclipse project data in root folder:

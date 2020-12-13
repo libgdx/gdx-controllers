@@ -6,3 +6,6 @@ dependencies {
 	implementation project(':gdx-controllers-core')
 	api "com.badlogicgames.gdx:gdx:$gdxVersion"
 }
+
+targetCompatibility = 1.7
+sourceCompatibility = 1.7
