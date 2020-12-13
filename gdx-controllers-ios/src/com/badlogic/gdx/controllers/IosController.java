@@ -8,6 +8,7 @@ import org.robovm.apple.corehaptic.CHHapticEvent;
 import org.robovm.apple.corehaptic.CHHapticEventParameter;
 import org.robovm.apple.corehaptic.CHHapticEventParameterID;
 import org.robovm.apple.corehaptic.CHHapticEventType;
+import org.robovm.apple.corehaptic.CHHapticParameterCurve;
 import org.robovm.apple.corehaptic.CHHapticPattern;
 import org.robovm.apple.foundation.Foundation;
 import org.robovm.apple.foundation.NSArray;
@@ -404,6 +405,6 @@ public class IosController extends AbstractController {
         NSArray<CHHapticEventParameter> params = new NSArray<>(new CHHapticEventParameter(CHHapticEventParameterID.HapticIntensity, strength),
                 new CHHapticEventParameter(CHHapticEventParameterID.HapticSharpness, .5f));
         return new CHHapticPattern(new NSArray<>(new CHHapticEvent(CHHapticEventType.HapticContinuous, params, 0, length)),
-                new NSArray<>());
+                new NSArray<CHHapticParameterCurve>());
     }
 }
