@@ -1,79 +1,20 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-def isLocalBuild() {
-    return hasProperty("LOCAL")
-}
-
-def isReleaseBuild() {
-    return hasProperty("RELEASE")
-}
-
-def isSnapshotBuild() {
-    return hasProperty("SNAPSHOT")
-}
-
-def getLocalRepositoryUrl() {
-    return hasProperty('LOCAL_REPOSITORY_URL') ? LOCAL_REPOSITORY_URL
-            : 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
-}
-
-def getReleaseRepositoryUrl() {
-    return hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL
-            : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-}
-
-def getSnapshotRepositoryUrl() {
-    return hasProperty('SNAPSHOT_REPOSITORY_URL') ? SNAPSHOT_REPOSITORY_URL
-            : "https://oss.sonatype.org/content/repositories/snapshots/"
-}
-
-def getRepositoryUsername() {
-    return hasProperty('NEXUS_USERNAME') ? NEXUS_USERNAME : ""
-}
-
-def getRepositoryPassword() {
-    return hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : ""
-}
-
-def getGroupId() {
-    return GROUPID;
-}
-
-def getArtifactId() {
-    return ARTIFACTID;
-}
-
-def getVersion() {
-    if (isReleaseBuild()) {
-        return VERSION.replace("-SNAPSHOT", "")
-    } else {
-        return VERSION;
-    }
-}
-
-
 uploadArchives {
     repositories {
         mavenDeployer {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-            pom.groupId = getGroupId()
-            pom.version = getVersion()
-            pom.artifactId = getArtifactId()
-
             if (isLocalBuild()) {
                 repository(url: getLocalRepositoryUrl())
-            } else {
-                if (isReleaseBuild()) {
-                    repository(url: getReleaseRepositoryUrl()) {
-                        authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
-                    }
+            } else if (isReleaseBuild()) {
+                repository(url: getReleaseRepositoryUrl()) {
+                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
                 }
-                if (isSnapshotBuild()) {
-                    snapshotRepository(url: getSnapshotRepositoryUrl()) {
-                        authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
-                    }
+            } else {
+                snapshotRepository(url: getSnapshotRepositoryUrl()) {
+                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
                 }
             }
 

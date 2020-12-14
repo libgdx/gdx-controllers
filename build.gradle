@@ -1,9 +1,3 @@
-ext {
-    GROUPID = 'com.badlogicgames.gdx-controllers'
-    VERSION = '2.0.0-SNAPSHOT'
-
-}
-
 buildscript {
     repositories {
         jcenter()
@@ -30,6 +24,37 @@ allprojects {
         appName = 'gdx-controllers'
         gdxVersion = '1.9.11'
         roboVMVersion = '2.3.12-SNAPSHOT'
+
+        isReleaseBuild = {
+            return project.hasProperty("RELEASE")
+        }
+
+        isLocalBuild = {
+            return project.hasProperty("LOCAL")
+        }
+
+        getLocalRepositoryUrl = {
+            return project.hasProperty('LOCAL_REPOSITORY_URL') ? LOCAL_REPOSITORY_URL
+                    : 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
+        }
+
+        getReleaseRepositoryUrl = {
+            return project.hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL
+                    : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        }
+
+        getSnapshotRepositoryUrl = {
+            return project.hasProperty('SNAPSHOT_REPOSITORY_URL') ? SNAPSHOT_REPOSITORY_URL
+                    : "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+
+        getRepositoryUsername = {
+            return project.hasProperty('NEXUS_USERNAME') ? NEXUS_USERNAME : "$System.env.NEXUS_USERNAME"
+        }
+
+        getRepositoryPassword = {
+            return project.hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : "$System.env.NEXUS_PASSWORD"
+        }
     }
 
     repositories {
@@ -42,8 +67,7 @@ allprojects {
         maven { url "https://jitpack.io" }
     }
 
-    group = GROUPID
-    version = VERSION
+    version project.getProperty('version') + (isReleaseBuild() ? "" : "-SNAPSHOT")
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
