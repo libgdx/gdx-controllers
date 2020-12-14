@@ -22,5 +22,13 @@ jobs:
       run: chmod +x gradlew
     - name: Setup Android build environment
       uses: android-actions/setup-android@v2.0.2
+    - name: Build Android
+      run: ./gradlew clean :test:android:buildDebug
+    - name: Build Desktop
+      run: ./gradlew :test:desktop:build :test:lwjgl3:build
+    - name: Build iOS
+      run: ./gradlew :test:ios:build
+    - name: Build GWT
+      run: ./gradlew :test:html:build
     - name: Local install
-      run: ./gradlew clean build uploadArchives -PLOCAL=true
+      run: ./gradlew uploadArchives -PLOCAL=true
