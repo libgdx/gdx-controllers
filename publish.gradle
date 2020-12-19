@@ -43,6 +43,11 @@ afterEvaluate { project ->
 
                     developers {
                         developer {
+                            id = "Tomski"
+                            name = "Tom Wojciechowski"
+                            email = "tomwojciechowski@asidik.com"
+                        }
+                        developer {
                             id 'MrStahlfelge'
                             name 'Benjamin Schulte'
                             email 'lightblocks@golfgl.de'
