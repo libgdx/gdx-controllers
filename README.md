@@ -4,21 +4,17 @@ Use game controllers with ease in your libGDX games.
 
 [📖️ Documentation](https://github.com/libgdx/gdx-controllers/wiki) - [🎁️ Feature overview](https://github.com/libgdx/gdx-controllers/wiki/Features)
 
-Release version not yet available. If you need a released version, take a look at
-[gdx-controllers v1](https://github.com/libgdx/libgdx/wiki/Controllers). However, you are
-welcome to use the new v2 in work here.
-
 [🚀️ Migration guide from v1](https://github.com/libgdx/gdx-controllers/wiki/Migrate-from-v1)
 
 ## 💾️ Installation
 
 The recommended way to use gdx-pay is via dependency management with Gradle or Maven. Artifacts are available in
-[Snapshot Repository](https://oss.sonatype.org/content/repositories/snapshots/com/badlogicgames/gdx-controllers/).
+[Snapshot Repository](https://oss.sonatype.org/content/repositories/snapshots/com/badlogicgames/gdx-controllers/) and Maven Central.
 
 *project-root/build.gradle:*
 
     ext {
-        gdxControllersVersion = '2.0.0-SNAPSHOT'
+        gdxControllersVersion = '2.0.0'
     }
 
 Add the following dependencies:
