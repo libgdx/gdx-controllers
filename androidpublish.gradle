@@ -53,7 +53,8 @@ uploadArchives {
 }
 
 signing {
-    required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
+    useGpgCmd()
+    required { isReleaseBuild() }
     sign configurations.archives
 }
 
