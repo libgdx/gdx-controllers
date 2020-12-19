@@ -64,7 +64,6 @@ allprojects {
         mavenLocal()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
-        maven { url "https://jitpack.io" }
     }
 
     version project.getProperty('version') + (isReleaseBuild() ? "" : "-SNAPSHOT")
