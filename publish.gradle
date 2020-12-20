@@ -59,7 +59,9 @@ afterEvaluate { project ->
     }
 
     signing {
-        useGpgCmd()
+        if (isReleaseBuild()) {
+            useGpgCmd()
+        }
         required { isReleaseBuild() }
         sign configurations.archives
     }

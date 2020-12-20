@@ -75,5 +75,9 @@ allprojects {
     tasks.withType(Test) {
         systemProperty 'file.encoding', 'UTF-8'
     }
+
+    tasks.withType(Sign) {
+        onlyIf { isReleaseBuild() }
+    }
 }
 
