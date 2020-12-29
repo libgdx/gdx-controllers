@@ -333,8 +333,11 @@ public class IosController extends AbstractController {
     public float getAxis(int i) {
         GCControllerAxisInput axisFromConst = getAxisFromConst(i);
 
+        // we need to flip back vertical axis values, Apple flips it before
+        boolean isVertical = i % 2 == 1;
+
         if (axisFromConst != null)
-            return axisFromConst.getValue();
+            return axisFromConst.getValue() * (isVertical ? -1 : 1);
 
         return 0;
     }
