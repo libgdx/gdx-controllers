@@ -40,6 +40,7 @@ public class IosController extends AbstractController {
     private final GCController controller;
     private final String uuid;
     private final boolean[] pressedButtons;
+    private final float[] axisValues;
     private long lastPausePressedMs = 0;
 
     private CHHapticEngine hapticEngine;
@@ -49,6 +50,7 @@ public class IosController extends AbstractController {
         uuid = UUID.randomUUID().toString();
 
         pressedButtons = new boolean[getMaxButtonIndex() + 1];
+        axisValues = new float[getAxisCount()];
 
         controller.retain();
         if (Foundation.getMajorSystemVersion() < 13) {
@@ -117,14 +119,9 @@ public class IosController extends AbstractController {
                     notifyListenersButtonUp(buttonNum);
             }
 
-        } else if (gcControllerElement instanceof GCControllerAxisInput) {
-            GCControllerAxisInput axisInput = (GCControllerAxisInput) gcControllerElement;
-            int axisNum = getConstFromAxisInput(axisInput);
-            notifyListenersAxisMoved(axisNum, axisInput.getValue());
-
         } else if (gcControllerElement instanceof GCControllerDirectionPad) {
 
-            // some dpad button changed, cycle to find them all
+            // dpad button or axis values changed, cycle to find them all
             for (int buttonNum = BUTTON_DPAD_UP; buttonNum <= BUTTON_DPAD_RIGHT; buttonNum++) {
                 GCControllerButtonInput dpadButton = getButtonFromConst(buttonNum);
                 if (dpadButton != null && pressedButtons[buttonNum] != dpadButton.isPressed()) {
@@ -133,6 +130,14 @@ public class IosController extends AbstractController {
                         notifyListenersButtonDown(buttonNum);
                     else
                         notifyListenersButtonUp(buttonNum);
+                }
+            }
+
+            for (int axisIdx = 0; axisIdx < axisValues.length; axisIdx++) {
+                float axisValue = getAxis(axisIdx);
+                if (axisValue != axisValues[axisIdx]) {
+                    axisValues[axisIdx] = axisValue;
+                    notifyListenersAxisMoved(axisIdx, axisValue);
                 }
             }
         }
@@ -288,15 +293,6 @@ public class IosController extends AbstractController {
             return buttonFromConst.isPressed();
         else
             return false;
-    }
-
-    protected int getConstFromAxisInput(GCControllerAxisInput axis) {
-        for (int i = 0; i <= 3; i++) {
-            if (getAxisFromConst(i) == axis)
-                return i;
-        }
-
-        return -1;
     }
 
     protected GCControllerAxisInput getAxisFromConst(int i) {
