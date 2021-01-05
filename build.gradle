@@ -7,7 +7,7 @@ buildscript {
     dependencies {
         classpath "org.wisepersist:gwt-gradle-plugin:1.0.13"
         classpath "com.android.tools.build:gradle:3.5.4"
-        classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.12-SNAPSHOT'
+        classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.12'
     }
 }
 
@@ -23,7 +23,8 @@ allprojects {
 
         appName = 'gdx-controllers'
         gdxVersion = '1.9.11'
-        roboVMVersion = '2.3.12-SNAPSHOT'
+        roboVMVersion = '2.3.12'
+        jamepadVersion = '2.0.12.1'
 
         isReleaseBuild = {
             return project.hasProperty("RELEASE")

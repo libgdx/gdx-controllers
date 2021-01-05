@@ -16,7 +16,9 @@ eclipse {
 dependencies {
 	api project(":gdx-controllers-core")
 	implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
-	api "com.badlogicgames.jamepad:jamepad:2.0.12.1"
+	api("com.badlogicgames.jamepad:jamepad:$jamepadVersion") {
+		exclude group: 'com.badlogicgames.gdx', module: 'gdx-jnigen-loader'
+	}
 }
 
 targetCompatibility = 1.7
