@@ -178,7 +178,10 @@ public class JamepadController implements Controller {
 
     @Override
     public void cancelVibration() {
-
+        if (isVibrating()) {
+            // starting a vibration of strength 0 cancels the last one
+            startVibration(0, 0);
+        }
     }
 
     @Override
