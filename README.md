@@ -2,7 +2,7 @@
 
 Use game controllers with ease in your libGDX games.
 
-[📖️ Documentation](https://github.com/libgdx/gdx-controllers/wiki) - [🎁️ Feature overview](https://github.com/libgdx/gdx-controllers/wiki/Features)
+[📖️ Documentation](https://github.com/libgdx/gdx-controllers/wiki) - [🎁️ Feature overview](https://github.com/libgdx/gdx-controllers/wiki/Features) - [Compatibility](https://github.com/libgdx/gdx-controllers/wiki/Compatibility)
 
 [🚀️ Migration guide from v1](https://github.com/libgdx/gdx-controllers/wiki/Migrate-from-v1)
 
@@ -30,6 +30,16 @@ implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxContr
 ```
 implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
 ```
+
+This will automatically fetch the [underlying SDL-based natives and Java wrappers](https://github.com/libgdx/Jamepad).
+If you want to use a newer version, add the dependency yourself:
+
+    implementation("com.badlogicgames.jamepad:jamepad:$jamepadVersion") {
+	    exclude group: 'com.badlogicgames.gdx', module: 'gdx-jnigen-loader'
+    }
+
+Make sure to check the [compatibility doc](https://github.com/libgdx/gdx-controllers/wiki/Compatibility) when doing so.
+
 #### android:
 ```
 implementation "com.badlogicgames.gdx-controllers:gdx-controllers-android:$gdxControllersVersion"
