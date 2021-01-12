@@ -54,6 +54,7 @@ public class ControllersTest extends ApplicationAdapter {
     private int callbackCount;
     private TextButton vibrateButton;
     private Label buttonNum;
+    private Label powerLevel;
 
     @Override
     public void create() {
@@ -186,6 +187,12 @@ public class ControllersTest extends ApplicationAdapter {
         moreInfoTable.row();
         moreInfoTable.add("Vibration").right().padRight(10);
         moreInfoTable.add(vibrateButton).fill();
+
+        powerLevel = new Label("", skin);
+        moreInfoTable.row();
+        moreInfoTable.add("Power Level").right().padRight(10);
+        moreInfoTable.add(powerLevel);
+
         buttonNum = new Label("", skin);
         moreInfoTable.row();
         moreInfoTable.add("Button indices").right().padRight(10);
@@ -290,6 +297,7 @@ public class ControllersTest extends ApplicationAdapter {
         playerIndexButton.setText(selectedController != null && selectedController.supportsPlayerIndex() ? String.valueOf(selectedController.getPlayerIndex()) : "N/A");
         vibrateButton.setText(selectedController == null || !selectedController.canVibrate() ? "N/A" : selectedController.isVibrating() ? "Vibrating" : "Click to start");
         buttonNum.setText(selectedController == null ? "N/A" : selectedController.getMinButtonIndex() + " to " + selectedController.getMaxButtonIndex());
+        powerLevel.setText(selectedController == null ? "N/A" : selectedController.getPowerLevel().toString());
 
         stage.act();
         stage.draw();

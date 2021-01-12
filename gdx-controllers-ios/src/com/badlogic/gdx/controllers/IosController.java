@@ -392,6 +392,33 @@ public class IosController extends AbstractController {
     }
 
     @Override
+    public ControllerPowerLevel getPowerLevel() {
+        if (Foundation.getMajorSystemVersion() >= 14) {
+            switch (controller.getBattery().getBatteryState()) {
+                case Discharging:
+                    float batteryLevel = controller.getBattery().getBatteryLevel();
+                    if (batteryLevel <= 0.05f) {
+                        return ControllerPowerLevel.POWER_EMPTY;
+                    } else if (batteryLevel <= 0.20f) {
+                        return ControllerPowerLevel.POWER_LOW;
+                    } else if (batteryLevel <= 0.70f) {
+                        return ControllerPowerLevel.POWER_MEDIUM;
+                    } else {
+                        return ControllerPowerLevel.POWER_FULL;
+                    }
+                case Charging:
+                    return ControllerPowerLevel.POWER_WIRED;
+                case Full:
+                    return ControllerPowerLevel.POWER_FULL;
+                default:
+                    return ControllerPowerLevel.POWER_UNKNOWN;
+            }
+        }
+
+        return ControllerPowerLevel.POWER_UNKNOWN;
+    }
+
+    @Override
     public boolean equals(Object o) {
         return (o instanceof IosController && ((IosController) o).getController() == controller);
     }

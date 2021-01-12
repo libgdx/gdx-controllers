@@ -62,6 +62,11 @@ public class ICadeController extends AbstractController {
 	}
 
 	@Override
+	public ControllerPowerLevel getPowerLevel() {
+		return ControllerPowerLevel.POWER_UNKNOWN;
+	}
+
+	@Override
 	public String getName() {
 		return "iCade device";
 	}

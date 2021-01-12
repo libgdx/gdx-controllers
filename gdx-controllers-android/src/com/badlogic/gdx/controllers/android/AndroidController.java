@@ -23,6 +23,7 @@ import android.view.MotionEvent;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
+import com.badlogic.gdx.controllers.ControllerPowerLevel;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntIntMap;
 
@@ -182,5 +183,10 @@ public class AndroidController implements Controller {
 	@Override
 	public ControllerMapping getMapping() {
 		return AndroidControllerMapping.getInstance();
+	}
+
+	@Override
+	public ControllerPowerLevel getPowerLevel() {
+		return ControllerPowerLevel.POWER_UNKNOWN;
 	}
 }

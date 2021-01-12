@@ -1,9 +1,9 @@
 package com.badlogic.gdx.controllers.desktop.support;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
+import com.badlogic.gdx.controllers.ControllerPowerLevel;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -173,7 +173,6 @@ public class JamepadController implements Controller {
     @Override
     public void startVibration(int duration, float strength) {
         try {
-            Gdx.app.log("Jamepad", controllerIndex.getPowerLevel().toString());
             if (controllerIndex.doVibration(strength, strength, duration)) {
                 vibrationEndMs = TimeUtils.millis() + duration;
                 canVibrate = true;
@@ -271,5 +270,28 @@ public class JamepadController implements Controller {
     @Override
     public ControllerMapping getMapping() {
         return JamepadMapping.getInstance();
+    }
+
+    @Override
+    public ControllerPowerLevel getPowerLevel() {
+        try {
+            switch (controllerIndex.getPowerLevel()) {
+                case POWER_MAX:
+                case POWER_FULL:
+                    return ControllerPowerLevel.POWER_FULL;
+                case POWER_MEDIUM:
+                    return ControllerPowerLevel.POWER_MEDIUM;
+                case POWER_LOW:
+                    return ControllerPowerLevel.POWER_LOW;
+                case POWER_EMPTY:
+                    return ControllerPowerLevel.POWER_EMPTY;
+                case POWER_WIRED:
+                    return ControllerPowerLevel.POWER_WIRED;
+                default:
+                    return ControllerPowerLevel.POWER_UNKNOWN;
+            }
+        } catch (Throwable t) {
+            return ControllerPowerLevel.POWER_UNKNOWN;
+        }
     }
 }

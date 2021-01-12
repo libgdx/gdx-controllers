@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,12 +16,10 @@
 
 package com.badlogic.gdx.controllers;
 
-import com.badlogic.gdx.math.Vector3;
-
 /** Represents a connected controller. Provides methods to query the state of buttons, axes and more information on
  * the controller. Multiple {@link ControllerListener} instances can be registered with the Controller to receive events in case
  * the controller's state changes. Listeners will be invoked on the rendering thread.
- * 
+ *
  * @author Nathan Sweet */
 public interface Controller {
 	/**
@@ -114,6 +112,12 @@ public interface Controller {
 	 * might not support all features.
 	 */
 	ControllerMapping getMapping();
+
+	/**
+	 * @return value of enum {@link ControllerPowerLevel} indicating battery state of the connected
+	 * controller, or {@link ControllerPowerLevel#POWER_UNKNOWN} if information is not present
+	 */
+	ControllerPowerLevel getPowerLevel();
 
 	/** Adds a new {@link ControllerListener} to this {@link Controller}. The listener will receive calls in case the state of the
 	 * controller changes. The listener will be invoked on the rendering thread.
