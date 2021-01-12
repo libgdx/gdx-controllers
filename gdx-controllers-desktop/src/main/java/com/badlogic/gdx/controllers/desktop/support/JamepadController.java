@@ -1,5 +1,6 @@
 package com.badlogic.gdx.controllers.desktop.support;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
@@ -36,6 +37,8 @@ public class JamepadController implements Controller {
     private boolean connected = true;
     private boolean canVibrate = true;
     private long vibrationEndMs;
+    private int axisCount = -1;
+    private int maxButtonIndex = -1;
 
     public JamepadController(ControllerIndex controllerIndex) {
         this.controllerIndex = controllerIndex;
@@ -170,6 +173,7 @@ public class JamepadController implements Controller {
     @Override
     public void startVibration(int duration, float strength) {
         try {
+            Gdx.app.log("Jamepad", controllerIndex.getPowerLevel().toString());
             if (controllerIndex.doVibration(strength, strength, duration)) {
                 vibrationEndMs = TimeUtils.millis() + duration;
                 canVibrate = true;
@@ -225,12 +229,38 @@ public class JamepadController implements Controller {
 
     @Override
     public int getMaxButtonIndex() {
-        return CODE_TO_BUTTON.size - 1;
+        if (maxButtonIndex >= 0) {
+            return maxButtonIndex;
+        }
+
+        maxButtonIndex = CODE_TO_BUTTON.size - 1;
+        try {
+            while (maxButtonIndex >= 0 && !controllerIndex.isButtonAvailable(CODE_TO_BUTTON.get(maxButtonIndex))) {
+                maxButtonIndex--;
+            }
+        } catch (ControllerUnpluggedException e) {
+            setDisconnected();
+        }
+
+        return maxButtonIndex;
     }
 
     @Override
     public int getAxisCount() {
-        return CODE_TO_AXIS.size;
+        if (axisCount >= 0) {
+            return axisCount;
+        }
+
+        axisCount = CODE_TO_AXIS.size;
+        try {
+            while (axisCount > 0 && !controllerIndex.isAxisAvailable(CODE_TO_AXIS.get(axisCount - 1))) {
+                axisCount--;
+            }
+        } catch (ControllerUnpluggedException e) {
+            setDisconnected();
+        }
+
+        return axisCount;
     }
 
     @Override

@@ -66,9 +66,18 @@ public class JamepadControllerManager implements ControllerManager, Disposable {
         compositeListener.addListener(new ManageControllers());
     }
 
-
+    @Override
     public void dispose() {
         controllerManager.quitSDLGamepad();
+    }
+
+    /**
+     * Writes last native SDL error to error output.
+     * Note: Output might not indicate an error, but could be a warning as well.
+     * Use for debugging purposes.
+     */
+    public static void logLastNativeGamepadError() {
+        Gdx.app.error("Jamepad", controllerManager.getLastNativeError());
     }
 
     private class ManageControllers extends ControllerAdapter {
