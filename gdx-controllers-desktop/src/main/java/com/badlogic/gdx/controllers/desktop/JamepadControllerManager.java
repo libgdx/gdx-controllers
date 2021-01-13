@@ -12,6 +12,9 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
 public class JamepadControllerManager implements ControllerManager, Disposable {
+    // assign a Jamepad configuration to this field at game startup to override defaults
+    public static com.studiohartman.jamepad.Configuration jamepadConfiguration;
+
     private static boolean nativeLibInitialized = false;
     private static com.studiohartman.jamepad.ControllerManager controllerManager;
 
@@ -22,10 +25,13 @@ public class JamepadControllerManager implements ControllerManager, Disposable {
         compositeListener.addListener(new ManageControllers());
 
         if (!nativeLibInitialized) {
-            int maxNumControllers = 4;
+            if (jamepadConfiguration == null) {
+                jamepadConfiguration = new com.studiohartman.jamepad.Configuration();
+            }
             String mappingsPath = "gamecontrollerdb.txt";
 
-            controllerManager = new com.studiohartman.jamepad.ControllerManager(maxNumControllers, mappingsPath);
+
+            controllerManager = new com.studiohartman.jamepad.ControllerManager(jamepadConfiguration, mappingsPath);
             controllerManager.initSDLGamepad();
 
             JamepadControllerMonitor monitor = new JamepadControllerMonitor(controllerManager, compositeListener);

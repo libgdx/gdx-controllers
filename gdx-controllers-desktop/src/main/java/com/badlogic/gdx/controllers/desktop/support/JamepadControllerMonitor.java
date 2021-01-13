@@ -29,7 +29,7 @@ public class JamepadControllerMonitor implements Runnable {
 
     private void checkForNewControllers() {
         int newNumControllers = controllerManager.getNumControllers();
-        for (int i = 0; i < newNumControllers; i++) {
+        for (int i = 0; i < newNumControllers; i++) try {
             ControllerIndex controllerIndex = controllerManager.getControllerIndex(i);
 
             if (!indexToController.containsKey(controllerIndex.getIndex()) && controllerIndex.isConnected()) {
@@ -39,6 +39,8 @@ public class JamepadControllerMonitor implements Runnable {
                 indexToController.put(controllerIndex.getIndex(), tuple1);
                 listener.connected(tuple1.controller);
             }
+        } catch (ArrayIndexOutOfBoundsException t) {
+            // more controllers connected than we can handle according to our config
         }
     }
 
