@@ -8,7 +8,7 @@ Use game controllers with ease in your libGDX games.
 
 ## 💾️ Installation
 
-The recommended way to use gdx-pay is via dependency management with Gradle or Maven. Artifacts are available in
+The recommended way to use gdx-controllers is via dependency management with Gradle or Maven. Artifacts are available in
 [Snapshot Repository](https://oss.sonatype.org/content/repositories/snapshots/com/badlogicgames/gdx-controllers/) and Maven Central.
 
 [![Sonatype Nexus (Releases)](https://img.shields.io/nexus/r/com.badlogicgames.gdx-controllers/gdx-controllers-core?nexusVersion=2&server=https%3A%2F%2Foss.sonatype.org&label=release)](https://search.maven.org/artifact/com.badlogicgames.gdx-controllers/gdx-controllers-core)
