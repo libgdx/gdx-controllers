@@ -180,7 +180,11 @@ public class ControllersTest extends ApplicationAdapter {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (selectedController != null) {
-                    selectedController.startVibration(1000, 1f);
+                    if (!selectedController.isVibrating()) {
+                        selectedController.startVibration(1000, 1f);
+                    } else {
+                        selectedController.cancelVibration();
+                    }
                 }
             }
         });

@@ -42,7 +42,7 @@
 		<framework>OpenGLES</framework>
 		<framework>QuartzCore</framework>
 		<framework>CoreGraphics</framework>
-		<framework>GameKit</framework>
+		<framework>GameController</framework>
 		<framework>OpenAL</framework>
 		<framework>AudioToolbox</framework>
 		<framework>AVFoundation</framework>

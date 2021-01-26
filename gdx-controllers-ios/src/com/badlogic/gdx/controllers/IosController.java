@@ -10,6 +10,7 @@ import org.robovm.apple.corehaptic.CHHapticEventParameterID;
 import org.robovm.apple.corehaptic.CHHapticEventType;
 import org.robovm.apple.corehaptic.CHHapticParameterCurve;
 import org.robovm.apple.corehaptic.CHHapticPattern;
+import org.robovm.apple.corehaptic.CHHapticPatternPlayer;
 import org.robovm.apple.foundation.Foundation;
 import org.robovm.apple.foundation.NSArray;
 import org.robovm.apple.foundation.NSErrorException;
@@ -44,6 +45,8 @@ public class IosController extends AbstractController {
     private long lastPausePressedMs = 0;
 
     private CHHapticEngine hapticEngine;
+    private CHHapticPatternPlayer playingHapticPattern;
+    private long vibrationEndMs;
 
     public IosController(GCController controller) {
         this.controller = controller;
@@ -379,10 +382,26 @@ public class IosController extends AbstractController {
         if (canVibrate()) {
             try {
                 hapticEngine.start(null);
-                hapticEngine.createPlayer(constructRumbleEvent((float) duration / 1000, strength)).start(0, null);
+                playingHapticPattern = hapticEngine.createPlayer(constructRumbleEvent((float) duration / 1000, strength));
+                playingHapticPattern.start(0, null);
+                vibrationEndMs = TimeUtils.millis() + duration;
             } catch (Throwable t) {
                 Gdx.app.error("Controllers", "Vibration failed", t);
             }
+        }
+    }
+
+    @Override
+    public boolean isVibrating() {
+        return canVibrate() && TimeUtils.millis() < vibrationEndMs && playingHapticPattern != null;
+    }
+
+    @Override
+    public void cancelVibration() {
+        if (isVibrating()) {
+            playingHapticPattern.cancelAndReturnError(null);
+            playingHapticPattern = null;
+            vibrationEndMs = 0;
         }
     }
 

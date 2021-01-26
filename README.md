@@ -17,7 +17,7 @@ The recommended way to use gdx-controllers is via dependency management with Gra
 *project-root/build.gradle:*
 
     ext {
-        gdxControllersVersion = '2.0.0'
+        gdxControllersVersion = '2.0.1' // see badges above for latest versions
     }
 
 Add the following dependencies:
@@ -57,9 +57,9 @@ implementation "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxContro
 ```
 <pattern>com.badlogic.gdx.controllers.IosControllerManager</pattern> 
 ....
-	<framework>GameKit</framework>
+	<framework>GameController</framework>
 ```
-If you forget to explicitly link GameKit framework, no game controller will show up.
+If you forget to explicitly link the framework, no game controller will show up.
 
 #### html:
 ```
