@@ -234,7 +234,7 @@ public class JamepadController implements Controller {
 
         maxButtonIndex = CODE_TO_BUTTON.size - 1;
         try {
-            while (maxButtonIndex >= 0 && !controllerIndex.isButtonAvailable(CODE_TO_BUTTON.get(maxButtonIndex))) {
+            while (maxButtonIndex > 0 && !controllerIndex.isButtonAvailable(CODE_TO_BUTTON.get(maxButtonIndex))) {
                 maxButtonIndex--;
             }
         } catch (ControllerUnpluggedException e) {
