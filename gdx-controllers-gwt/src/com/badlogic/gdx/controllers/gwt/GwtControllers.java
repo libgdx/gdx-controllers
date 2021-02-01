@@ -17,9 +17,8 @@
 package com.badlogic.gdx.controllers.gwt;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.AbstractControllerManager;
 import com.badlogic.gdx.controllers.ControllerListener;
-import com.badlogic.gdx.controllers.ControllerManager;
 import com.badlogic.gdx.controllers.gwt.support.Gamepad;
 import com.badlogic.gdx.controllers.gwt.support.GamepadButton;
 import com.badlogic.gdx.controllers.gwt.support.GamepadSupport;
@@ -30,10 +29,9 @@ import com.badlogic.gdx.utils.Pool;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayNumber;
 
-public class GwtControllers implements ControllerManager, GamepadSupportListener {
+public class GwtControllers extends AbstractControllerManager implements GamepadSupportListener {
 
 	private final IntMap<GwtController> controllerMap = new IntMap<GwtController>();
-	private final Array<Controller> controllers = new Array<Controller>();
 	private final Array<ControllerListener> listeners = new Array<ControllerListener>();
 	private final Array<GwtControllerEvent> eventQueue = new Array<GwtControllerEvent>();
 	private final Pool<GwtControllerEvent> eventPool = new Pool<GwtControllerEvent>() {
@@ -107,11 +105,6 @@ public class GwtControllers implements ControllerManager, GamepadSupportListener
 				Gdx.app.postRunnable(this);
 			}
 		}.run();
-	}
-
-	@Override
-	public Array<Controller> getControllers () {
-		return controllers;
 	}
 
 	@Override

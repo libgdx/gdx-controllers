@@ -12,8 +12,7 @@ import org.robovm.apple.uikit.UIViewController;
 import org.robovm.objc.Selector;
 import org.robovm.objc.block.VoidBlock1;
 
-public class IosControllerManager implements ControllerManager {
-	private final Array<Controller> controllers = new Array<>();
+public class IosControllerManager extends AbstractControllerManager {
 	private final Array<ControllerListener> listeners = new Array<>();
 	private boolean initialized = false;
 	private ICadeController iCadeController;
@@ -64,7 +63,7 @@ public class IosControllerManager implements ControllerManager {
 	public Array<Controller> getControllers() {
 		initializeControllerArray();
 
-		return controllers;
+		return super.getControllers();
 	}
 
 	private void initializeControllerArray() {

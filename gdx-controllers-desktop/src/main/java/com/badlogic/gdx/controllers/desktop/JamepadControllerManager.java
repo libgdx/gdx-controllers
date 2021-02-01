@@ -1,24 +1,23 @@
 package com.badlogic.gdx.controllers.desktop;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.controllers.AbstractControllerManager;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerAdapter;
 import com.badlogic.gdx.controllers.ControllerListener;
-import com.badlogic.gdx.controllers.ControllerManager;
 import com.badlogic.gdx.controllers.desktop.support.CompositeControllerListener;
 import com.badlogic.gdx.controllers.desktop.support.JamepadControllerMonitor;
 import com.badlogic.gdx.controllers.desktop.support.JamepadShutdownHook;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
-public class JamepadControllerManager implements ControllerManager, Disposable {
+public class JamepadControllerManager extends AbstractControllerManager implements Disposable {
     // assign a Jamepad configuration to this field at game startup to override defaults
     public static com.studiohartman.jamepad.Configuration jamepadConfiguration;
 
     private static boolean nativeLibInitialized = false;
     private static com.studiohartman.jamepad.ControllerManager controllerManager;
 
-    private final Array<Controller> controllers = new Array<>();
     private final CompositeControllerListener compositeListener = new CompositeControllerListener();
 
     public JamepadControllerManager() {
@@ -42,11 +41,6 @@ public class JamepadControllerManager implements ControllerManager, Disposable {
 
             nativeLibInitialized = true;
         }
-    }
-
-    @Override
-    public Array<Controller> getControllers() {
-        return controllers;
     }
 
     @Override
