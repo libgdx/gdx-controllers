@@ -49,6 +49,15 @@ public class Controllers {
 		return getManager().getControllers();
 	}
 
+	/**
+	 * @return the controller the player used most recently. This might return null if there is no
+	 *         controller connected or the last used connector disconnected
+	 */
+	public static Controller getCurrent() {
+		initialize();
+		return getManager().getCurrentController();
+	}
+
 	/** Add a global {@link ControllerListener} that can react to events from all {@link Controller} instances. The listener will be
 	 * invoked on the rendering thread.
 	 * @param listener */

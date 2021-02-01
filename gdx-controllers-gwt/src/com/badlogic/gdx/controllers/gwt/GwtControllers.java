@@ -43,6 +43,7 @@ public class GwtControllers extends AbstractControllerManager implements Gamepad
 
 	public GwtControllers () {
 		GamepadSupport.init(this);
+		listeners.add(new ManageCurrentControllerListener());
 		setupEventQueue();
 	}
 
@@ -193,6 +194,7 @@ public class GwtControllers extends AbstractControllerManager implements Gamepad
 	@Override
 	public void clearListeners () {
 		listeners.clear();
+		listeners.add(new ManageCurrentControllerListener());
 	}
 
 	@Override

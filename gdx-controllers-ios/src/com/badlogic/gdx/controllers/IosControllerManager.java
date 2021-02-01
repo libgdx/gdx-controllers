@@ -18,6 +18,7 @@ public class IosControllerManager extends AbstractControllerManager {
 	private ICadeController iCadeController;
 
 	public IosControllerManager() {
+		listeners.add(new ManageCurrentControllerListener());
 	}
 
 	public static void enableICade(UIViewController controller, Selector action) {
@@ -62,8 +63,13 @@ public class IosControllerManager extends AbstractControllerManager {
 	@Override
 	public Array<Controller> getControllers() {
 		initializeControllerArray();
-
 		return super.getControllers();
+	}
+
+	@Override
+	public Controller getCurrentController() {
+		initializeControllerArray();
+		return super.getCurrentController();
 	}
 
 	private void initializeControllerArray() {
@@ -163,6 +169,7 @@ public class IosControllerManager extends AbstractControllerManager {
 	public void clearListeners() {
 		synchronized (listeners) {
 			listeners.clear();
+			listeners.add(new ManageCurrentControllerListener());
 		}
 	}
 }

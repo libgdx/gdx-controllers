@@ -22,6 +22,8 @@ import com.badlogic.gdx.utils.Array;
 public interface ControllerManager {
 	Array<Controller> getControllers();
 
+	Controller getCurrentController();
+
 	void addListener(ControllerListener listener);
 
 	void removeListener(ControllerListener listener);
