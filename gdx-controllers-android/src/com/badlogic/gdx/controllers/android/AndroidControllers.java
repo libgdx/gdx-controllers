@@ -47,6 +47,7 @@ public class AndroidControllers extends AbstractControllerManager implements Lif
 	};
 
 	public AndroidControllers() {
+		listeners.add(new ManageCurrentControllerListener());
 		Gdx.app.addLifecycleListener(this);
 		gatherControllers(false);
 		setupEventQueue();
@@ -345,7 +346,7 @@ public class AndroidControllers extends AbstractControllerManager implements Lif
 	@Override
 	public void clearListeners () {
 		listeners.clear();
-		
+		listeners.add(new ManageCurrentControllerListener());
 	}
 
 	@Override

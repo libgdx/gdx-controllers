@@ -80,12 +80,13 @@ public class JamepadControllerManager extends AbstractControllerManager implemen
         Gdx.app.error("Jamepad", controllerManager.getLastNativeError());
     }
 
-    private class ManageControllers extends ControllerAdapter {
+    private class ManageControllers extends ManageCurrentControllerListener {
         @Override
         public void connected(Controller controller) {
             synchronized (controllers) {
                 controllers.add(controller);
             }
+            super.connected(controller);
         }
 
         @Override
@@ -93,6 +94,7 @@ public class JamepadControllerManager extends AbstractControllerManager implemen
             synchronized (controllers) {
                 controllers.removeValue(controller, true);
             }
+            super.disconnected(controller);
         }
     }
 }
