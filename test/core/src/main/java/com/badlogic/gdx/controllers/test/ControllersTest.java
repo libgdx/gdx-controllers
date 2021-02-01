@@ -42,11 +42,12 @@ public class ControllersTest extends ApplicationAdapter {
     public Label buttonLeftStick;
     public Label buttonRightStick;
     private Stage stage;
-    private Array<String> controllerNames = new Array<>();
     private TextButton playerIndexButton;
 
     private Controller selectedController;
     private SelectBox<String> controllerList;
+    private Controller markedCurrentController;
+    private boolean automaticChangeEvent;
     private ControllerListener controllerListener;
     private Skin skin;
     private Label callbackLabel;
@@ -123,7 +124,6 @@ public class ControllersTest extends ApplicationAdapter {
             }
         });
 
-        controllerList.setItems(controllerNames);
         controllerList.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -134,7 +134,9 @@ public class ControllersTest extends ApplicationAdapter {
                     selectedController = null;
                 } else {
                     selectedController = Controllers.getControllers().get(index - 1);
-                    selectedController.startVibration(200, 1);
+                    if (!automaticChangeEvent) {
+                        selectedController.startVibration(200, 1);
+                    }
                 }
                 callbackCount = 0;
                 addAxisLabels();
@@ -273,22 +275,30 @@ public class ControllersTest extends ApplicationAdapter {
     }
 
     private void refreshControllersList() {
-        controllerNames = new Array<>();
-        Array<Controller> controllers = new Array<>();
+        Array<String> controllerNames = new Array<>();
+        markedCurrentController = Controllers.getCurrent();
+        int markedIndex = 0;
         controllerNames.add("Select...");
         Gdx.app.log("Controllers", Controllers.getControllers().size + " controllers connected.");
         for (int i = 0; i < Controllers.getControllers().size; i++) {
             Controller controller = Controllers.getControllers().get(i);
             String name = controller.getName();
             Gdx.app.log("Controllers", name + "/" + controller.getUniqueId());
+
+            if (controller == markedCurrentController) {
+                name = "-> " + name;
+                markedIndex = controllerNames.size;
+            }
+
             if (name.length() > 30)
                 name = name.substring(0, 28) + "...";
             controllerNames.add(name);
-            controllers.add(controller);
             controller.addListener(controllerListener);
         }
         controllerList.setItems(controllerNames);
-        controllerList.setSelectedIndex(0);
+        automaticChangeEvent = true;
+        controllerList.setSelectedIndex(markedIndex);
+        automaticChangeEvent = false;
     }
 
     @Override
@@ -302,6 +312,10 @@ public class ControllersTest extends ApplicationAdapter {
         vibrateButton.setText(selectedController == null || !selectedController.canVibrate() ? "N/A" : selectedController.isVibrating() ? "Vibrating" : "Click to start");
         buttonNum.setText(selectedController == null ? "N/A" : selectedController.getMinButtonIndex() + " to " + selectedController.getMaxButtonIndex());
         powerLevel.setText(selectedController == null ? "N/A" : selectedController.getPowerLevel().toString());
+
+        if (markedCurrentController != Controllers.getCurrent()) {
+            refreshControllersList();
+        }
 
         stage.act();
         stage.draw();
