@@ -2,8 +2,9 @@ name: Compile and publish snapshot
 
 on:
   push:
-    branches: [ master ]
-
+    branches:
+      - master
+      - release/**
 jobs:
   build:
 
