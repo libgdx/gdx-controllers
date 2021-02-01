@@ -92,7 +92,7 @@ public class GwtController implements Controller {
 
 	@Override
 	public void cancelVibration() {
-
+		startVibration(0, 0);
 	}
 
 	@Override
