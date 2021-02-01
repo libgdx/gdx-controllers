@@ -26,19 +26,17 @@ import android.view.View.OnKeyListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.LifecycleListener;
 import com.badlogic.gdx.backends.android.AndroidInput;
-import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.AbstractControllerManager;
 import com.badlogic.gdx.controllers.ControllerListener;
-import com.badlogic.gdx.controllers.ControllerManager;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.IntMap.Entry;
 import com.badlogic.gdx.utils.Pool;
 
-public class AndroidControllers implements LifecycleListener, ControllerManager, OnKeyListener, OnGenericMotionListener {
+public class AndroidControllers extends AbstractControllerManager implements LifecycleListener, OnKeyListener, OnGenericMotionListener {
 	private final static String TAG = "AndroidControllers";
 	public static boolean ignoreNoGamepadButtons = true;
 	private final IntMap<AndroidController> controllerMap = new IntMap<AndroidController>();
-	private final Array<Controller> controllers = new Array<Controller>();
 	private final Array<ControllerListener> listeners = new Array<ControllerListener>();
 	private final Array<AndroidControllerEvent> eventQueue = new Array<AndroidControllerEvent>();
 	private final Pool<AndroidControllerEvent> eventPool = new Pool<AndroidControllerEvent>() {
@@ -243,10 +241,7 @@ public class AndroidControllers implements LifecycleListener, ControllerManager,
 				event.code = keyCode;
 				eventQueue.add(event);
 			}
-			if (keyCode == KeyEvent.KEYCODE_BACK && !Gdx.input.isCatchBackKey()) {
-				return false;
-			}
-			return true;
+			return keyCode != KeyEvent.KEYCODE_BACK || Gdx.input.isCatchBackKey();
 		} else {
 			return false;
 		}
@@ -316,11 +311,6 @@ public class AndroidControllers implements LifecycleListener, ControllerManager,
 		return ((device.getSources() & InputDevice.SOURCE_CLASS_JOYSTICK) == InputDevice.SOURCE_CLASS_JOYSTICK)
 				&& (((device.getSources() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD)
 				|| (device.getKeyboardType() != InputDevice.KEYBOARD_TYPE_ALPHABETIC));
-	}
-
-	@Override
-	public Array<Controller> getControllers () {
-		return controllers;
 	}
 
 	@Override
