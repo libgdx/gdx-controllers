@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.IntMap;
+import com.badlogic.gdx.controllers.desktop.JamepadControllerManager;
 import com.studiohartman.jamepad.ControllerIndex;
 import com.studiohartman.jamepad.ControllerManager;
 
@@ -28,8 +29,8 @@ public class JamepadControllerMonitor implements Runnable {
     }
 
     private void checkForNewControllers() {
-        int newNumControllers = controllerManager.getNumControllers();
-        for (int i = 0; i < newNumControllers; i++) try {
+        int numControllers = JamepadControllerManager.jamepadConfiguration.maxNumControllers;
+        for (int i = 0; i < numControllers; i++) try {
             ControllerIndex controllerIndex = controllerManager.getControllerIndex(i);
 
             if (!indexToController.containsKey(controllerIndex.getIndex()) && controllerIndex.isConnected()) {
