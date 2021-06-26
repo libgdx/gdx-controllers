@@ -3,13 +3,14 @@ package com.badlogic.gdx.controllers.desktop;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.AbstractControllerManager;
 import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.ControllerAdapter;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.desktop.support.CompositeControllerListener;
 import com.badlogic.gdx.controllers.desktop.support.JamepadControllerMonitor;
 import com.badlogic.gdx.controllers.desktop.support.JamepadShutdownHook;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+
+import java.io.IOException;
 
 public class JamepadControllerManager extends AbstractControllerManager implements Disposable {
     // assign a Jamepad configuration to this field at game startup to override defaults
@@ -69,6 +70,13 @@ public class JamepadControllerManager extends AbstractControllerManager implemen
     @Override
     public void dispose() {
         controllerManager.quitSDLGamepad();
+    }
+
+    /**
+     * @see com.studiohartman.jamepad.ControllerManager#addMappingsFromFile(String)
+     */
+    public static void addMappingsFromFile(String path) throws IOException, IllegalStateException {
+        controllerManager.addMappingsFromFile(path);
     }
 
     /**
