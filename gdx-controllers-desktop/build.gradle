@@ -13,6 +13,37 @@ eclipse {
 	}
 }
 
+// downloads most up to date version of the SDL game controller database
+task getdb {
+	def source = 'https://raw.githubusercontent.com/gabomdq/SDL_GameControllerDB/master/gamecontrollerdb.txt'
+	def dest = 'src/main/resources/gamecontrollerdb.txt'
+
+	doFirst {
+		def f = project.file(dest)
+		println f.getAbsolutePath()
+		if(f.exists())
+			f.delete()
+		new URL(source).withInputStream { i -> f.withOutputStream { it << i } }
+		def lines = f.text.readLines()
+		def desktopOnlyLines = new ArrayList<String>(lines.size())
+		def lastHeader = null;
+		for(line in lines) {
+			if (line.startsWith('# '))
+				lastHeader = line.substring(2)
+
+			if (!lastHeader.equals('Android') && !lastHeader.equals('iOS'))
+				desktopOnlyLines.add(line)
+		}
+
+		f.write(desktopOnlyLines.join('\n'))
+	}
+}
+
+tasks.getByName('processResources') {
+	dependsOn getdb
+}
+
+
 dependencies {
 	api project(":gdx-controllers-core")
 	implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
