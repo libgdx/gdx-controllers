@@ -19,10 +19,9 @@ task getdb {
 	def dest = 'src/main/resources/gamecontrollerdb.txt'
 
 	doFirst {
-		try
-		{
-			def f = project.file(dest)
+		def f = project.file(dest)
 
+		try {
 			if(!f.parentFile.exists())
 				f.parentFile.mkdirs()
 
@@ -42,10 +41,11 @@ task getdb {
 
 			f.write(desktopOnlyLines.join('\n'))
 			logger.info("Updated gamecontrollerdb.txt from github server")
-		}
-		catch (ex)
-		{
-			logger.warn("Failed to update gamecontrollerdb.txt from github server", ex)
+		} catch(ex) {
+			if(!f.exists())
+				throw new GradleException('Failed to download gamecontrollerdb.txt from github and no cached version exists, aborting', ex)
+			else
+				logger.warn("Failed to update gamecontrollerdb.txt from github, using cached version", ex)
 		}
 	}
 }
