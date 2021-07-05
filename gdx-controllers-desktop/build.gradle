@@ -22,7 +22,6 @@ task getdb {
 		try
 		{
 			def f = project.file(dest)
-			println f.getAbsolutePath()
 
 			if(!f.parentFile.exists())
 				f.parentFile.mkdirs()
