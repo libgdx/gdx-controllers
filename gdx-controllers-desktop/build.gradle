@@ -13,6 +13,48 @@ eclipse {
 	}
 }
 
+// downloads most up to date version of the SDL game controller database
+task getdb {
+	def source = 'https://raw.githubusercontent.com/gabomdq/SDL_GameControllerDB/master/gamecontrollerdb.txt'
+	def dest = 'src/main/resources/gamecontrollerdb.txt'
+
+	doFirst {
+		def f = project.file(dest)
+
+		try {
+			if(!f.parentFile.exists())
+				f.parentFile.mkdirs()
+
+			new URL(source).withInputStream { i -> f.withOutputStream { it << i } }
+
+			def lines = f.text.readLines()
+			def desktopOnlyLines = new ArrayList<String>(lines.size())
+			def lastHeader = null
+
+			for(line in lines) {
+				if (line.startsWith('# '))
+					lastHeader = line.substring(2)
+
+				if (!lastHeader.equals('Android') && !lastHeader.equals('iOS'))
+					desktopOnlyLines.add(line)
+			}
+
+			f.write(desktopOnlyLines.join('\n'))
+			logger.info("Updated gamecontrollerdb.txt from github server")
+		} catch(ex) {
+			if(!f.exists())
+				throw new GradleException('Failed to download gamecontrollerdb.txt from github and no cached version exists, aborting', ex)
+			else
+				logger.warn("Failed to update gamecontrollerdb.txt from github, using cached version", ex)
+		}
+	}
+}
+
+tasks.getByName('processResources') {
+	dependsOn getdb
+}
+
+
 dependencies {
 	api project(":gdx-controllers-core")
 	implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
