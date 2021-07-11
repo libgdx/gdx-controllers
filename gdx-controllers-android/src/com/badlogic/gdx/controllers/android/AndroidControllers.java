@@ -254,7 +254,6 @@ public class AndroidControllers extends AbstractControllerManager implements Lif
 		removedControllers.putAll(controllerMap);
 		
 		for(int deviceId: InputDevice.getDeviceIds()) {
-			InputDevice device = InputDevice.getDevice(deviceId);
 			AndroidController controller = controllerMap.get(deviceId);
 			if(controller != null) {
 				removedControllers.remove(deviceId);
@@ -311,7 +310,8 @@ public class AndroidControllers extends AbstractControllerManager implements Lif
 	private boolean isController(InputDevice device) {
 		return ((device.getSources() & InputDevice.SOURCE_CLASS_JOYSTICK) == InputDevice.SOURCE_CLASS_JOYSTICK)
 				&& (((device.getSources() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD)
-				|| (device.getKeyboardType() != InputDevice.KEYBOARD_TYPE_ALPHABETIC));
+				|| (device.getKeyboardType() != InputDevice.KEYBOARD_TYPE_ALPHABETIC))
+				&& !"uinput-fpc".equals(device.getName());
 	}
 
 	@Override
