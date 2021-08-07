@@ -28,10 +28,8 @@ public class JamepadControllerManager extends AbstractControllerManager implemen
             if (jamepadConfiguration == null) {
                 jamepadConfiguration = new com.studiohartman.jamepad.Configuration();
             }
-            String mappingsPath = "gamecontrollerdb.txt";
 
-
-            controllerManager = new com.studiohartman.jamepad.ControllerManager(jamepadConfiguration, mappingsPath);
+            controllerManager = new com.studiohartman.jamepad.ControllerManager(jamepadConfiguration);
             controllerManager.initSDLGamepad();
 
             JamepadControllerMonitor monitor = new JamepadControllerMonitor(controllerManager, compositeListener);
