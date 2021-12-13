@@ -35,7 +35,7 @@ public class JamepadController implements Controller {
     private final IntMap<Float> axisState = new IntMap<>();
     private final String uuid;
     private boolean connected = true;
-    private boolean canVibrate = true;
+    private Boolean canVibrate = null;
     private long vibrationEndMs;
     private int axisCount = -1;
     private int maxButtonIndex = -1;
@@ -162,6 +162,14 @@ public class JamepadController implements Controller {
 
     @Override
     public boolean canVibrate() {
+        if (canVibrate == null) {
+            try {
+                canVibrate = controllerIndex.canVibrate();
+            } catch (ControllerUnpluggedException e) {
+                setDisconnected();
+            }
+        }
+
         return canVibrate;
     }
 
@@ -176,8 +184,6 @@ public class JamepadController implements Controller {
             if (controllerIndex.doVibration(strength, strength, duration)) {
                 vibrationEndMs = TimeUtils.millis() + duration;
                 canVibrate = true;
-            } else {
-                canVibrate = false;
             }
         } catch (ControllerUnpluggedException e) {
             setDisconnected();
