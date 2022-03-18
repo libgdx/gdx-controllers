@@ -29,14 +29,14 @@ public interface Controller {
 
 	/** @param buttonCode
 	 * @return whether the button is pressed. */
-	public boolean getButton (int buttonCode);
+	boolean getButton (int buttonCode);
 
 	/** @param axisCode
 	 * @return the value of the axis, between -1 and 1 */
-	public float getAxis (int axisCode);
+	float getAxis (int axisCode);
 
 	/** @return the device name */
-	public String getName ();
+	String getName ();
 
 	/**
 	 * @return unique ID to recognize this controller if more than one of the same controller models are connected.
@@ -122,9 +122,9 @@ public interface Controller {
 	/** Adds a new {@link ControllerListener} to this {@link Controller}. The listener will receive calls in case the state of the
 	 * controller changes. The listener will be invoked on the rendering thread.
 	 * @param listener */
-	public void addListener (ControllerListener listener);
+	void addListener (ControllerListener listener);
 
 	/** Removes the given {@link ControllerListener}
 	 * @param listener */
-	public void removeListener (ControllerListener listener);
+	void removeListener (ControllerListener listener);
 }
