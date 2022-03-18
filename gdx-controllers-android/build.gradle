@@ -4,7 +4,7 @@ project.group = 'com.badlogicgames.gdx-controllers'
 
 android {
 
-    compileSdkVersion "${compileSdk}"
+    compileSdkVersion 29
     buildToolsVersion "${buildTools}"
 
     defaultConfig {
