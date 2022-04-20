@@ -24,7 +24,7 @@ allprojects {
         appName = 'gdx-controllers'
         gdxVersion = '1.9.11'
         roboVMVersion = '2.3.12'
-        jamepadVersion = '2.0.18.0-SNAPSHOT'
+        jamepadVersion = '2.0.20.0'
 
         isReleaseBuild = {
             return project.hasProperty("RELEASE")
