@@ -17,9 +17,6 @@ allprojects {
     apply plugin: "idea"
 
     ext {
-        minSdk = 16
-        targetSdk = 29
-        buildTools = '29.0.3'
 
         appName = 'gdx-controllers'
         gdxVersion = '1.9.11'

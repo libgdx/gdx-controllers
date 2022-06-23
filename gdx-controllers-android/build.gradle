@@ -5,11 +5,11 @@ project.group = 'com.badlogicgames.gdx-controllers'
 android {
 
     compileSdkVersion 29
-    buildToolsVersion "${buildTools}"
+    buildToolsVersion '29.0.3'
 
     defaultConfig {
-        minSdkVersion minSdk
-        targetSdkVersion targetSdk
+        minSdkVersion 16
+        targetSdkVersion 29
     }
 
     sourceSets {
