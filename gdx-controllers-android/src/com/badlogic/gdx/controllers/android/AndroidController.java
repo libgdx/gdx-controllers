@@ -27,6 +27,8 @@ import com.badlogic.gdx.controllers.ControllerPowerLevel;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntIntMap;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.UUID;
 
 public class AndroidController implements Controller {
@@ -53,48 +55,44 @@ public class AndroidController implements Controller {
 		this.connected = true;
 
 		InputDevice device = InputDevice.getDevice(deviceId);
-		int numAxes = 0;
+		ArrayList<Integer> axesIDList = new ArrayList<>();
 		for (MotionRange range : device.getMotionRanges()) {
 			if ((range.getSource() & InputDevice.SOURCE_CLASS_JOYSTICK) != 0) {
-				if (range.getAxis() == MotionEvent.AXIS_HAT_X || range.getAxis() == MotionEvent.AXIS_HAT_Y){
-					povAxis = true;
-				} else if (range.getAxis() == MotionEvent.AXIS_LTRIGGER || range.getAxis() == MotionEvent.AXIS_RTRIGGER){
-					triggerAxis = true;
-				} else  {
-					numAxes += 1;
-				}
+				axesIDList.add(range.getAxis());
 			}
 		}
 
-		axesIds = new int[numAxes];
-		axes = new float[numAxes];
-		int i = 0;
-		for (MotionRange range : device.getMotionRanges()) {
-			if ((range.getSource() & InputDevice.SOURCE_CLASS_JOYSTICK) != 0) {
-				if (range.getAxis() != MotionEvent.AXIS_HAT_X && range.getAxis() != MotionEvent.AXIS_HAT_Y
-					&& range.getAxis() != MotionEvent.AXIS_LTRIGGER && range.getAxis() != MotionEvent.AXIS_RTRIGGER) {
-					axesIds[i++] = range.getAxis();
-				}
+		//remove pov axis as it will be mapped to buttons
+		if (axesIDList.contains(MotionEvent.AXIS_HAT_X) && axesIDList.contains(MotionEvent.AXIS_HAT_Y)){
+			povAxis = true;
+			axesIDList.remove(MotionEvent.AXIS_HAT_X);
+			axesIDList.remove(MotionEvent.AXIS_HAT_Y);
+		}
+
+		if (AndroidControllers.useNewAxisLogic){
+			//remove trigger axis as it will be mapped to buttons
+			if (axesIDList.contains(MotionEvent.AXIS_LTRIGGER) && axesIDList.contains(MotionEvent.AXIS_RTRIGGER)){
+				triggerAxis = true;
+				axesIDList.remove(MotionEvent.AXIS_LTRIGGER);
+				axesIDList.remove(MotionEvent.AXIS_RTRIGGER);
+			}
+
+			//move left and right sticks to indices 0-3, to match default controller mapping
+			if (axesIDList.contains(MotionEvent.AXIS_X) && axesIDList.contains(MotionEvent.AXIS_Y)){
+				axesIDList.add(0, axesIDList.remove(MotionEvent.AXIS_X));
+				axesIDList.add(1, axesIDList.remove(MotionEvent.AXIS_Y));
+			}
+			if (axesIDList.contains(MotionEvent.AXIS_Z) && axesIDList.contains(MotionEvent.AXIS_RZ)){
+				axesIDList.add(2, axesIDList.remove(MotionEvent.AXIS_Z));
+				axesIDList.add(3, axesIDList.remove(MotionEvent.AXIS_RZ));
 			}
 		}
 
-		//attempt to place left and right sticks in indices 0-3, to match default controller mapping
-		i = 0;
-		for (int id : axesIds){
-			if (id == MotionEvent.AXIS_X && i != 0){
-				axesIds[i] = axesIds[0];
-				axesIds[0] = id;
-			} else if (id == MotionEvent.AXIS_Y && i != 1){
-				axesIds[i] = axesIds[1];
-				axesIds[1] = id;
-			} else if (id == MotionEvent.AXIS_Z && i != 2){
-				axesIds[i] = axesIds[2];
-				axesIds[2] = id;
-			} else if (id == MotionEvent.AXIS_RZ && i != 3){
-				axesIds[i] = axesIds[3];
-				axesIds[3] = id;
-			}
-			i++;
+		axesIds = new int[axesIDList.size()];
+		axes = new float[axesIDList.size()];
+
+		for (int i = 0; i < axesIds.length; i++){
+			axesIds[i] = axesIDList.get(i);
 		}
 
 	}

@@ -36,6 +36,7 @@ import com.badlogic.gdx.utils.Pool;
 public class AndroidControllers extends AbstractControllerManager implements LifecycleListener, OnKeyListener, OnGenericMotionListener {
 	private final static String TAG = "AndroidControllers";
 	public static boolean ignoreNoGamepadButtons = true;
+	public static boolean useNewAxisLogic = true;
 	private final IntMap<AndroidController> controllerMap = new IntMap<AndroidController>();
 	private final Array<ControllerListener> listeners = new Array<ControllerListener>();
 	private final Array<AndroidControllerEvent> eventQueue = new Array<AndroidControllerEvent>();
