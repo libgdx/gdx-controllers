@@ -39,6 +39,9 @@ public class AndroidController implements Controller {
 	protected float povX = 0f;
 	protected float povY = 0f;
 	private boolean povAxis;
+	protected float lTrigger = 0f;
+	protected float rTrigger = 0f;
+	private boolean triggerAxis;
 	private final Array<ControllerListener> listeners = new Array<ControllerListener>();
 	private String uuid;
 	public boolean connected;
@@ -53,10 +56,12 @@ public class AndroidController implements Controller {
 		int numAxes = 0;
 		for (MotionRange range : device.getMotionRanges()) {
 			if ((range.getSource() & InputDevice.SOURCE_CLASS_JOYSTICK) != 0) {
-				if (range.getAxis() != MotionEvent.AXIS_HAT_X && range.getAxis() != MotionEvent.AXIS_HAT_Y) {
-					numAxes += 1;
-				} else {
+				if (range.getAxis() == MotionEvent.AXIS_HAT_X || range.getAxis() == MotionEvent.AXIS_HAT_Y){
 					povAxis = true;
+				} else if (range.getAxis() == MotionEvent.AXIS_LTRIGGER || range.getAxis() == MotionEvent.AXIS_RTRIGGER){
+					triggerAxis = true;
+				} else  {
+					numAxes += 1;
 				}
 			}
 		}
@@ -66,11 +71,32 @@ public class AndroidController implements Controller {
 		int i = 0;
 		for (MotionRange range : device.getMotionRanges()) {
 			if ((range.getSource() & InputDevice.SOURCE_CLASS_JOYSTICK) != 0) {
-				if (range.getAxis() != MotionEvent.AXIS_HAT_X && range.getAxis() != MotionEvent.AXIS_HAT_Y) {
+				if (range.getAxis() != MotionEvent.AXIS_HAT_X && range.getAxis() != MotionEvent.AXIS_HAT_Y
+					&& range.getAxis() != MotionEvent.AXIS_LTRIGGER && range.getAxis() != MotionEvent.AXIS_RTRIGGER) {
 					axesIds[i++] = range.getAxis();
 				}
 			}
 		}
+
+		//attempt to place left and right sticks in indices 0-3, to match default controller mapping
+		i = 0;
+		for (int id : axesIds){
+			if (id == MotionEvent.AXIS_X && i != 0){
+				axesIds[i] = axesIds[0];
+				axesIds[0] = id;
+			} else if (id == MotionEvent.AXIS_Y && i != 1){
+				axesIds[i] = axesIds[1];
+				axesIds[1] = id;
+			} else if (id == MotionEvent.AXIS_Z && i != 2){
+				axesIds[i] = axesIds[2];
+				axesIds[2] = id;
+			} else if (id == MotionEvent.AXIS_RZ && i != 3){
+				axesIds[i] = axesIds[3];
+				axesIds[3] = id;
+			}
+			i++;
+		}
+
 	}
 
 	public boolean isAttached () {
@@ -79,6 +105,10 @@ public class AndroidController implements Controller {
 
 	public boolean hasPovAxis() {
 		return povAxis;
+	}
+
+	public boolean hasTriggerAxis(){
+		return triggerAxis;
 	}
 
 	public void setAttached (boolean attached) {
