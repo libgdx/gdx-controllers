@@ -28,7 +28,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntIntMap;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.UUID;
 
 public class AndroidController implements Controller {
@@ -65,26 +64,30 @@ public class AndroidController implements Controller {
 		//remove pov axis as it will be mapped to buttons
 		if (axesIDList.contains(MotionEvent.AXIS_HAT_X) && axesIDList.contains(MotionEvent.AXIS_HAT_Y)){
 			povAxis = true;
-			axesIDList.remove(MotionEvent.AXIS_HAT_X);
-			axesIDList.remove(MotionEvent.AXIS_HAT_Y);
+			axesIDList.remove((Integer)MotionEvent.AXIS_HAT_X);
+			axesIDList.remove((Integer)MotionEvent.AXIS_HAT_Y);
 		}
 
 		if (AndroidControllers.useNewAxisLogic){
 			//remove trigger axis as it will be mapped to buttons
 			if (axesIDList.contains(MotionEvent.AXIS_LTRIGGER) && axesIDList.contains(MotionEvent.AXIS_RTRIGGER)){
 				triggerAxis = true;
-				axesIDList.remove(MotionEvent.AXIS_LTRIGGER);
-				axesIDList.remove(MotionEvent.AXIS_RTRIGGER);
+				axesIDList.remove((Integer)MotionEvent.AXIS_LTRIGGER);
+				axesIDList.remove((Integer)MotionEvent.AXIS_RTRIGGER);
 			}
 
 			//move left and right sticks to indices 0-3, to match default controller mapping
 			if (axesIDList.contains(MotionEvent.AXIS_X) && axesIDList.contains(MotionEvent.AXIS_Y)){
-				axesIDList.add(0, axesIDList.remove(MotionEvent.AXIS_X));
-				axesIDList.add(1, axesIDList.remove(MotionEvent.AXIS_Y));
+				axesIDList.remove((Integer)MotionEvent.AXIS_X);
+				axesIDList.remove((Integer)MotionEvent.AXIS_Y);
+				axesIDList.add(0, MotionEvent.AXIS_X);
+				axesIDList.add(1, MotionEvent.AXIS_Y);
 			}
 			if (axesIDList.contains(MotionEvent.AXIS_Z) && axesIDList.contains(MotionEvent.AXIS_RZ)){
-				axesIDList.add(2, axesIDList.remove(MotionEvent.AXIS_Z));
-				axesIDList.add(3, axesIDList.remove(MotionEvent.AXIS_RZ));
+				axesIDList.remove((Integer)MotionEvent.AXIS_Z);
+				axesIDList.remove((Integer)MotionEvent.AXIS_RZ);
+				axesIDList.add(2, MotionEvent.AXIS_Z);
+				axesIDList.add(3, MotionEvent.AXIS_RZ);
 			}
 		}
 
