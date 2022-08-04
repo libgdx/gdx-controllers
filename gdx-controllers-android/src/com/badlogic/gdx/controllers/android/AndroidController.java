@@ -27,6 +27,7 @@ import com.badlogic.gdx.controllers.ControllerPowerLevel;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntIntMap;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class AndroidController implements Controller {
@@ -39,6 +40,9 @@ public class AndroidController implements Controller {
 	protected float povX = 0f;
 	protected float povY = 0f;
 	private boolean povAxis;
+	protected float lTrigger = 0f;
+	protected float rTrigger = 0f;
+	private boolean triggerAxis;
 	private final Array<ControllerListener> listeners = new Array<ControllerListener>();
 	private String uuid;
 	public boolean connected;
@@ -50,27 +54,50 @@ public class AndroidController implements Controller {
 		this.connected = true;
 
 		InputDevice device = InputDevice.getDevice(deviceId);
-		int numAxes = 0;
+		ArrayList<Integer> axesIDList = new ArrayList<>();
 		for (MotionRange range : device.getMotionRanges()) {
 			if ((range.getSource() & InputDevice.SOURCE_CLASS_JOYSTICK) != 0) {
-				if (range.getAxis() != MotionEvent.AXIS_HAT_X && range.getAxis() != MotionEvent.AXIS_HAT_Y) {
-					numAxes += 1;
-				} else {
-					povAxis = true;
-				}
+				axesIDList.add(range.getAxis());
 			}
 		}
 
-		axesIds = new int[numAxes];
-		axes = new float[numAxes];
-		int i = 0;
-		for (MotionRange range : device.getMotionRanges()) {
-			if ((range.getSource() & InputDevice.SOURCE_CLASS_JOYSTICK) != 0) {
-				if (range.getAxis() != MotionEvent.AXIS_HAT_X && range.getAxis() != MotionEvent.AXIS_HAT_Y) {
-					axesIds[i++] = range.getAxis();
-				}
+		//remove pov axis as it will be mapped to buttons
+		if (axesIDList.contains(MotionEvent.AXIS_HAT_X) && axesIDList.contains(MotionEvent.AXIS_HAT_Y)){
+			povAxis = true;
+			axesIDList.remove((Integer)MotionEvent.AXIS_HAT_X);
+			axesIDList.remove((Integer)MotionEvent.AXIS_HAT_Y);
+		}
+
+		if (AndroidControllers.useNewAxisLogic){
+			//remove trigger axis as it will be mapped to buttons
+			if (axesIDList.contains(MotionEvent.AXIS_LTRIGGER) && axesIDList.contains(MotionEvent.AXIS_RTRIGGER)){
+				triggerAxis = true;
+				axesIDList.remove((Integer)MotionEvent.AXIS_LTRIGGER);
+				axesIDList.remove((Integer)MotionEvent.AXIS_RTRIGGER);
+			}
+
+			//move left and right sticks to indices 0-3, to match default controller mapping
+			if (axesIDList.contains(MotionEvent.AXIS_X) && axesIDList.contains(MotionEvent.AXIS_Y)){
+				axesIDList.remove((Integer)MotionEvent.AXIS_X);
+				axesIDList.remove((Integer)MotionEvent.AXIS_Y);
+				axesIDList.add(0, MotionEvent.AXIS_X);
+				axesIDList.add(1, MotionEvent.AXIS_Y);
+			}
+			if (axesIDList.contains(MotionEvent.AXIS_Z) && axesIDList.contains(MotionEvent.AXIS_RZ)){
+				axesIDList.remove((Integer)MotionEvent.AXIS_Z);
+				axesIDList.remove((Integer)MotionEvent.AXIS_RZ);
+				axesIDList.add(2, MotionEvent.AXIS_Z);
+				axesIDList.add(3, MotionEvent.AXIS_RZ);
 			}
 		}
+
+		axesIds = new int[axesIDList.size()];
+		axes = new float[axesIDList.size()];
+
+		for (int i = 0; i < axesIds.length; i++){
+			axesIds[i] = axesIDList.get(i);
+		}
+
 	}
 
 	public boolean isAttached () {
@@ -79,6 +106,10 @@ public class AndroidController implements Controller {
 
 	public boolean hasPovAxis() {
 		return povAxis;
+	}
+
+	public boolean hasTriggerAxis(){
+		return triggerAxis;
 	}
 
 	public void setAttached (boolean attached) {

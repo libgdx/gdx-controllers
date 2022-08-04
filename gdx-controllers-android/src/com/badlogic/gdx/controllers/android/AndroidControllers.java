@@ -36,6 +36,7 @@ import com.badlogic.gdx.utils.Pool;
 public class AndroidControllers extends AbstractControllerManager implements LifecycleListener, OnKeyListener, OnGenericMotionListener {
 	private final static String TAG = "AndroidControllers";
 	public static boolean ignoreNoGamepadButtons = true;
+	public static boolean useNewAxisLogic = true;
 	private final IntMap<AndroidController> controllerMap = new IntMap<AndroidController>();
 	private final Array<ControllerListener> listeners = new Array<ControllerListener>();
 	private final Array<AndroidControllerEvent> eventQueue = new Array<AndroidControllerEvent>();
@@ -200,6 +201,47 @@ public class AndroidControllers extends AbstractControllerManager implements Lif
 					}
 				}
 
+				if (controller.hasTriggerAxis()){
+					float lTrigger = motionEvent.getAxisValue(MotionEvent.AXIS_LTRIGGER);
+					float rTrigger = motionEvent.getAxisValue(MotionEvent.AXIS_RTRIGGER);
+					//map axis movement to trigger buttons
+					if (lTrigger != controller.lTrigger){
+						if (lTrigger == 1){
+							AndroidControllerEvent event = eventPool.obtain();
+							event.controller = controller;
+							event.type = AndroidControllerEvent.BUTTON_DOWN;
+							event.code = KeyEvent.KEYCODE_BUTTON_L2;
+							eventQueue.add(event);
+						} else if (lTrigger == 0){
+							AndroidControllerEvent event = eventPool.obtain();
+							event.controller = controller;
+							event.type = AndroidControllerEvent.BUTTON_UP;
+							event.code = KeyEvent.KEYCODE_BUTTON_L2;
+							eventQueue.add(event);
+						}
+						controller.lTrigger = lTrigger;
+
+					}
+
+					if (rTrigger != controller.rTrigger){
+						if (rTrigger == 1){
+							AndroidControllerEvent event = eventPool.obtain();
+							event.controller = controller;
+							event.type = AndroidControllerEvent.BUTTON_DOWN;
+							event.code = KeyEvent.KEYCODE_BUTTON_R2;
+							eventQueue.add(event);
+						} else if (rTrigger == 0){
+							AndroidControllerEvent event = eventPool.obtain();
+							event.controller = controller;
+							event.type = AndroidControllerEvent.BUTTON_UP;
+							event.code = KeyEvent.KEYCODE_BUTTON_R2;
+							eventQueue.add(event);
+						}
+						controller.rTrigger = rTrigger;
+
+					}
+				}
+
 				int axisIndex = 0;
             	for (int axisId: controller.axesIds) {
 					float axisValue = motionEvent.getAxisValue(axisId);
@@ -229,6 +271,10 @@ public class AndroidControllers extends AbstractControllerManager implements Lif
 		AndroidController controller = controllerMap.get(keyEvent.getDeviceId());
 		if(controller != null) {
 			if(controller.getButton(keyCode) && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+				return true;
+			}
+			//ignore any button trigger input if there is a trigger axis
+			if (controller.hasTriggerAxis() && (keyCode == KeyEvent.KEYCODE_BUTTON_L2 || keyCode == KeyEvent.KEYCODE_BUTTON_R2)){
 				return true;
 			}
 			synchronized(eventQueue) {
