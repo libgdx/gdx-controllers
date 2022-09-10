@@ -12,6 +12,8 @@ public class JamepadControllerMonitor implements Runnable {
     private final ControllerManager controllerManager;
     private final ControllerListener listener;
     private final IntMap<Tuple> indexToController = new IntMap<>();
+    //temporary array for cleaning disconnected controllers
+    private final IntArray disconnectedControllers = new IntArray();
 
     public JamepadControllerMonitor(ControllerManager controllerManager, ControllerListener listener) {
         this.controllerManager = controllerManager;
@@ -46,7 +48,7 @@ public class JamepadControllerMonitor implements Runnable {
     }
 
     private void update() {
-        IntArray disconnectedControllers = new IntArray(indexToController.size);
+        disconnectedControllers.clear();
         for (Tuple tuple : indexToController.values()) {
             JamepadController controller = tuple.controller;
             boolean connected = controller.update();
