@@ -32,7 +32,7 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
  * 
  * @author Nathan Sweet */
 public class Controllers {
-	private static final String TAG = "Controllers";
+	private static final String TAG = "ControllersOP";
 	static final ObjectMap<Application, ControllerManager> managers = new ObjectMap<Application, ControllerManager>();
     /**
      * The class name of a preferred {@link ControllerManager}. If this is null then an appropriate ControllerManager will
