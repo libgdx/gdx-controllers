@@ -76,8 +76,6 @@ public class ControllersTest extends ApplicationAdapter {
             }
         };
 
-        refreshControllersList();
-
         Controllers.addListener(new ControllerAdapter() {
             @Override
             public void connected(final Controller controller) {
@@ -226,6 +224,8 @@ public class ControllersTest extends ApplicationAdapter {
         stage.addActor(table);
 
         Gdx.input.setInputProcessor(stage);
+
+        refreshControllersList();
     }
 
     private void addAxisLabels() {
@@ -293,6 +293,9 @@ public class ControllersTest extends ApplicationAdapter {
             if (name.length() > 30)
                 name = name.substring(0, 28) + "...";
             controllerNames.add(name);
+
+            // avoid adding the listener to the same controller twice
+            controller.removeListener(controllerListener);
             controller.addListener(controllerListener);
         }
         controllerList.setItems(controllerNames);

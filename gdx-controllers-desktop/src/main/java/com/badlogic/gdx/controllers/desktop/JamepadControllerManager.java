@@ -36,7 +36,6 @@ public class JamepadControllerManager extends AbstractControllerManager implemen
             monitor.run();
 
             Gdx.app.addLifecycleListener(new JamepadShutdownHook(controllerManager));
-            Gdx.app.postRunnable(monitor);
 
             nativeLibInitialized = true;
         }

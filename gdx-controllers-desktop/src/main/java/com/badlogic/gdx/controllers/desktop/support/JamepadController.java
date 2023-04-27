@@ -30,10 +30,11 @@ public class JamepadController implements Controller {
     }
 
     private final CompositeControllerListener compositeControllerListener = new CompositeControllerListener();
-    private final ControllerIndex controllerIndex;
     private final IntMap<Boolean> buttonState = new IntMap<>();
     private final IntMap<Float> axisState = new IntMap<>();
     private final String uuid;
+    private final String name;
+    private ControllerIndex controllerIndex;
     private boolean connected = true;
     private Boolean canVibrate = null;
     private long vibrationEndMs;
@@ -43,6 +44,7 @@ public class JamepadController implements Controller {
     public JamepadController(ControllerIndex controllerIndex) {
         this.controllerIndex = controllerIndex;
         this.uuid = UUID.randomUUID().toString();
+        this.name = getInitialName();
         initializeState();
     }
 
@@ -51,7 +53,7 @@ public class JamepadController implements Controller {
         try {
             ControllerButton button = toButton(buttonCode);
             return button != null && controllerIndex.isButtonPressed(button);
-        } catch (ControllerUnpluggedException e) {
+        } catch (ControllerUnpluggedException | NullPointerException e) {
             setDisconnected();
         }
         return false;
@@ -67,26 +69,36 @@ public class JamepadController implements Controller {
             } else {
                 return controllerIndex.getAxisState(axis);
             }
-        } catch (ControllerUnpluggedException e) {
+        } catch (ControllerUnpluggedException | NullPointerException e) {
             setDisconnected();
         }
         return 0f;
     }
 
-    @Override
-    public String getName() {
+    private String getInitialName() {
         try {
             return controllerIndex.getName();
-        } catch (ControllerUnpluggedException e) {
-            setDisconnected();
+        } catch (ControllerUnpluggedException | NullPointerException e) {
+            // this is only called in the constructor, so disconnecting here wouldn't make sense
         }
         return "Unknown";
     }
 
-    private void setDisconnected() {
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    public void setControllerIndex(ControllerIndex controllerIndex) {
+        this.controllerIndex = controllerIndex;
+    }
+
+    public void setDisconnected() {
         if (connected) {
             connected = false;
-            logger.info("Failed querying controller at index: " + controllerIndex.getIndex());
+            if (controllerIndex != null) {
+                logger.info("Failed querying controller at index: " + controllerIndex.getIndex());
+            }
             compositeControllerListener.disconnected(this);
         }
     }
@@ -165,7 +177,7 @@ public class JamepadController implements Controller {
         if (canVibrate == null) {
             try {
                 canVibrate = controllerIndex.canVibrate();
-            } catch (ControllerUnpluggedException e) {
+            } catch (ControllerUnpluggedException | NullPointerException e) {
                 setDisconnected();
             }
         }
@@ -185,7 +197,7 @@ public class JamepadController implements Controller {
                 vibrationEndMs = TimeUtils.millis() + duration;
                 canVibrate = true;
             }
-        } catch (ControllerUnpluggedException e) {
+        } catch (ControllerUnpluggedException | NullPointerException e) {
             setDisconnected();
         }
     }
@@ -212,7 +224,7 @@ public class JamepadController implements Controller {
     public int getPlayerIndex() {
         try {
             return controllerIndex.getPlayerIndex();
-        } catch (ControllerUnpluggedException e) {
+        } catch (ControllerUnpluggedException | NullPointerException e) {
             setDisconnected();
             return PLAYER_IDX_UNSET;
         }
@@ -222,7 +234,7 @@ public class JamepadController implements Controller {
     public void setPlayerIndex(int index) {
         try {
             controllerIndex.setPlayerIndex(index);
-        } catch (ControllerUnpluggedException e) {
+        } catch (ControllerUnpluggedException | NullPointerException e) {
             setDisconnected();
         }
     }
@@ -243,7 +255,7 @@ public class JamepadController implements Controller {
             while (maxButtonIndex > 0 && !controllerIndex.isButtonAvailable(CODE_TO_BUTTON.get(maxButtonIndex))) {
                 maxButtonIndex--;
             }
-        } catch (ControllerUnpluggedException e) {
+        } catch (ControllerUnpluggedException | NullPointerException e) {
             setDisconnected();
         }
 
@@ -261,7 +273,7 @@ public class JamepadController implements Controller {
             while (axisCount > 0 && !controllerIndex.isAxisAvailable(CODE_TO_AXIS.get(axisCount - 1))) {
                 axisCount--;
             }
-        } catch (ControllerUnpluggedException e) {
+        } catch (ControllerUnpluggedException | NullPointerException e) {
             setDisconnected();
         }
 
