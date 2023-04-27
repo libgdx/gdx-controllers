@@ -80,8 +80,10 @@ public class IosController extends AbstractController {
             });
 
         if (Foundation.getMajorSystemVersion() >= 14) try {
-            hapticEngine = controller.getHaptics().createEngine(GCHapticsLocality.Default);
-            hapticEngine.retain();
+            if (controller.getHaptics()!=null) {
+                hapticEngine = controller.getHaptics().createEngine(GCHapticsLocality.Default);
+                hapticEngine.retain();
+            }
         } catch (Throwable t) {
             Gdx.app.error("Controllers", "Failed to create haptics engine", t);
         }
