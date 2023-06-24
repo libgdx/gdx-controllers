@@ -4,6 +4,7 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.controllers.ControllerPowerLevel;
+import com.badlogic.gdx.utils.IntFloatMap;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -33,7 +34,7 @@ public class JamepadController implements Controller {
 
     private final CompositeControllerListener compositeControllerListener = new CompositeControllerListener();
     private final IntMap<Boolean> buttonState = new IntMap<>();
-    private final IntMap<FloatWrapper> axisState = new IntMap<>();
+    private final IntFloatMap axisState = new IntFloatMap();
     private final String uuid;
     private final String name;
     private ControllerIndex controllerIndex;
@@ -134,14 +135,13 @@ public class JamepadController implements Controller {
             int id = axis.ordinal();
 
             float value = getAxis(id);
-            FloatWrapper axisValueWrapper = axisState.get(id);
-            if (value != axisValueWrapper.value) {
+            if (value != axisState.get(id, 0)) {
                 if (logger.getLevel() == Logger.DEBUG) {
                     logger.debug("Axis [" + id + " - " + toAxis(id) + "] moved [" + value + "]");
                 }
                 compositeControllerListener.axisMoved(this, id, value);
             }
-            axisValueWrapper.value = value;
+            axisState.put(id, value);
         }
     }
 
@@ -167,7 +167,7 @@ public class JamepadController implements Controller {
 
     private void initializeState() {
         for (ControllerAxis axis : ControllerAxis.values()) {
-            axisState.put(axis.ordinal(), new FloatWrapper());
+            axisState.put(axis.ordinal(), 0);
         }
 
         for (ControllerButton button : ControllerButton.values()) {
