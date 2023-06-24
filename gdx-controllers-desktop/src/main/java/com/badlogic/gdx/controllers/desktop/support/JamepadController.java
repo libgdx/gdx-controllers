@@ -18,6 +18,8 @@ public class JamepadController implements Controller {
     private static final IntMap<ControllerButton> CODE_TO_BUTTON = new IntMap<>(ControllerButton.values().length);
     private static final IntMap<ControllerAxis> CODE_TO_AXIS = new IntMap<>(ControllerAxis.values().length);
     private static final Logger logger = new Logger(JamepadController.class.getSimpleName());
+    private static final ControllerButton[] CONTROLLER_BUTTON_VALUES = ControllerButton.values();
+    private static final ControllerAxis[] CONTROLLER_AXIS_VALUES = ControllerAxis.values();
 
     static {
         for (ControllerButton button : ControllerButton.values()) {
@@ -31,7 +33,7 @@ public class JamepadController implements Controller {
 
     private final CompositeControllerListener compositeControllerListener = new CompositeControllerListener();
     private final IntMap<Boolean> buttonState = new IntMap<>();
-    private final IntMap<Float> axisState = new IntMap<>();
+    private final IntMap<FloatWrapper> axisState = new IntMap<>();
     private final String uuid;
     private final String name;
     private ControllerIndex controllerIndex;
@@ -128,22 +130,23 @@ public class JamepadController implements Controller {
     }
 
     private void updateAxisState() {
-        for (ControllerAxis axis : ControllerAxis.values()) {
+        for (ControllerAxis axis : CONTROLLER_AXIS_VALUES) {
             int id = axis.ordinal();
 
             float value = getAxis(id);
-            if (value != axisState.get(id)) {
+            FloatWrapper axisValueWrapper = axisState.get(id);
+            if (value != axisValueWrapper.value) {
                 if (logger.getLevel() == Logger.DEBUG) {
                     logger.debug("Axis [" + id + " - " + toAxis(id) + "] moved [" + value + "]");
                 }
                 compositeControllerListener.axisMoved(this, id, value);
             }
-            axisState.put(id, value);
+            axisValueWrapper.value = value;
         }
     }
 
     private void updateButtonsState() {
-        for (ControllerButton button : ControllerButton.values()) {
+        for (ControllerButton button : CONTROLLER_BUTTON_VALUES) {
             int id = button.ordinal();
 
             boolean pressed = getButton(id);
@@ -164,7 +167,7 @@ public class JamepadController implements Controller {
 
     private void initializeState() {
         for (ControllerAxis axis : ControllerAxis.values()) {
-            axisState.put(axis.ordinal(), 0.0f);
+            axisState.put(axis.ordinal(), new FloatWrapper());
         }
 
         for (ControllerButton button : ControllerButton.values()) {
