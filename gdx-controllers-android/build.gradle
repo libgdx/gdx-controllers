@@ -29,15 +29,20 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 dependencies {
     implementation "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
-    api project(":gdx-controllers-core")
+    implementation project(":gdx-controllers-core")
 }
 
 ext {
     ARTIFACTID = 'gdx-controllers-android'
 }
-
-apply from : '../androidpublish.gradle'
