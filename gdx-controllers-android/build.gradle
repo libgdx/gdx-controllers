@@ -39,7 +39,7 @@ android {
 
 dependencies {
     implementation "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
-    implementation project(":gdx-controllers-core")
+    api project(":gdx-controllers-core")
 }
 
 ext {
