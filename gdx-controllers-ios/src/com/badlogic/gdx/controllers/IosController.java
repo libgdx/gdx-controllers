@@ -20,6 +20,7 @@ import org.robovm.apple.gamecontroller.GCControllerButtonInput;
 import org.robovm.apple.gamecontroller.GCControllerDirectionPad;
 import org.robovm.apple.gamecontroller.GCControllerElement;
 import org.robovm.apple.gamecontroller.GCControllerPlayerIndex;
+import org.robovm.apple.gamecontroller.GCDeviceBattery;
 import org.robovm.apple.gamecontroller.GCExtendedGamepad;
 import org.robovm.apple.gamecontroller.GCGamepad;
 import org.robovm.apple.gamecontroller.GCHapticsLocality;
@@ -415,9 +416,13 @@ public class IosController extends AbstractController {
     @Override
     public ControllerPowerLevel getPowerLevel() {
         if (Foundation.getMajorSystemVersion() >= 14) {
-            switch (controller.getBattery().getBatteryState()) {
+            GCDeviceBattery battery = controller.getBattery();
+            if (battery == null)
+                return ControllerPowerLevel.POWER_UNKNOWN;
+
+            switch (battery.getBatteryState()) {
                 case Discharging:
-                    float batteryLevel = controller.getBattery().getBatteryLevel();
+                    float batteryLevel = battery.getBatteryLevel();
                     if (batteryLevel <= 0.05f) {
                         return ControllerPowerLevel.POWER_EMPTY;
                     } else if (batteryLevel <= 0.20f) {
