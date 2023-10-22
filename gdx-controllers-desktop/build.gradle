@@ -1,6 +1,5 @@
 apply plugin: 'java-library'
 
-apply from: '../publish.gradle'
 
 configurations {
 	custom
