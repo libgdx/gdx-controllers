@@ -19,15 +19,16 @@ public class JamepadController implements Controller {
     private static final IntMap<ControllerButton> CODE_TO_BUTTON = new IntMap<>(ControllerButton.values().length);
     private static final IntMap<ControllerAxis> CODE_TO_AXIS = new IntMap<>(ControllerAxis.values().length);
     private static final Logger logger = new Logger(JamepadController.class.getSimpleName());
+    // ControllerButton.values() and ControllerAxis.values() is cached once, to avoid producing garbage every frame
     private static final ControllerButton[] CONTROLLER_BUTTON_VALUES = ControllerButton.values();
     private static final ControllerAxis[] CONTROLLER_AXIS_VALUES = ControllerAxis.values();
 
     static {
-        for (ControllerButton button : ControllerButton.values()) {
+        for (ControllerButton button : CONTROLLER_BUTTON_VALUES) {
             CODE_TO_BUTTON.put(button.ordinal(), button);
         }
 
-        for (ControllerAxis axis : ControllerAxis.values()) {
+        for (ControllerAxis axis : CONTROLLER_AXIS_VALUES) {
             CODE_TO_AXIS.put(axis.ordinal(), axis);
         }
     }
@@ -166,11 +167,11 @@ public class JamepadController implements Controller {
     }
 
     private void initializeState() {
-        for (ControllerAxis axis : ControllerAxis.values()) {
+        for (ControllerAxis axis : CONTROLLER_AXIS_VALUES) {
             axisState.put(axis.ordinal(), 0);
         }
 
-        for (ControllerButton button : ControllerButton.values()) {
+        for (ControllerButton button : CONTROLLER_BUTTON_VALUES) {
             buttonState.put(button.ordinal(), false);
         }
     }
