@@ -8,7 +8,6 @@ buildscript {
     dependencies {
         classpath "org.docstr:gwt-gradle-plugin:1.1.29"
         classpath "com.android.tools.build:gradle:7.2.2"
-        classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.19'
     }
 }
 
@@ -63,6 +62,15 @@ allprojects {
 
     tasks.withType(Test) {
         systemProperty 'file.encoding', 'UTF-8'
+    }
+}
+
+configure(subprojects.findAll {!it.path.contains(":test:") && it.name != 'gdx-controllers-android'}) {
+    apply plugin: 'java-library'
+
+    java {
+        withSourcesJar()
+        withJavadocJar()
     }
 }
 

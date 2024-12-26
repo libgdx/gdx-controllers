@@ -1,3 +1,12 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.19'
+	}
+}
+
 apply plugin: 'robovm'
 apply plugin: 'java'
 
