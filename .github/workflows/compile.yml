@@ -30,4 +30,4 @@ jobs:
     - name: Build GWT
       run: ./gradlew :test:html:build
     - name: Local install
-      run: ./gradlew uploadArchives -PLOCAL=true
+      run: ./gradlew publishToMavenLocal
