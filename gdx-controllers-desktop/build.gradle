@@ -1,11 +1,3 @@
-apply plugin: 'java-library'
-
-
-configurations {
-	custom
-	compile.extendsFrom custom
-}
-
 eclipse {
 	project {
 		name = appName + "-desktop"
