@@ -18,9 +18,9 @@ allprojects {
     ext {
 
         appName = 'gdx-controllers'
-        gdxVersion = '1.9.11'
+        gdxVersion = '1.13.1'
         roboVMVersion = '2.3.19'
-        jamepadVersion = '2.26.5.0'
+        lwjgl3Version = '3.4.0-SNAPSHOT'
 
         isReleaseBuild = {
             return project.hasProperty("RELEASE")

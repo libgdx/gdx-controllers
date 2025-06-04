@@ -49,7 +49,7 @@ tasks.getByName('processResources') {
 dependencies {
 	api project(":gdx-controllers-core")
 	implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
-	implementation "org.lwjgl:lwjgl-sdl:3.4.0-SNAPSHOT"
+	implementation "org.lwjgl:lwjgl-sdl:$lwjgl3Version"
 }
 
 targetCompatibility = 1.8

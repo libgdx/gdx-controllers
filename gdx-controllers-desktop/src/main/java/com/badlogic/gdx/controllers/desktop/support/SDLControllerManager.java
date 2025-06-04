@@ -73,10 +73,6 @@ public class SDLControllerManager {
         this.mappingsPath = mappingsPath;
         isInitialized = false;
         controllers = new ControllerIndex[configuration.maxNumControllers];
-
-        if (configuration.loadNativeLibrary) {
-            new SharedLibraryLoader().load("jamepad");
-        }
     }
 
     /**
