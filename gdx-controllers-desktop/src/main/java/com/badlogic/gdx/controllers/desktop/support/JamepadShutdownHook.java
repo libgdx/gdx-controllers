@@ -1,12 +1,11 @@
 package com.badlogic.gdx.controllers.desktop.support;
 
 import com.badlogic.gdx.LifecycleListener;
-import com.studiohartman.jamepad.ControllerManager;
 
 public class JamepadShutdownHook implements LifecycleListener {
-    private final ControllerManager controllerManager;
+    private final SDLControllerManager controllerManager;
 
-    public JamepadShutdownHook(ControllerManager controllerManager) {
+    public JamepadShutdownHook(SDLControllerManager controllerManager) {
         this.controllerManager = controllerManager;
     }
 

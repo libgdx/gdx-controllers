@@ -5,19 +5,16 @@ import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.controllers.desktop.JamepadControllerManager;
-import com.studiohartman.jamepad.ControllerIndex;
-import com.studiohartman.jamepad.ControllerManager;
-import com.studiohartman.jamepad.ControllerUnpluggedException;
 
 public class JamepadControllerMonitor implements Runnable {
-    private final ControllerManager controllerManager;
+    private final SDLControllerManager controllerManager;
     private final ControllerListener listener;
     private final IntMap<Tuple> indexToController
         = new IntMap<>(JamepadControllerManager.jamepadConfiguration.maxNumControllers);
     // temporary array for delaying connect messages
     private final Array<JamepadController> connectedControllers = new Array<JamepadController>();
 
-    public JamepadControllerMonitor(ControllerManager controllerManager, ControllerListener listener) {
+    public JamepadControllerMonitor(SDLControllerManager controllerManager, ControllerListener listener) {
         this.controllerManager = controllerManager;
         this.listener = listener;
 
