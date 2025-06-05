@@ -1,91 +1,82 @@
-apply plugin: 'maven'
-apply plugin: 'signing'
+configure([
+        project(":gdx-controllers-core"),
+        project(":gdx-controllers-android"),
+        project(":gdx-controllers-desktop"),
+        project(":gdx-controllers-gwt"),
+        project(":gdx-controllers-ios")
+])
+{
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
 
-afterEvaluate { project ->
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+    afterEvaluate { project ->
+        //Workaround android not having components populated yet.
+        afterEvaluate {
+            publishing {
+                publications {
+                    mavenJava(MavenPublication) {
 
-                if (isLocalBuild()) {
-                    repository(url: getLocalRepositoryUrl())
-                } else if (isReleaseBuild()) {
-                    repository(url: getReleaseRepositoryUrl()) {
-                        authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
-                    }
-                } else {
-                    snapshotRepository(url: getSnapshotRepositoryUrl()) {
-                        authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                        //Most normal java projects
+                        if (components.findByName("java") != null)
+                            from components.java
+
+                        //Android
+                        if (components.findByName("release") != null) {
+                            from components.release
+                        }
+
+                        pom {
+                            name = POM_NAME
+                            if (!POM_DESCRIPTION.isEmpty())
+                                description = POM_DESCRIPTION
+                            url = POM_URL
+                            licenses {
+                                license {
+                                    name = POM_LICENCE_NAME
+                                    url = POM_LICENCE_URL
+                                    distribution = POM_LICENCE_DIST
+                                }
+                            }
+                            developers {
+                                developer {
+                                    id = "libGDX Developers"
+                                    url = "https://github.com/libgdx/libgdx/graphs/contributors"
+                                }
+                            }
+                            scm {
+                                connection = POM_SCM_CONNECTION
+                                developerConnection = POM_SCM_DEV_CONNECTION
+                                url = POM_SCM_URL
+                            }
+                        }
                     }
                 }
 
+                repositories {
+                    maven {
+                        url = version.endsWith('SNAPSHOT') ? getSnapshotRepositoryUrl() : getReleaseRepositoryUrl()
 
-
-
-                pom.project {
-                    name 'gdx-controllers'
-                    description 'Game Controller Extension for libGDX'
-                    url 'https://github.com/libgdx/gdx-controllers'
-
-                    scm {
-                        url 'scm:git@github.com:libgdx/gdx-controllers.git'
-                        connection 'scm:git@github.com:libgdx/gdx-controllers.git'
-                        developerConnection 'scm:git@github.com:libgdx/gdx-controllers.git'
-                    }
-
-                    licenses {
-                        license {
-                            name 'The Apache Software License, Version 2.0'
-                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                            distribution 'repo'
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id = "Tomski"
-                            name = "Tom Wojciechowski"
-                            email = "tomwojciechowski@asidik.com"
-                        }
-                        developer {
-                            id 'MrStahlfelge'
-                            name 'Benjamin Schulte'
-                            email 'lightblocks@golfgl.de'
+                        if (getRepositoryUsername() || getRepositoryPassword()) {
+                            credentials {
+                                username = getRepositoryUsername()
+                                password = getRepositoryPassword()
+                            }
                         }
                     }
                 }
             }
+
+            signing {
+                useGpgCmd()
+                sign publishing.publications.mavenJava
+            }
+
+            //Simply using "required" in signing block doesn't work because taskGraph isn't ready yet.
+            gradle.taskGraph.whenReady {
+                tasks.withType(Sign) {
+                    onlyIf { isReleaseBuild() }
+                }
+            }
         }
     }
-
-    signing {
-        if (isReleaseBuild()) {
-            useGpgCmd()
-        }
-        required { isReleaseBuild() }
-        sign configurations.archives
-    }
-
-    task libraryJar(type: Jar, dependsOn:classes) {
-        from sourceSets.main.output.classesDirs
-        from configurations.custom.collect { it.isDirectory() ? it : zipTree(it) }
-        classifier = 'library'
-    }
-
-    task sourcesJar(type: Jar, dependsOn:classes) {
-        from sourceSets.main.allSource
-        classifier = 'sources'
-    }
-
-    task javadocJar(type: Jar, dependsOn:javadoc) {
-        from javadoc.destinationDir
-        classifier = 'javadoc'
-    }
-
-    artifacts {
-        archives libraryJar
-        archives sourcesJar
-        archives javadocJar
-    }
-
 }

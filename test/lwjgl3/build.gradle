@@ -36,4 +36,5 @@ jar {
 	manifest {
 		attributes 'Main-Class': project.mainClassName
 	}
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

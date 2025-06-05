@@ -11,11 +11,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up JDK 8
+    - name: Set up JDK 11
       uses: actions/setup-java@v3
       with:
         distribution: 'zulu'
-        java-version: 8
+        java-version: 11
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build Android
@@ -37,4 +37,4 @@ jobs:
         NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
         NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
       run:
-        ./gradlew clean uploadArchives -PRELEASE=true -Psigning.gnupg.keyId=${{ secrets.GPG_KEYID }} -Psigning.gnupg.passphrase=${{ secrets.GPG_PASSPHRASE }} -Psigning.gnupg.keyName=${{ secrets.GPG_KEYID }}
+        ./gradlew clean publish -PRELEASE=true -Psigning.gnupg.keyId=${{ secrets.GPG_KEYID }} -Psigning.gnupg.passphrase=${{ secrets.GPG_PASSPHRASE }} -Psigning.gnupg.keyName=${{ secrets.GPG_KEYID }}
