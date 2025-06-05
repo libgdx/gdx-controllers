@@ -1,7 +1,7 @@
 package com.badlogic.gdx.controllers.desktop.support;
 
 import com.badlogic.gdx.controllers.desktop.Configuration;
-import com.badlogic.gdx.utils.SharedLibraryLoader;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.sdl.SDL_Event;
 
