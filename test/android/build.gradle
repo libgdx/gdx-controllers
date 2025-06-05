@@ -1,7 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-	compileSdkVersion 30
+	namespace "com.badlogic.gdx.controllers.test"
+	compileSdk 35
 	sourceSets {
 		main {
 			manifest.srcFile 'AndroidManifest.xml'
@@ -30,8 +31,8 @@ android {
 	}
 	defaultConfig {
 		applicationId 'com.badlogic.gdx.controllers.test'
-		minSdkVersion 19
-		targetSdkVersion 30
+		minSdkVersion 21
+		targetSdkVersion 35
 		versionCode 1
 		versionName "1.0"
 	}
