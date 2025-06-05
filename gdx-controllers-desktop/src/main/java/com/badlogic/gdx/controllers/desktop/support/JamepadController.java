@@ -4,6 +4,7 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.controllers.ControllerPowerLevel;
+import com.badlogic.gdx.utils.IntFloatMap;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -18,20 +19,23 @@ public class JamepadController implements Controller {
     private static final IntMap<ControllerButton> CODE_TO_BUTTON = new IntMap<>(ControllerButton.values().length);
     private static final IntMap<ControllerAxis> CODE_TO_AXIS = new IntMap<>(ControllerAxis.values().length);
     private static final Logger logger = new Logger(JamepadController.class.getSimpleName());
+    // ControllerButton.values() and ControllerAxis.values() is cached once, to avoid producing garbage every frame
+    private static final ControllerButton[] CONTROLLER_BUTTON_VALUES = ControllerButton.values();
+    private static final ControllerAxis[] CONTROLLER_AXIS_VALUES = ControllerAxis.values();
 
     static {
-        for (ControllerButton button : ControllerButton.values()) {
+        for (ControllerButton button : CONTROLLER_BUTTON_VALUES) {
             CODE_TO_BUTTON.put(button.ordinal(), button);
         }
 
-        for (ControllerAxis axis : ControllerAxis.values()) {
+        for (ControllerAxis axis : CONTROLLER_AXIS_VALUES) {
             CODE_TO_AXIS.put(axis.ordinal(), axis);
         }
     }
 
     private final CompositeControllerListener compositeControllerListener = new CompositeControllerListener();
     private final IntMap<Boolean> buttonState = new IntMap<>();
-    private final IntMap<Float> axisState = new IntMap<>();
+    private final IntFloatMap axisState = new IntFloatMap();
     private final String uuid;
     private final String name;
     private ControllerIndex controllerIndex;
@@ -128,11 +132,11 @@ public class JamepadController implements Controller {
     }
 
     private void updateAxisState() {
-        for (ControllerAxis axis : ControllerAxis.values()) {
+        for (ControllerAxis axis : CONTROLLER_AXIS_VALUES) {
             int id = axis.ordinal();
 
             float value = getAxis(id);
-            if (value != axisState.get(id)) {
+            if (value != axisState.get(id, 0)) {
                 if (logger.getLevel() == Logger.DEBUG) {
                     logger.debug("Axis [" + id + " - " + toAxis(id) + "] moved [" + value + "]");
                 }
@@ -143,7 +147,7 @@ public class JamepadController implements Controller {
     }
 
     private void updateButtonsState() {
-        for (ControllerButton button : ControllerButton.values()) {
+        for (ControllerButton button : CONTROLLER_BUTTON_VALUES) {
             int id = button.ordinal();
 
             boolean pressed = getButton(id);
@@ -163,11 +167,11 @@ public class JamepadController implements Controller {
     }
 
     private void initializeState() {
-        for (ControllerAxis axis : ControllerAxis.values()) {
-            axisState.put(axis.ordinal(), 0.0f);
+        for (ControllerAxis axis : CONTROLLER_AXIS_VALUES) {
+            axisState.put(axis.ordinal(), 0);
         }
 
-        for (ControllerButton button : ControllerButton.values()) {
+        for (ControllerButton button : CONTROLLER_BUTTON_VALUES) {
             buttonState.put(button.ordinal(), false);
         }
     }
