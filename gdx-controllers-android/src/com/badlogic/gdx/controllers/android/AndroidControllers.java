@@ -288,7 +288,7 @@ public class AndroidControllers extends AbstractControllerManager implements Lif
 				event.code = keyCode;
 				eventQueue.add(event);
 			}
-			return keyCode != KeyEvent.KEYCODE_BACK || Gdx.input.isCatchBackKey();
+			return keyCode != KeyEvent.KEYCODE_BACK || Gdx.input.isCatchKey(keyCode);
 		} else {
 			return false;
 		}
