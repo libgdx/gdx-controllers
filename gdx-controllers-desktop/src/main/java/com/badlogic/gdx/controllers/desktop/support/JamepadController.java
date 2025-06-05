@@ -106,7 +106,9 @@ public class JamepadController implements Controller {
 
     private void updateAxisState() {
         for (ControllerAxis axis : ControllerAxis.VALUES) {
-            int id = axis.ordinal();
+            if (axis == ControllerAxis.INVALID)
+                continue;
+            int id = axis.getId();
 
             float value = getAxis(id);
             if (value != axisState.get(id, Float.NaN)) {
@@ -121,7 +123,9 @@ public class JamepadController implements Controller {
 
     private void updateButtonsState() {
         for (ControllerButton button : ControllerButton.VALUES) {
-            int id = button.ordinal();
+            if (button == ControllerButton.INVALID)
+                continue;
+            int id = button.getId();
 
             boolean pressed = getButton(id);
             boolean oldState = buttonState.get(id, -1) == 1;
@@ -142,11 +146,11 @@ public class JamepadController implements Controller {
 
     private void initializeState() {
         for (ControllerAxis axis : ControllerAxis.VALUES) {
-            axisState.put(axis.ordinal(), 0.0f);
+            axisState.put(axis.getId(), 0.0f);
         }
 
         for (ControllerButton button : ControllerButton.VALUES) {
-            buttonState.put(button.ordinal(), 0);
+            buttonState.put(button.getId(), 0);
         }
     }
 

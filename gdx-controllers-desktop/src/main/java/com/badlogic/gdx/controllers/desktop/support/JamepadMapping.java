@@ -6,16 +6,16 @@ public class JamepadMapping extends ControllerMapping {
     private static JamepadMapping instance;
 
     JamepadMapping() {
-        super(ControllerAxis.LEFTX.ordinal(), ControllerAxis.LEFTY.ordinal(),
-                ControllerAxis.RIGHTX.ordinal(), ControllerAxis.RIGHTY.ordinal(),
-                ControllerButton.SOUTH.ordinal(), ControllerButton.EAST.ordinal(),
-                ControllerButton.WEST.ordinal(), ControllerButton.NORTH.ordinal(),
-                ControllerButton.BACK.ordinal(), ControllerButton.START.ordinal(),
-                ControllerButton.LEFT_SHOULDER.ordinal(), UNDEFINED,
-                ControllerButton.RIGHT_SHOULDER.ordinal(), UNDEFINED,
-                ControllerButton.LEFT_STICK.ordinal(), ControllerButton.LEFT_SHOULDER.ordinal(),
-                ControllerButton.DPAD_UP.ordinal(), ControllerButton.DPAD_DOWN.ordinal(),
-                ControllerButton.DPAD_LEFT.ordinal(), ControllerButton.DPAD_RIGHT.ordinal());
+        super(ControllerAxis.LEFTX.getId(), ControllerAxis.LEFTY.getId(),
+                ControllerAxis.RIGHTX.getId(), ControllerAxis.RIGHTY.getId(),
+                ControllerButton.SOUTH.getId(), ControllerButton.EAST.getId(),
+                ControllerButton.WEST.getId(), ControllerButton.NORTH.getId(),
+                ControllerButton.BACK.getId(), ControllerButton.START.getId(),
+                ControllerButton.LEFT_SHOULDER.getId(), UNDEFINED,
+                ControllerButton.RIGHT_SHOULDER.getId(), UNDEFINED,
+                ControllerButton.LEFT_STICK.getId(), ControllerButton.LEFT_SHOULDER.getId(),
+                ControllerButton.DPAD_UP.getId(), ControllerButton.DPAD_DOWN.getId(),
+                ControllerButton.DPAD_LEFT.getId(), ControllerButton.DPAD_RIGHT.getId());
     }
 
     static JamepadMapping getInstance() {

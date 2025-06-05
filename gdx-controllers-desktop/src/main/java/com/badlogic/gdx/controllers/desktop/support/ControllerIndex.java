@@ -143,8 +143,10 @@ public final class ControllerIndex {
      * @throws ControllerUnpluggedException If the controller is not connected
      */
     public boolean isButtonPressed(ControllerButton toCheck) throws ControllerUnpluggedException {
-        updateButton(toCheck.ordinal());
-        return heldDownButtons[toCheck.ordinal()];
+        if (toCheck == ControllerButton.INVALID)
+            return false;
+        updateButton(toCheck.getId());
+        return heldDownButtons[toCheck.getId()];
     }
 
     /**
@@ -158,11 +160,16 @@ public final class ControllerIndex {
      * @throws ControllerUnpluggedException If the controller is not connected
      */
     public boolean isButtonJustPressed(ControllerButton toCheck) throws ControllerUnpluggedException {
-        updateButton(toCheck.ordinal());
-        return justPressedButtons[toCheck.ordinal()];
+        if (toCheck == ControllerButton.INVALID)
+            return false;
+
+        updateButton(toCheck.getId());
+        return justPressedButtons[toCheck.getId()];
     }
 
     private void updateButton(int buttonIndex) throws ControllerUnpluggedException {
+        if (buttonIndex < 0)
+            return;
         ensureConnected();
 
         SDL_UpdateGamepads();
