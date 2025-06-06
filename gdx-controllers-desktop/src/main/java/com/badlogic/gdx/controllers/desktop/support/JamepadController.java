@@ -183,6 +183,7 @@ public class JamepadController implements Controller {
                 canVibrate = controllerIndex.canVibrate();
             } catch (ControllerUnpluggedException | NullPointerException e) {
                 setDisconnected();
+                return false;
             }
         }
 
