@@ -19,7 +19,7 @@ allprojects {
 
         appName = 'gdx-controllers'
         gdxVersion = '1.13.1'
-        roboVMVersion = '2.3.19'
+        roboVMVersion = '2.3.23'
         lwjgl3Version = '3.4.0-SNAPSHOT'
 
         isReleaseBuild = {
