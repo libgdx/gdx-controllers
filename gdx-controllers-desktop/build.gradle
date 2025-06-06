@@ -50,6 +50,14 @@ dependencies {
 	api project(":gdx-controllers-core")
 	implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
 	implementation "org.lwjgl:lwjgl-sdl:$lwjgl3Version"
+	implementation "org.lwjgl:lwjgl-sdl:$lwjgl3Version:natives-linux"
+	implementation "org.lwjgl:lwjgl-sdl:$lwjgl3Version:natives-linux-arm32"
+	implementation "org.lwjgl:lwjgl-sdl:$lwjgl3Version:natives-linux-arm64"
+	implementation "org.lwjgl:lwjgl-sdl:$lwjgl3Version:natives-linux-riscv64"
+	implementation "org.lwjgl:lwjgl-sdl:$lwjgl3Version:natives-macos"
+	implementation "org.lwjgl:lwjgl-sdl:$lwjgl3Version:natives-macos-arm64"
+	implementation "org.lwjgl:lwjgl-sdl:$lwjgl3Version:natives-windows"
+	implementation "org.lwjgl:lwjgl-sdl:$lwjgl3Version:natives-windows-x86"
 }
 
 targetCompatibility = 1.8
