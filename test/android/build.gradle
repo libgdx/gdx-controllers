@@ -1,7 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-	compileSdkVersion 30
+	namespace "com.badlogic.gdx.controllers.test"
+	compileSdk 35
 	sourceSets {
 		main {
 			manifest.srcFile 'AndroidManifest.xml'
@@ -30,8 +31,8 @@ android {
 	}
 	defaultConfig {
 		applicationId 'com.badlogic.gdx.controllers.test'
-		minSdkVersion 19
-		targetSdkVersion 30
+		minSdkVersion 21
+		targetSdkVersion 35
 		versionCode 1
 		versionName "1.0"
 	}
@@ -49,7 +50,6 @@ dependencies {
 	implementation project(':gdx-controllers-android')
 	implementation "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
 
-	natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi"
 	natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
 	natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
 	natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
@@ -72,7 +72,6 @@ task copyAndroidNatives() {
     	    def outputDir = null
     	    if(jar.name.endsWith("natives-arm64-v8a.jar")) outputDir = file("libs/arm64-v8a")
     	    if(jar.name.endsWith("natives-armeabi-v7a.jar")) outputDir = file("libs/armeabi-v7a")
-    	    if(jar.name.endsWith("natives-armeabi.jar")) outputDir = file("libs/armeabi")
     	    if(jar.name.endsWith("natives-x86_64.jar")) outputDir = file("libs/x86_64")
     	    if(jar.name.endsWith("natives-x86.jar")) outputDir = file("libs/x86")
     	    if(outputDir != null) {

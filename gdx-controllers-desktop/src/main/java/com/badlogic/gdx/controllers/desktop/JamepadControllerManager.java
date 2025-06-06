@@ -7,6 +7,7 @@ import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.desktop.support.CompositeControllerListener;
 import com.badlogic.gdx.controllers.desktop.support.JamepadControllerMonitor;
 import com.badlogic.gdx.controllers.desktop.support.JamepadShutdownHook;
+import com.badlogic.gdx.controllers.desktop.support.SDLControllerManager;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -14,10 +15,10 @@ import java.io.IOException;
 
 public class JamepadControllerManager extends AbstractControllerManager implements Disposable {
     // assign a Jamepad configuration to this field at game startup to override defaults
-    public static com.studiohartman.jamepad.Configuration jamepadConfiguration;
+    public static Configuration jamepadConfiguration;
 
     private static boolean nativeLibInitialized = false;
-    private static com.studiohartman.jamepad.ControllerManager controllerManager;
+    private static SDLControllerManager controllerManager;
 
     private final CompositeControllerListener compositeListener = new CompositeControllerListener();
 
@@ -26,10 +27,10 @@ public class JamepadControllerManager extends AbstractControllerManager implemen
 
         if (!nativeLibInitialized) {
             if (jamepadConfiguration == null) {
-                jamepadConfiguration = new com.studiohartman.jamepad.Configuration();
+                jamepadConfiguration = new Configuration();
             }
 
-            controllerManager = new com.studiohartman.jamepad.ControllerManager(jamepadConfiguration);
+            controllerManager = new SDLControllerManager(jamepadConfiguration);
             controllerManager.initSDLGamepad();
 
             JamepadControllerMonitor monitor = new JamepadControllerMonitor(controllerManager, compositeListener);
@@ -70,7 +71,7 @@ public class JamepadControllerManager extends AbstractControllerManager implemen
     }
 
     /**
-     * @see com.studiohartman.jamepad.ControllerManager#addMappingsFromFile(String)
+     * @see SDLControllerManager#addMappingsFromFile(String)
      */
     public static void addMappingsFromFile(String path) throws IOException, IllegalStateException {
         controllerManager.addMappingsFromFile(path);

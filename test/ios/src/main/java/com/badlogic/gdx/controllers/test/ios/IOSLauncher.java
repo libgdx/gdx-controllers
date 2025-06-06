@@ -20,6 +20,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.iosrobovm.IOSApplication;
 import com.badlogic.gdx.backends.iosrobovm.IOSApplicationConfiguration;
 import com.badlogic.gdx.backends.iosrobovm.IOSGraphics;
+import com.badlogic.gdx.backends.iosrobovm.IOSUIViewController;
 import com.badlogic.gdx.controllers.IosControllerManager;
 import com.badlogic.gdx.controllers.test.ControllersTest;
 
@@ -43,7 +44,7 @@ public class IOSLauncher extends IOSApplication.Delegate {
 		};
 		return new IOSApplication(testApp, configuration) {
 			@Override
-			protected IOSGraphics.IOSUIViewController createUIViewController(IOSGraphics graphics) {
+			protected IOSUIViewController createUIViewController(IOSGraphics graphics) {
 				return new MyUIViewController(this, graphics);
 			}
 		};
