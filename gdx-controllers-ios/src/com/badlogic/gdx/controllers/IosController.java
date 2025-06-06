@@ -346,7 +346,10 @@ public class IosController extends AbstractController {
 
     @Override
     public String getName() {
-        return controller.getVendorName();
+        String vendorName = controller.getVendorName();
+        if (vendorName == null)
+            return "Unnamed Controller";
+        return vendorName;
     }
 
     @Override
