@@ -5,36 +5,17 @@ import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.controllers.ControllerPowerLevel;
 import com.badlogic.gdx.utils.IntFloatMap;
-import com.badlogic.gdx.utils.IntMap;
+import com.badlogic.gdx.utils.IntIntMap;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.studiohartman.jamepad.ControllerAxis;
-import com.studiohartman.jamepad.ControllerButton;
-import com.studiohartman.jamepad.ControllerIndex;
-import com.studiohartman.jamepad.ControllerUnpluggedException;
 
 import java.util.UUID;
 
 public class JamepadController implements Controller {
-    private static final IntMap<ControllerButton> CODE_TO_BUTTON = new IntMap<>(ControllerButton.values().length);
-    private static final IntMap<ControllerAxis> CODE_TO_AXIS = new IntMap<>(ControllerAxis.values().length);
     private static final Logger logger = new Logger(JamepadController.class.getSimpleName());
-    // ControllerButton.values() and ControllerAxis.values() is cached once, to avoid producing garbage every frame
-    private static final ControllerButton[] CONTROLLER_BUTTON_VALUES = ControllerButton.values();
-    private static final ControllerAxis[] CONTROLLER_AXIS_VALUES = ControllerAxis.values();
-
-    static {
-        for (ControllerButton button : CONTROLLER_BUTTON_VALUES) {
-            CODE_TO_BUTTON.put(button.ordinal(), button);
-        }
-
-        for (ControllerAxis axis : CONTROLLER_AXIS_VALUES) {
-            CODE_TO_AXIS.put(axis.ordinal(), axis);
-        }
-    }
 
     private final CompositeControllerListener compositeControllerListener = new CompositeControllerListener();
-    private final IntMap<Boolean> buttonState = new IntMap<>();
+    private final IntIntMap buttonState = new IntIntMap(); // there is no IntBoolMap, so we do "1" = true, "0" = false
     private final IntFloatMap axisState = new IntFloatMap();
     private final String uuid;
     private final String name;
@@ -55,7 +36,7 @@ public class JamepadController implements Controller {
     @Override
     public boolean getButton(final int buttonCode) {
         try {
-            ControllerButton button = toButton(buttonCode);
+            ControllerButton button = ControllerButton.getById(buttonCode);
             return button != null && controllerIndex.isButtonPressed(button);
         } catch (ControllerUnpluggedException | NullPointerException e) {
             setDisconnected();
@@ -66,7 +47,7 @@ public class JamepadController implements Controller {
     @Override
     public float getAxis(final int axisCode) {
         try {
-            ControllerAxis axis = toAxis(axisCode);
+            ControllerAxis axis = ControllerAxis.getById(axisCode);
 
             if (axis == null) {
                 return 0.0f;
@@ -123,22 +104,16 @@ public class JamepadController implements Controller {
         return connected;
     }
 
-    private ControllerButton toButton(int buttonCode) {
-        return CODE_TO_BUTTON.get(buttonCode);
-    }
-
-    private ControllerAxis toAxis(int axisCode) {
-        return CODE_TO_AXIS.get(axisCode);
-    }
-
     private void updateAxisState() {
-        for (ControllerAxis axis : CONTROLLER_AXIS_VALUES) {
-            int id = axis.ordinal();
+        for (ControllerAxis axis : ControllerAxis.VALUES) {
+            if (axis == ControllerAxis.INVALID)
+                continue;
+            int id = axis.getId();
 
             float value = getAxis(id);
-            if (value != axisState.get(id, 0)) {
+            if (value != axisState.get(id, Float.NaN)) {
                 if (logger.getLevel() == Logger.DEBUG) {
-                    logger.debug("Axis [" + id + " - " + toAxis(id) + "] moved [" + value + "]");
+                    logger.debug("Axis [" + id + " - " + ControllerAxis.getById(id) + "] moved [" + value + "]");
                 }
                 compositeControllerListener.axisMoved(this, id, value);
             }
@@ -147,11 +122,14 @@ public class JamepadController implements Controller {
     }
 
     private void updateButtonsState() {
-        for (ControllerButton button : CONTROLLER_BUTTON_VALUES) {
-            int id = button.ordinal();
+        for (ControllerButton button : ControllerButton.VALUES) {
+            if (button == ControllerButton.INVALID)
+                continue;
+            int id = button.getId();
 
             boolean pressed = getButton(id);
-            if (pressed != buttonState.get(id)) {
+            boolean oldState = buttonState.get(id, -1) == 1;
+            if (pressed != oldState) {
                 if (pressed) {
                     compositeControllerListener.buttonDown(this, id);
                 } else {
@@ -159,20 +137,20 @@ public class JamepadController implements Controller {
                 }
 
                 if (logger.getLevel() == Logger.DEBUG) {
-                    logger.debug("Button [" + id + " - " + toButton(id) + "] is " + (pressed ? "pressed" : "released"));
+                    logger.debug("Button [" + id + " - " + ControllerButton.getById(id) + "] is " + (pressed ? "pressed" : "released"));
                 }
             }
-            buttonState.put(id, pressed);
+            buttonState.put(id, pressed ? 1 : 0);
         }
     }
 
     private void initializeState() {
-        for (ControllerAxis axis : CONTROLLER_AXIS_VALUES) {
-            axisState.put(axis.ordinal(), 0);
+        for (ControllerAxis axis : ControllerAxis.VALUES) {
+            axisState.put(axis.getId(), 0.0f);
         }
 
-        for (ControllerButton button : CONTROLLER_BUTTON_VALUES) {
-            buttonState.put(button.ordinal(), false);
+        for (ControllerButton button : ControllerButton.VALUES) {
+            buttonState.put(button.getId(), 0);
         }
     }
 
@@ -255,9 +233,10 @@ public class JamepadController implements Controller {
             return maxButtonIndex;
         }
 
-        maxButtonIndex = CODE_TO_BUTTON.size - 1;
+        // TODO: 04.06.2025 I don't think this code makes any sense, but I might be mistaken
+        maxButtonIndex = ControllerButton.VALUES.length - 1;
         try {
-            while (maxButtonIndex > 0 && !controllerIndex.isButtonAvailable(CODE_TO_BUTTON.get(maxButtonIndex))) {
+            while (maxButtonIndex > 0 && !controllerIndex.isButtonAvailable(ControllerButton.VALUES[maxButtonIndex])) {
                 maxButtonIndex--;
             }
         } catch (ControllerUnpluggedException | NullPointerException e) {
@@ -273,12 +252,17 @@ public class JamepadController implements Controller {
             return axisCount;
         }
 
-        axisCount = CODE_TO_AXIS.size;
+        axisCount = 0;
         try {
-            while (axisCount > 0 && !controllerIndex.isAxisAvailable(CODE_TO_AXIS.get(axisCount - 1))) {
-                axisCount--;
+            for (ControllerAxis axis : ControllerAxis.VALUES) {
+                if (axis == ControllerAxis.INVALID)
+                    continue;
+
+                if (controllerIndex.isAxisAvailable(axis))
+                    axisCount++;
+
             }
-        } catch (ControllerUnpluggedException | NullPointerException e) {
+        } catch (ControllerUnpluggedException e) {
             setDisconnected();
         }
 
@@ -298,22 +282,8 @@ public class JamepadController implements Controller {
     @Override
     public ControllerPowerLevel getPowerLevel() {
         try {
-            switch (controllerIndex.getPowerLevel()) {
-                case POWER_MAX:
-                case POWER_FULL:
-                    return ControllerPowerLevel.POWER_FULL;
-                case POWER_MEDIUM:
-                    return ControllerPowerLevel.POWER_MEDIUM;
-                case POWER_LOW:
-                    return ControllerPowerLevel.POWER_LOW;
-                case POWER_EMPTY:
-                    return ControllerPowerLevel.POWER_EMPTY;
-                case POWER_WIRED:
-                    return ControllerPowerLevel.POWER_WIRED;
-                default:
-                    return ControllerPowerLevel.POWER_UNKNOWN;
-            }
-        } catch (Throwable t) {
+            return controllerIndex.getPowerLevel();
+        } catch (ControllerUnpluggedException e) {
             return ControllerPowerLevel.POWER_UNKNOWN;
         }
     }

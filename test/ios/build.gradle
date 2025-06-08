@@ -3,7 +3,7 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.19'
+		classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.23'
 	}
 }
 
